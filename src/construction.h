@@ -59,9 +59,9 @@ namespace yiqi
 	 */
 	typedef boost::program_options::options_description Options;
 	Parameters::Unique
-	ParseOptionsToParameters (int           argc,
-				  char          **argv,
-				  Options const &description);
+	ParseOptionsToParameters (int                argc,
+				  const char * const *argv,
+				  Options const      &description);
     }
 }
 

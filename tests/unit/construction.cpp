@@ -16,7 +16,11 @@
 
 using ::testing::ElementsAreArray;
 using ::testing::Matcher;
+using ::testing::NotNull;
 using ::testing::StrEq;
+
+namespace yc = yiqi::construction;
+namespace po = boost::program_options;
 
 namespace
 {
@@ -86,6 +90,11 @@ namespace
 	"--yiqi_a",
 	"--yiqi_b"
     };
+
+    const std::vector <std::string> RealCommandArguments =
+    {
+	"--yiqi_tool"
+    };
 }
 
 class ConstructionParameters :
@@ -136,4 +145,18 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
 			   ArgumentCount (args)),
 		 ElementsAreArray (&matchers[0],
 				   matchers.size ()));
+}
+
+TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
+{
+    CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
+    boost::program_options::options_description desc ("Options");
+    desc.add_options ()
+	("yiqi_tool", "Tool");
+
+    yc::Parameters::Unique pointer (yc::ParseOptionsToParameters (ArgumentCount (args),
+								  Arguments (args),
+								  desc));
+
+    EXPECT_THAT (pointer.get (), NotNull ());
 }
