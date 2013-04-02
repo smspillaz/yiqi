@@ -12,14 +12,14 @@ namespace po = boost::program_options;
 
 yc::Parameters::Unique
 yc::ParseOptionsToParameters (int                argc,
-			      const char * const *argv,
-			      const yc::Options  &description)
+                  const char * const *argv,
+                  const yc::Options  &description)
 {
-    po::variables_map optionVariableMap;
+    po::variables_map       optionVariableMap;
+    po::command_line_parser parser (argc, argv);
 
-    po::store (po::command_line_parser (argc, argv)
-		    .options (description).run (),
-	       optionVariableMap);
+    po::store (parser.options (description).run (),
+               optionVariableMap);
 
     return yc::Parameters::Unique ();
 }

@@ -25,35 +25,35 @@ namespace po = boost::program_options;
 namespace
 {
     /**
-     * @brief The ExceptionCleanup class provides a method to guaruntee
-     * cleanup of a function if an exception is thrown before commit is
-     * set to true
-     */
+    * @brief The ExceptionCleanup class provides a method to guaruntee
+    * cleanup of a function if an exception is thrown before commit is
+    * set to true
+    */
     class ExceptionCleanup
     {
-	public:
+        public:
 
-	    typedef std::function <void ()> Func;
-	    ExceptionCleanup (Func const &func,
-			      bool       &commit) :
-		mFunc (func),
-		mCommit (commit)
-	    {
-	    }
+            typedef std::function <void ()> Func;
+            ExceptionCleanup (Func const &func,
+                              bool       &commit) :
+                mFunc (func),
+                mCommit (commit)
+            {
+            }
 
-	    ~ExceptionCleanup ()
-	    {
-		if (!mCommit)
-		    mFunc ();
-	    }
+            ~ExceptionCleanup ()
+            {
+                if (!mCommit)
+                    mFunc ();
+            }
 
-	private:
+        private:
 
-	    ExceptionCleanup (ExceptionCleanup const &) = delete;
-	    ExceptionCleanup & operator= (ExceptionCleanup const &) = delete;
+            ExceptionCleanup (ExceptionCleanup const &) = delete;
+            ExceptionCleanup & operator= (ExceptionCleanup const &) = delete;
 
-	    Func mFunc;
-	    bool &mCommit;
+            Func mFunc;
+            bool &mCommit;
     };
 
     /**
@@ -63,12 +63,12 @@ namespace
 
     int ArgumentCount (CommandLineArguments const &args)
     {
-	return std::get <0> (args);
+        return std::get <0> (args);
     }
 
     char const * const * Arguments (CommandLineArguments const &args)
     {
-	return &(std::get <1> (args))[0];
+        return &(std::get <1> (args))[0];
     }
 
     /**
@@ -77,23 +77,23 @@ namespace
     template <typename T>
     std::vector <T> ToVector (T const *array, size_t size)
     {
-	if (size)
-	    return std::vector <T> (array, array + size);
-	else
-	    throw std::out_of_range ("ToVector: size is < 1");
+        if (size)
+            return std::vector <T> (array, array + size);
+        else
+            throw std::out_of_range ("ToVector: size is < 1");
     }
 
     /* Constants */
     const std::vector <std::string> SampleCommandArguments =
     {
-	"--yiqi_tool",
-	"--yiqi_a",
-	"--yiqi_b"
+        "--yiqi_tool",
+        "--yiqi_a",
+        "--yiqi_b"
     };
 
     const std::vector <std::string> RealCommandArguments =
     {
-	"--yiqi_tool"
+        "--yiqi_tool"
     };
 }
 
@@ -102,8 +102,8 @@ class ConstructionParameters :
 {
     public:
 
-	CommandLineArguments
-	GenerateCommandLine (std::vector <std::string> const &);
+        CommandLineArguments
+        GenerateCommandLine (std::vector <std::string> const &);
 };
 
 CommandLineArguments
@@ -112,10 +112,10 @@ ConstructionParameters::GenerateCommandLine (std::vector<std::string> const &arg
     std::vector <const char *> charArguments;
 
     for (std::string const &str : arguments)
-	charArguments.push_back (str.c_str ());
+        charArguments.push_back (str.c_str ());
 
     return CommandLineArguments (charArguments.size (),
-				 charArguments);
+                                 charArguments);
 }
 
 TEST_F (ConstructionParameters, GeneratedCommandLineHasNProvidedArguments)
@@ -131,7 +131,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
 
     std::vector <Matcher <char const *> > matchers;
     for (std::string const &str : SampleCommandArguments)
-	matchers.push_back (StrEq (str));
+        matchers.push_back (StrEq (str));
 
     /* ElementsAreArray has some strange semantics:
      *
@@ -142,9 +142,9 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
      *    the size of the array too
      */
     EXPECT_THAT (ToVector (Arguments (args),
-			   ArgumentCount (args)),
-		 ElementsAreArray (&matchers[0],
-				   matchers.size ()));
+                 ArgumentCount (args)),
+                 ElementsAreArray (&matchers[0],
+                                   matchers.size ()));
 }
 
 TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
@@ -152,11 +152,11 @@ TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
     CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
     boost::program_options::options_description desc ("Options");
     desc.add_options ()
-	("yiqi_tool", "Tool");
+    ("yiqi_tool", "Tool");
 
-    yc::Parameters::Unique pointer (yc::ParseOptionsToParameters (ArgumentCount (args),
-								  Arguments (args),
-								  desc));
+    auto pointer (yc::ParseOptionsToParameters (ArgumentCount (args),
+                                                Arguments (args),
+                                                desc));
 
     EXPECT_THAT (pointer.get (), NotNull ());
 }
