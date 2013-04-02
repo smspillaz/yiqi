@@ -8,6 +8,7 @@
 
 #include <tuple>
 #include <vector>
+#include <functional>
 
 #include <gmock/gmock.h>
 
@@ -19,6 +20,38 @@ using ::testing::StrEq;
 
 namespace
 {
+    /**
+     * @brief The ExceptionCleanup class provides a method to guaruntee
+     * cleanup of a function if an exception is thrown before commit is
+     * set to true
+     */
+    class ExceptionCleanup
+    {
+	public:
+
+	    typedef std::function <void ()> Func;
+	    ExceptionCleanup (Func const &func,
+			      bool       &commit) :
+		mFunc (func),
+		mCommit (commit)
+	    {
+	    }
+
+	    ~ExceptionCleanup ()
+	    {
+		if (!mCommit)
+		    mFunc ();
+	    }
+
+	private:
+
+	    ExceptionCleanup (ExceptionCleanup const &) = delete;
+	    ExceptionCleanup & operator= (ExceptionCleanup const &) = delete;
+
+	    Func mFunc;
+	    bool &mCommit;
+    };
+
     /**
      * @brief A tuple type with a managed array of arguments
      */
@@ -67,7 +100,13 @@ class ConstructionParameters :
 CommandLineArguments
 ConstructionParameters::GenerateCommandLine (std::vector<std::string> const &arguments)
 {
-    return CommandLineArguments ();
+    std::vector <const char *> charArguments;
+
+    for (std::string const &str : arguments)
+	charArguments.push_back (str.c_str ());
+
+    return CommandLineArguments (charArguments.size (),
+				 charArguments);
 }
 
 TEST_F (ConstructionParameters, GeneratedCommandLineHasNProvidedArguments)
