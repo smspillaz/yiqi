@@ -1,3 +1,9 @@
+# /CMakeLists.txt
+# Main CMake file for the Yiqi project. Finds Google Test
+# and determines if we can build Yiqi
+#
+# See LICENCE.md for Copyright information
+
 project (YiqiInstrumentation)
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
@@ -59,8 +65,11 @@ endif (NOT GTEST_FOUND)
 set (YIQI_INTERNAL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set (YIQI_INTERNAL_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set (YIQI_SAMPLES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/sample)
+set (YIQI_TESTS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
 set (YIQI_MAIN_LIBRARY yiqi_main)
+set (YIQI_LIBRARY yiqi)
 
 add_subdirectory (${YIQI_INTERNAL_SOURCE_DIRECTORY})
 add_subdirectory (${YIQI_SAMPLES_DIRECTORY})
+add_subdirectory (${YIQI_TESTS_DIRECTORY})
