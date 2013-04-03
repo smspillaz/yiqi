@@ -6,7 +6,9 @@
  */
 
 #include "construction.h"
+#include "constants.h"
 
+namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
 namespace po = boost::program_options;
 
@@ -15,7 +17,9 @@ yc::FetchOptionsDescription ()
 {
     po::options_description description ("Options");
     description.add_options ()
-        ("yiqi_tool", po::value <std::string> ()->default_value ("none"), "Tool");
+        (yconst::YiqiToolOption (),
+         po::value <std::string> ()->default_value ("none"),
+         "Tool");
 
     return description;
 }
@@ -25,15 +29,15 @@ yc::ParseOptionsForTool(int                argc,
                         const char * const *argv,
                         const yc::Options  &description)
 {
-    po::variables_map       optionVariableMap;
+    po::variables_map       variableMap;
     po::command_line_parser parser (argc, argv);
 
     po::store (parser.options (description).run (),
-               optionVariableMap);
-    po::notify (optionVariableMap);
+               variableMap);
+    po::notify (variableMap);
 
-    if (optionVariableMap.count ("yiqi_tool"))
-        return optionVariableMap["yiqi_tool"].as <std::string> ();
+    if (variableMap.count (yconst::YiqiToolOption ()))
+        return variableMap[yconst::YiqiToolOption ()].as <std::string> ();
 
     return std::string ("none");
 }

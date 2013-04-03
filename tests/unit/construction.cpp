@@ -13,6 +13,7 @@
 #include <gmock/gmock.h>
 
 #include <construction.h>
+#include <constants.h>
 
 using ::testing::_;
 using ::testing::ElementsAreArray;
@@ -20,6 +21,7 @@ using ::testing::Matcher;
 using ::testing::NotNull;
 using ::testing::StrEq;
 
+namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
 namespace po = boost::program_options;
 
@@ -85,19 +87,21 @@ namespace
     }
 
     /* Constants */
+    static std::string const MockTool ("mock");
+    static std::string const MockProgramName ("mock_program_name");
+    static std::string const ArgYiqiToolOption (std::string ("--") +
+                                                yconst::YiqiToolOption ());
+
     std::vector <std::string> const SampleCommandArguments =
     {
-        "--yiqi_tool",
+        ArgYiqiToolOption,
         "--yiqi_a",
         "--yiqi_b"
     };
 
-    static std::string const MockTool ("mock");
-    static std::string const MockProgramName ("mock_program_name");
-
     const std::vector <std::string> RealCommandArguments =
     {
-        "--yiqi_tool",
+        ArgYiqiToolOption,
         MockTool
     };
 
