@@ -14,6 +14,7 @@
 
 #include <construction.h>
 
+using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Matcher;
 using ::testing::NotNull;
@@ -84,17 +85,23 @@ namespace
     }
 
     /* Constants */
-    const std::vector <std::string> SampleCommandArguments =
+    std::vector <std::string> const SampleCommandArguments =
     {
         "--yiqi_tool",
         "--yiqi_a",
         "--yiqi_b"
     };
 
+    static std::string const MockTool ("mock");
+    static std::string const MockProgramName ("mock_program_name");
+
     const std::vector <std::string> RealCommandArguments =
     {
-        "--yiqi_tool"
+        "--yiqi_tool",
+        MockTool
     };
+
+    const std::vector <std::string> NoArguments;
 }
 
 class ConstructionParameters :
@@ -102,8 +109,17 @@ class ConstructionParameters :
 {
     public:
 
+        ConstructionParameters () :
+            desc (yc::FetchOptionsDescription ())
+        {
+        }
+
         CommandLineArguments
         GenerateCommandLine (std::vector <std::string> const &);
+
+    protected:
+
+        po::options_description desc;
 };
 
 CommandLineArguments
@@ -125,13 +141,30 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasNProvidedArguments)
     EXPECT_EQ (SampleCommandArguments.size (), ArgumentCount (args));
 }
 
+namespace
+{
+    void MatchAnythingFor (std::string                     const &str,
+                           std::vector <Matcher <char const *> > &matchers)
+    {
+        matchers.push_back (_);
+    }
+
+    void MatchExact (std::string                     const &str,
+                     std::vector <Matcher <char const *> > &matchers)
+    {
+        matchers.push_back (StrEq (str));
+    }
+}
+
 TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
 {
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
     std::vector <Matcher <char const *> > matchers;
+    MatchAnythingFor (MockProgramName, matchers);
+
     for (std::string const &str : SampleCommandArguments)
-        matchers.push_back (StrEq (str));
+        MatchExact (str, matchers);
 
     /* ElementsAreArray has some strange semantics:
      *
@@ -142,6 +175,22 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
      *    the size of the array too
      */
     EXPECT_THAT (ToVector (Arguments (args),
+                           ArgumentCount (args)),
+                 ElementsAreArray (&matchers[0],
+                                   matchers.size ()));
+}
+
+TEST_F (ConstructionParameters, GeneratedCommandLineHasFirstArgAsMockProgramName)
+{
+    CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
+
+    std::vector <Matcher <char const *> > matchers;
+    MatchExact (MockProgramName, matchers);
+
+    for (std::string const &str : SampleCommandArguments)
+        MatchAnythingFor (str, matchers);
+
+    EXPECT_THAT (ToVector (Arguments (args),
                  ArgumentCount (args)),
                  ElementsAreArray (&matchers[0],
                                    matchers.size ()));
@@ -150,13 +199,30 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
 TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
 {
     CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
-    boost::program_options::options_description desc ("Options");
-    desc.add_options ()
-    ("yiqi_tool", "Tool");
 
     auto pointer (yc::ParseOptionsToParameters (ArgumentCount (args),
                                                 Arguments (args),
                                                 desc));
 
     EXPECT_THAT (pointer.get (), NotNull ());
+}
+
+TEST_F (ConstructionParameters, ParseOptionsForToolReturnsSpecifiedTool)
+{
+    CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
+
+    std::string tool (yc::ParseOptionsForTool (ArgumentCount (args),
+                                               Arguments (args),
+                                               desc));
+    EXPECT_EQ (MockTool, tool);
+}
+
+TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
+{
+    CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
+
+    std::string tool (yc::ParseOptionsForTool (ArgumentCount (args),
+                                               Arguments (args),
+                                               desc));
+    EXPECT_EQ (std::string ("none"), tool);
 }
