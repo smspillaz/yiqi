@@ -6,6 +6,9 @@
  * See LICENCE.md for Copyright information
  */
 
+#include <map>
+#include <mutex>
+
 #include "constants.h"
 
 namespace yconst = yiqi::constants;
@@ -34,13 +37,34 @@ yconst::ToolsArray const & yconst::InstrumentationToolNames()
 }
 
 char const *
-yconst::StringFromTool (InstrumentationTool tool)
+yconst::StringFromTool (InstrumentationTool toolValue)
 {
-    return "";
+    typedef std::map <InstrumentationTool, char const *> ToolToStringMap;
+
+    static ToolToStringMap toolToStringMap;
+    static std::once_flag  populateOnceFlag;
+
+    std::call_once (populateOnceFlag, [&]() {
+        for (auto const &tool : yconst::InstrumentationToolNames ())
+            toolToStringMap[tool.tool] = tool.name;
+    });
+
+    return toolToStringMap[toolValue];
+
 }
 
 yconst::InstrumentationTool
 yconst::ToolFromString (const std::string &str)
 {
-    return InstrumentationTool::None;
+    typedef std::map <std::string, InstrumentationTool> StringToToolMap;
+
+    static StringToToolMap stringToToolMap;
+    static std::once_flag  populateOnceFlag;
+
+    std::call_once (populateOnceFlag, [&]() {
+        for (auto const &tool : yconst::InstrumentationToolNames ())
+            stringToToolMap[tool.name] = tool.tool;
+    });
+
+    return stringToToolMap[str];
 }

@@ -32,6 +32,15 @@ namespace yiqi
                << " name (as char const *): " << tool.name;
             return os;
         }
+
+        std::ostream &
+        operator<< (std::ostream &os, InstrumentationTool tool)
+        {
+            const int toolInt = static_cast <int> (tool);
+
+            os << "tool (as int): " << toolInt;
+            return os;
+        }
     }
 }
 
