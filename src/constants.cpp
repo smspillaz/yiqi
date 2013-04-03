@@ -17,17 +17,30 @@ yconst::YiqiToolOption ()
     return tool;
 }
 
-yconst::InstrumentationToolName const *
-yconst::InstrumentationToolNames ()
+yconst::ToolsArray const & yconst::InstrumentationToolNames()
 {
-    static InstrumentationToolName const names[] =
+    static ToolsArray const names =
     {
-        { InstrumentationTool::None, "none" },
-        { InstrumentationTool::Timer, "timer" },
-        { InstrumentationTool::Memcheck, "memcheck" },
-        { InstrumentationTool::Callgrind, "callgrind" },
-        { InstrumentationTool::Cachegrind, "cachegrind" }
+        {
+            { InstrumentationTool::None, "none" },
+            { InstrumentationTool::Timer, "timer" },
+            { InstrumentationTool::Memcheck, "memcheck" },
+            { InstrumentationTool::Callgrind, "callgrind" },
+            { InstrumentationTool::Cachegrind, "cachegrind" }
+        }
     };
 
     return names;
+}
+
+char const *
+yconst::StringFromTool (InstrumentationTool tool)
+{
+    return "";
+}
+
+yconst::InstrumentationTool
+yconst::ToolFromString (const std::string &str)
+{
+    return InstrumentationTool::None;
 }

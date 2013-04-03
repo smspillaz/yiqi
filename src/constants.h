@@ -10,6 +10,7 @@
 #define YIQI_CONSTANTS_H
 
 #include <string>
+#include <array>
 
 namespace yiqi
 {
@@ -41,15 +42,19 @@ namespace yiqi
         struct InstrumentationToolName
         {
             InstrumentationTool tool;
-            char          const *name;
+            char const          *name;
         };
 
+        typedef std::array <InstrumentationToolName, 5> ToolsArray;
         /**
          * @brief InstrumentationToolNames
          * @return an array of all instrumentation tool names
          * arranged by the order specified in InstrumentationTools
          */
-        InstrumentationToolName const * InstrumentationToolNames ();
+        ToolsArray const & InstrumentationToolNames ();
+
+        InstrumentationTool ToolFromString (std::string const &);
+        char const *        StringFromTool (InstrumentationTool);
     }
 }
 
