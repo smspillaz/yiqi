@@ -24,7 +24,9 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_memcheck.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_callgrind.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_cachegrind.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_unix.cpp)
 
 add_library (${YIQI_LIBRARY} STATIC
              ${YIQI_LIBRARY_SRCS})

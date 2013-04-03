@@ -11,32 +11,22 @@
 #include "instrumentation_tool.h"
 #include "test_util.h"
 
+#include "instrumentation_mock.h"
+
 using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
 using ::testing::Matcher;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
 
-
-namespace yit = yiqi::instrumentation::tools;
 namespace ycom = yiqi::commandline;
+namespace yit = yiqi::instrumentation::tools;
+namespace ymock = yiqi::mock;
+namespace ymockit = yiqi::mock::instrumentation::tools;
 namespace ytest = yiqi::testing;
 
 namespace
 {
-    class MockInstrumentationTool :
-        public yit::Tool
-    {
-        public:
-
-            MOCK_CONST_METHOD0 (InstrumentationWrapper,
-                                std::string const & ());
-            MOCK_CONST_METHOD0 (WrapperOptions,
-                                std::string const & ());
-            MOCK_CONST_METHOD0 (ToolIdentifier,
-                                ToolID ());
-    };
-
     static std::string const MockWrapper ("mock");
     static std::string const MockOptions ("--mock");
     static std::string const NilString ("");
@@ -57,7 +47,7 @@ class BuildCommandLine :
     public:
 
         BuildCommandLine () :
-            instrumentation (new MockInstrumentationTool)
+            instrumentation (new ymockit::Tool)
         {
             /* We don't care about whether or not these functions are
              * called, we care about how the system under test handles
@@ -70,7 +60,7 @@ class BuildCommandLine :
 
     protected:
 
-        std::unique_ptr <MockInstrumentationTool> instrumentation;
+        std::unique_ptr <ymockit::Tool> instrumentation;
 };
 
 TEST_F (BuildCommandLine, ThrowOnNoArgs)

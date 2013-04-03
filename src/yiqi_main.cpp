@@ -15,11 +15,16 @@
 #include "commandline.h"
 #include "construction.h"
 #include "instrumentation_tool.h"
+#include "systempaths.h"
+#include "system_api.h"
+#include "system_implementation.h"
 
 namespace po = boost::program_options;
 namespace ycom = yiqi::commandline;
 namespace yc = yiqi::construction;
 namespace yit = yiqi::instrumentation::tools;
+namespace ysys = yiqi::system;
+namespace ysysapi = yiqi::system::api;
 
 namespace
 {
@@ -62,10 +67,6 @@ int main (int argc, char **argv)
                                                              argv,
                                                              *tool));
         ycom::ArgvVector       argv (ycom::StringVectorToArgv (args));
-/*
-        char const *systemPath = getenv ("PATH");
-
-        execvp */
     }
 
     return RUN_ALL_TESTS ();

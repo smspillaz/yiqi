@@ -6,6 +6,7 @@
 
 include_directories (${YIQI_INTERNAL_INCLUDE_DIRECTORY}
                      ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                     ${YIQI_MOCKS_DIRECTORY}
                      ${YIQI_EXTERNAL_INCLUDE_DIRS})
 
 set (YIQI_UNIT_TESTS_BINARY
@@ -17,6 +18,7 @@ set (YIQI_UNIT_TESTS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp)
 
 add_executable (${YIQI_UNIT_TESTS_BINARY}
@@ -24,6 +26,7 @@ add_executable (${YIQI_UNIT_TESTS_BINARY}
 
 target_link_libraries (${YIQI_UNIT_TESTS_BINARY}
                        ${YIQI_LIBRARY}
+                       ${YIQI_MOCKS_LIBRARY}
                        ${GTEST_LIBRARY}
                        ${GTEST_MAIN_LIBRARY}
                        ${GMOCK_LIBRARY}
