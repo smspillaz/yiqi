@@ -37,7 +37,7 @@ namespace yiqi
 		    typedef std::unique_ptr <Tool> Unique;
 		    typedef yiqi::constants::InstrumentationTool ToolID;
 
-		    virtual ~Tool () = default;
+		    virtual ~Tool () {};
 
 		    /**
 		     * @brief InstrumentationWrapper

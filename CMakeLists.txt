@@ -54,9 +54,12 @@ if (NOT GTEST_FOUND)
 
 endif (NOT GTEST_FOUND)
 
-if (NOT GTEST_FOUND)
+find_library (GMOCK_LIBRARY gmock)
+find_library (GMOCK_MAIN_LIBRARY gmock_main)
+
+if (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
     message (SEND_ERROR "Google Test is required to build Yiqi")
-endif (NOT GTEST_FOUND)
+endif (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
 
 # -fPIC, -Wall and -Werror are mandatory
 set (COMPILER_FLAGS "-fPIC -Wall -Werror")

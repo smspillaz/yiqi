@@ -14,13 +14,23 @@ namespace yc = yiqi::construction;
 namespace yit = yiqi::instrumentation::tools;
 namespace po = boost::program_options;
 
+namespace
+{
+    std::string GetNoneString ()
+    {
+        auto const noneTool (yconst::InstrumentationTool::None);
+        auto const noneString (yconst::StringFromTool (noneTool));
+        return noneString;
+    }
+}
+
 po::options_description
 yc::FetchOptionsDescription ()
 {
     po::options_description description ("Options");
     description.add_options ()
         (yconst::YiqiToolOption (),
-         po::value <std::string> ()->default_value ("none"),
+         po::value <std::string> ()->default_value (GetNoneString ()),
          "Tool");
 
     return description;
@@ -41,9 +51,7 @@ yc::ParseOptionsForTool(int                argc,
     if (variableMap.count (yconst::YiqiToolOption ()))
         return variableMap[yconst::YiqiToolOption ()].as <std::string> ();
 
-    auto const noneTool (yconst::InstrumentationTool::None);
-    auto const noneString (yconst::StringFromTool (noneTool));
-    return noneString;
+    return GetNoneString ();
 }
 
 yit::Tool::Unique

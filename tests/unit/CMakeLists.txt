@@ -24,4 +24,6 @@ add_executable (${YIQI_UNIT_TESTS_BINARY}
 target_link_libraries (${YIQI_UNIT_TESTS_BINARY}
                        ${YIQI_LIBRARY}
                        ${GTEST_LIBRARY}
-                       ${GTEST_MAIN_LIBRARY})
+                       ${GTEST_MAIN_LIBRARY}
+                       ${GMOCK_LIBRARY}
+                       ${GMOCK_MAIN_LIBRARY})
