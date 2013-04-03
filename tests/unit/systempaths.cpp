@@ -43,7 +43,7 @@ TEST (SystemPath, SingleStringNoDelimitedReturnsSingleString)
 
 TEST (SystemPath, DelimitedStringReturnsMultipleStrings)
 {
-    char const *MultiplePathsCStr (SinglePath.c_str ());
+    char const *MultiplePathsCStr (MultiplePaths.c_str ());
     std::vector <std::string> paths (ysys::SplitPathString (MultiplePathsCStr));
 
     Matcher <std::string> matcher[] =

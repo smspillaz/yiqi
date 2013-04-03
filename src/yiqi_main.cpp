@@ -64,13 +64,7 @@ int main (int argc, char **argv)
         ycom::ArgvVector       argv (ycom::StringVectorToArgv (args));
 /*
         char const *systemPath = getenv ("PATH");
-        if (systemPath)
-        {
-            std::string sysPathString (systemPath);
-            std::vector <std::string> availablePaths;
 
-            boost::split (availablePaths, systemPath)
-        }
         execvp */
     }
 

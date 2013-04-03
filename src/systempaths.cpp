@@ -15,5 +15,14 @@ namespace ysys = yiqi::system;
 std::vector <std::string>
 ysys::SplitPathString (char const *systemPath)
 {
+    if (systemPath)
+    {
+        std::string sysPathString (systemPath);
+        std::vector <std::string> availablePaths;
+
+        boost::split (availablePaths, systemPath, boost::is_any_of (":"));
+        return availablePaths;
+    }
+
     return std::vector <std::string> ();
 }
