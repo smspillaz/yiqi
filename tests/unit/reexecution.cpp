@@ -46,7 +46,7 @@ namespace
     std::string const MockExecutablePath ("/mock/executable/path/");
     std::string const ExecutableMockPath ("/executable/mock/path/");
     std::string const MultiMockExecutablePath (MockExecutablePath + ":" +
-                                               MockExecutablePath);
+                                               ExecutableMockPath);
 
     std::vector <std::string> const InitialMockArgv =
     {
@@ -90,6 +90,7 @@ ReExecution::IgnoreCallsOnSyscalls ()
 {
     EXPECT_CALL (*syscalls, ExeExists (_)).Times (AtLeast (0));
     EXPECT_CALL (*syscalls, ExecInPlace (_, _)).Times (AtLeast (0));
+    EXPECT_CALL (*syscalls, GetExecutablePath ()).Times (AtLeast (0));
 }
 
 void
@@ -297,6 +298,8 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
 
     ON_CALL (*tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (MockInstrumentation));
+    ON_CALL (*tool, WrapperOptions ())
+        .WillByDefault (ReturnRef (MockArgument));
     ON_CALL (*syscalls, GetExecutablePath ())
         .WillByDefault (Return (MockExecutablePath));
     ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
@@ -304,11 +307,13 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
 
     std::vector <Matcher <char const *> > matchers =
     {
-        _
+        StrEq (MockInstrumentation),
+        StrEq (ytest::MockProgramName ()),
+        StrEq (MockArgument)
     };
 
     EXPECT_CALL (*syscalls, ExecInPlace (StrEq (ExpectedCheckedBinary),
-                                         ArrayFitsMatchers <char const *> (matchers)))
+                                         ArrayFitsMatchers (matchers)))
         .Times (1);
 
     yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
@@ -321,7 +326,7 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
 {
     std::string const FirstExpectedCheckedBinary (MockExecutablePath +
                                                   "/" + MockInstrumentation);
-    std::string const SecondExpectedCheckedBinary (MockExecutablePath +
+    std::string const SecondExpectedCheckedBinary (ExecutableMockPath +
                                                    "/" + MockInstrumentation);
 
     /* Never call ExecInPlace */
@@ -332,12 +337,25 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
 
     ON_CALL (*tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (MockInstrumentation));
+    ON_CALL (*tool, WrapperOptions ())
+        .WillByDefault (ReturnRef (MockArgument));
     ON_CALL (*syscalls, GetExecutablePath ())
         .WillByDefault (Return (MultiMockExecutablePath));
     ON_CALL (*syscalls, ExeExists (FirstExpectedCheckedBinary))
         .WillByDefault (Return (false));
     ON_CALL (*syscalls, ExeExists (SecondExpectedCheckedBinary))
-        .WillByDefault (Return (false));
+        .WillByDefault (Return (true));
+
+    std::vector <Matcher <char const *> > matchers =
+    {
+        StrEq (MockInstrumentation),
+        StrEq (ytest::MockProgramName ()),
+        StrEq (MockArgument)
+    };
+
+    EXPECT_CALL (*syscalls, ExecInPlace (StrEq (SecondExpectedCheckedBinary),
+                                         ArrayFitsMatchers (matchers)))
+        .Times (1);
 
     yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
                                 ytest::Arguments (args),
