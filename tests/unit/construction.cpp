@@ -23,10 +23,13 @@ using ::testing::ElementsAreArray;
 using ::testing::Matcher;
 using ::testing::NotNull;
 using ::testing::StrEq;
+using ::testing::WithParamInterface;
+using ::testing::ValuesIn;
 
 namespace ytest = yiqi::testing;
 namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
+namespace yit = yiqi::instrumentation::tools;
 namespace po = boost::program_options;
 
 namespace
@@ -232,3 +235,37 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
 
     EXPECT_EQ (ExpectedTool, tool);
 }
+
+class ConstructionParametersTable :
+    public ConstructionParameters,
+    public ::testing::WithParamInterface <yconst::InstrumentationToolName>
+{
+};
+
+TEST_P (ConstructionParametersTable, MakeSpecifiedToolReturnsExpectedTool)
+{
+    yconst::InstrumentationTool const ExpectedIdentifier (GetParam ().tool);
+    yit::Tool::Unique tool (yc::MakeSpecifiedTool (ExpectedIdentifier));
+
+    EXPECT_EQ (ExpectedIdentifier, tool->ToolIdentifier ());
+}
+
+TEST_P (ConstructionParametersTable, ParseOptionsForToolReturnsExpectedTool)
+{
+    yconst::InstrumentationTool const ExpectedIdentifier (GetParam ().tool);
+    std::vector <std::string> const ArgumentsVector =
+    {
+        ArgYiqiToolOption,
+        std::string (GetParam ().name)
+    };
+
+    CommandLineArguments args (GenerateCommandLine (ArgumentsVector));
+
+    auto tool (yc::ParseOptionsToToolUniquePtr (ArgumentCount (args),
+                                                Arguments (args),
+                                                desc));
+    EXPECT_EQ (ExpectedIdentifier, tool->ToolIdentifier ());
+}
+
+INSTANTIATE_TEST_CASE_P (AvailableTools, ConstructionParametersTable,
+                         ValuesIn (yconst::InstrumentationToolNames ()));
