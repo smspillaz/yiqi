@@ -127,6 +127,8 @@ ConstructionParameters::GenerateCommandLine (std::vector<std::string> const &arg
 {
     std::vector <const char *> charArguments;
 
+    charArguments.push_back (MockProgramName.c_str ());
+
     for (std::string const &str : arguments)
         charArguments.push_back (str.c_str ());
 
@@ -134,11 +136,11 @@ ConstructionParameters::GenerateCommandLine (std::vector<std::string> const &arg
                                  charArguments);
 }
 
-TEST_F (ConstructionParameters, GeneratedCommandLineHasNProvidedArguments)
+TEST_F (ConstructionParameters, GeneratedCommandLineHasNPlusOneProvidedArguments)
 {
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
-    EXPECT_EQ (SampleCommandArguments.size (), ArgumentCount (args));
+    EXPECT_EQ (SampleCommandArguments.size () + 1, ArgumentCount (args));
 }
 
 namespace
@@ -153,6 +155,12 @@ namespace
                      std::vector <Matcher <char const *> > &matchers)
     {
         matchers.push_back (StrEq (str));
+    }
+
+    std::vector <char const *> ArgumentsToVector (CommandLineArguments const &args)
+    {
+        return ToVector (Arguments (args),
+                         ArgumentCount (args));
     }
 }
 
@@ -174,8 +182,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
      *    you can only pass an array, which means that it needs to know
      *    the size of the array too
      */
-    EXPECT_THAT (ToVector (Arguments (args),
-                           ArgumentCount (args)),
+    EXPECT_THAT (ArgumentsToVector (args),
                  ElementsAreArray (&matchers[0],
                                    matchers.size ()));
 }
@@ -190,8 +197,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasFirstArgAsMockProgramName
     for (std::string const &str : SampleCommandArguments)
         MatchAnythingFor (str, matchers);
 
-    EXPECT_THAT (ToVector (Arguments (args),
-                 ArgumentCount (args)),
+    EXPECT_THAT (ArgumentsToVector (args),
                  ElementsAreArray (&matchers[0],
                                    matchers.size ()));
 }
@@ -219,7 +225,7 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsSpecifiedTool)
 
 TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
 {
-    CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
+    CommandLineArguments args (GenerateCommandLine (NoArguments));
 
     std::string tool (yc::ParseOptionsForTool (ArgumentCount (args),
                                                Arguments (args),
