@@ -14,6 +14,7 @@
 namespace yexec = yiqi::execution;
 namespace ysys = yiqi::system;
 
+/* TODO: the argc and argv here should be for the launched process not the original one */
 void yexec::RelaunchIfNecessary (int                argc,
                                  char const * const *argv,
                                  Tool const         &tool,
