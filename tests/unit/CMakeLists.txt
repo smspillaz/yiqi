@@ -16,7 +16,8 @@ set (YIQI_UNIT_TESTS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/test_util.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp)
 
 add_executable (${YIQI_UNIT_TESTS_BINARY}
                 ${YIQI_UNIT_TESTS_SRCS})
