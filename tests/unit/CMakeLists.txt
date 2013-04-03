@@ -5,7 +5,8 @@
 # want to depend on a running instance of an instrumentation program
 
 include_directories (${YIQI_INTERNAL_INCLUDE_DIRECTORY}
-                     ${YIQI_INTERNAL_SOURCE_DIRECTORY})
+                     ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                     ${YIQI_EXTERNAL_INCLUDE_DIRS})
 
 set (YIQI_UNIT_TESTS_BINARY
      yiqi_unit_tests)

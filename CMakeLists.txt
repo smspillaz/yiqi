@@ -10,14 +10,10 @@ cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
 include (FindPkgConfig)
 
+set (Boost_USE_STATIC_LIBS ON)
+
 pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
-
-# -fPIC, -Wall and -Werror are mandatory
-set (COMPILER_FLAGS "-fPIC -Wall -Werror")
-set (CXX_CXX11_FLAGS "-std=c++11")
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMPILER_FLAGS} ${CXX_CXX11_FLAGS}")
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMPILER_FLAGS}")
-
+find_package (Boost 1.49 COMPONENTS program_options)
 find_package (GTest QUIET)
 
 if (NOT GTEST_FOUND)
@@ -62,6 +58,20 @@ if (NOT GTEST_FOUND)
     message (SEND_ERROR "Google Test is required to build Yiqi")
 endif (NOT GTEST_FOUND)
 
+# -fPIC, -Wall and -Werror are mandatory
+set (COMPILER_FLAGS "-fPIC -Wall -Werror")
+set (CXX_CXX11_FLAGS "-std=c++11")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMPILER_FLAGS} ${CXX_CXX11_FLAGS}")
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMPILER_FLAGS}")
+
+set (YIQI_EXTERNAL_INCLUDE_DIRS
+     ${YIQI_VALGRIND_INCLUDE_DIRS}
+     ${Boost_INCLUDE_DIRS})
+set (YIQI_EXTERNAL_LIBRARY_DIRS
+     ${YIQI_VALGRIND_LIBRARY_DIRS}
+     ${Boost_LIBRARY_DIRS})
+set (YIQI_EXTERNAL_LIBRARIES
+     ${Boost_LIBRARIES})
 set (YIQI_INTERNAL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set (YIQI_INTERNAL_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set (YIQI_SAMPLES_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/sample)
