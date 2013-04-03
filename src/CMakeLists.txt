@@ -15,7 +15,14 @@ add_library (${YIQI_MAIN_LIBRARY} STATIC
 
 set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool_valgrind_base.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_timer.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_memcheck.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_callgrind.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_cachegrind.cpp)
 
 add_library (${YIQI_LIBRARY} STATIC
              ${YIQI_LIBRARY_SRCS})

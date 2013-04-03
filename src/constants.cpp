@@ -14,6 +14,20 @@
 namespace yconst = yiqi::constants;
 
 char const *
+yconst::ValgrindWrapper ()
+{
+    static char const *valgrind = "valgrind";
+    return valgrind;
+}
+
+char const *
+yconst::ValgrindToolOptionPrefix ()
+{
+    static char const *prefix = "--tool=";
+    return prefix;
+}
+
+char const *
 yconst::YiqiToolOption ()
 {
     static char const *tool = "yiqi_tool";

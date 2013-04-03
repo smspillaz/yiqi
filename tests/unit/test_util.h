@@ -6,6 +6,9 @@
  * See LICENCE.md for Copyright information
  */
 
+#ifndef YIQI_TEST_UTIL_H
+#define YIQI_TEST_UTIL_H
+
 #include <vector>
 
 namespace yiqi
@@ -26,3 +29,5 @@ namespace yiqi
 	}
     }
 }
+
+#endif // YIQI_TEST_UTIL_H

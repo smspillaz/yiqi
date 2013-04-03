@@ -17,6 +17,19 @@ namespace yiqi
     namespace constants
     {
         /**
+         * @brief ValgrindWrapper
+         * @return the binary name for valgrind
+         */
+        char const * ValgrindWrapper ();
+
+        /**
+         * @brief ValgrindToolOption
+         * @return the prefix for specifying a valgrind tool
+         */
+        char const * ValgrindToolOptionPrefix ();
+
+
+        /**
          * @brief YiqiToolOption
          * @return the current string describing how to specify
          * the instrumentation tool on the command line
@@ -58,4 +71,4 @@ namespace yiqi
     }
 }
 
-#endif
+#endif // YIQI_CONSTANTS_H

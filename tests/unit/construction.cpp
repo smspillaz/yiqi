@@ -14,6 +14,7 @@
 
 #include <construction.h>
 #include <constants.h>
+#include <instrumentation_tool.h>
 
 #include "test_util.h"
 
@@ -69,7 +70,7 @@ namespace
 
     int ArgumentCount (CommandLineArguments const &args)
     {
-	return std::get <0> (args);
+    return std::get <0> (args);
     }
 
     char const * const * Arguments (CommandLineArguments const &args)
@@ -201,7 +202,7 @@ TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
 {
     CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
 
-    auto pointer (yc::ParseOptionsToParameters (ArgumentCount (args),
+    auto pointer (yc::ParseOptionsToToolUniquePtr (ArgumentCount (args),
                                                 Arguments (args),
                                                 desc));
 
@@ -222,8 +223,12 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
 {
     CommandLineArguments args (GenerateCommandLine (NoArguments));
 
+    auto const toolId (yconst::InstrumentationTool::None);
+    std::string ExpectedTool (yconst::StringFromTool (toolId));
+
     std::string tool (yc::ParseOptionsForTool (ArgumentCount (args),
                                                Arguments (args),
                                                desc));
-    EXPECT_EQ (std::string ("none"), tool);
+
+    EXPECT_EQ (ExpectedTool, tool);
 }

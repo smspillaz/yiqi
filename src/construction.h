@@ -13,45 +13,33 @@
 #include <memory>
 #include <boost/program_options.hpp>
 
+#include "instrumentation_tools_available.h"
+
 namespace yiqi
 {
+    namespace constants
+    {
+        enum class InstrumentationTool;
+    }
+
+    namespace instrumentation
+    {
+        namespace tools
+        {
+            class Tool;
+        }
+    }
+
     namespace construction
     {
-        /**
-         * @brief An interface which describes some of the construction
-         * parameters for the environment, including how the program should
-         * be instrumented and also some details on callbacks into that
-         * instrumentation.
-         *
-         * An instance of this interface is usually constructed by
-         * ParseOptionsToParameters()
-         */
-        class Parameters
-        {
-            public:
-
-                typedef std::unique_ptr <Parameters> Unique;
-
-                Parameters (Parameters const &) = delete;
-                Parameters & operator=(Parameters const &) = delete;
-                virtual ~Parameters () = default;
-
-                /**
-                 * @brief Fetch the command line used for instrumentation
-                 * @return
-                 */
-                virtual std::string InstrumentationCommand () = 0;
-
-            protected:
-
-                Parameters () = default;
-        };
+        typedef yiqi::instrumentation::tools::Tool InstrumentationToolCommand;
+        typedef std::unique_ptr <InstrumentationToolCommand> ToolUniquePtr;
 
         /**
-         * @brief FetchOptionsDescription returns the available command line options
-         * to be used with this program
-         * @return a boost::program_options::options_description object describing how
-         * the command line options should be parsed
+         * @brief FetchOptionsDescription returns the
+         * available command line options to be used with this program
+         * @return a boost::program_options::options_description object
+         * describing how the command line options should be parsed
          */
         boost::program_options::options_description
         FetchOptionsDescription ();
@@ -74,6 +62,9 @@ namespace yiqi
                              const char * const *argv,
                              Options const      &description);
 
+        ToolUniquePtr
+        MakeSpecifiedTool (yiqi::constants::InstrumentationTool);
+
         /**
          * @brief ParseOptionsToParameters
          * @param argc Number of arguments from main()
@@ -82,12 +73,12 @@ namespace yiqi
          * object which describes which options should be available
          * @throws A boost::program_options::error on encountering a malformed
          * or unknown option
-         * @return A yiqi::construction::Parameters::Unique object
+         * @return A yiqi::construction::ToolUniquePtr object
          */
-        Parameters::Unique
-        ParseOptionsToParameters (int                argc,
-                                  const char * const *argv,
-                                  Options const      &description);
+        ToolUniquePtr
+        ParseOptionsToToolUniquePtr (int                argc,
+                                     const char * const *argv,
+                                     Options const      &description);
     }
 }
 
