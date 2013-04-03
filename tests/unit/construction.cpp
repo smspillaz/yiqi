@@ -6,7 +6,6 @@
  * See LICENCE.md for Copyright information
  */
 
-#include <tuple>
 #include <vector>
 #include <functional>
 
@@ -66,24 +65,19 @@ namespace
             bool &mCommit;
     };
 
-    /**
-     * @brief A tuple type with a managed array of arguments
-     */
-    typedef std::tuple <int, std::vector <char const *> > CommandLineArguments;
-
-    int ArgumentCount (CommandLineArguments const &args)
+    typedef ytest::CommandLineArguments CommandLineArguments;
+    int ArgumentCount (ytest::CommandLineArguments const &args)
     {
-    return std::get <0> (args);
+        return ytest::ArgumentCount (args);
     }
 
     char const * const * Arguments (CommandLineArguments const &args)
     {
-        return &(std::get <1> (args))[0];
+        return ytest::Arguments (args);
     }
 
     /* Constants */
     static std::string const MockTool ("mock");
-    static std::string const MockProgramName ("mock_program_name");
     static std::string const ArgYiqiToolOption (std::string ("--") +
                                                 yconst::YiqiToolOption ());
 
@@ -124,15 +118,7 @@ class ConstructionParameters :
 CommandLineArguments
 ConstructionParameters::GenerateCommandLine (std::vector<std::string> const &arguments)
 {
-    std::vector <const char *> charArguments;
-
-    charArguments.push_back (MockProgramName.c_str ());
-
-    for (std::string const &str : arguments)
-        charArguments.push_back (str.c_str ());
-
-    return CommandLineArguments (charArguments.size (),
-                                 charArguments);
+    return ytest::GenerateCommandLine (arguments);
 }
 
 TEST_F (ConstructionParameters, GeneratedCommandLineHasNPlusOneProvidedArguments)
@@ -168,7 +154,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
     std::vector <Matcher <char const *> > matchers;
-    MatchAnythingFor (MockProgramName, matchers);
+    MatchAnythingFor (ytest::MockProgramName (), matchers);
 
     for (std::string const &str : SampleCommandArguments)
         MatchExact (str, matchers);
@@ -191,7 +177,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasFirstArgAsMockProgramName
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
     std::vector <Matcher <char const *> > matchers;
-    MatchExact (MockProgramName, matchers);
+    MatchExact (ytest::MockProgramName (), matchers);
 
     for (std::string const &str : SampleCommandArguments)
         MatchAnythingFor (str, matchers);
