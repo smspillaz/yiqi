@@ -16,3 +16,18 @@ yconst::YiqiToolOption ()
     static char const *tool = "yiqi_tool";
     return tool;
 }
+
+yconst::InstrumentationToolName const *
+yconst::InstrumentationToolNames ()
+{
+    static InstrumentationToolName const names[] =
+    {
+        { InstrumentationTool::None, "none" },
+        { InstrumentationTool::Timer, "timer" },
+        { InstrumentationTool::Memcheck, "memcheck" },
+        { InstrumentationTool::Callgrind, "callgrind" },
+        { InstrumentationTool::Cachegrind, "cachegrind" }
+    };
+
+    return names;
+}

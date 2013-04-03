@@ -15,12 +15,15 @@
 #include <construction.h>
 #include <constants.h>
 
+#include "test_util.h"
+
 using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Matcher;
 using ::testing::NotNull;
 using ::testing::StrEq;
 
+namespace ytest = yiqi::testing;
 namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
 namespace po = boost::program_options;
@@ -72,18 +75,6 @@ namespace
     char const * const * Arguments (CommandLineArguments const &args)
     {
         return &(std::get <1> (args))[0];
-    }
-
-    /**
-     * @brief Copy array into vector so we can use it with Google Test matchers
-     */
-    template <typename T>
-    std::vector <T> ToVector (T const *array, size_t size)
-    {
-        if (size)
-            return std::vector <T> (array, array + size);
-        else
-            throw std::out_of_range ("ToVector: size is < 1");
     }
 
     /* Constants */
@@ -149,13 +140,13 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasNPlusOneProvidedArguments
 
 namespace
 {
-    void MatchAnythingFor (std::string                     const &str,
+    void MatchAnythingFor (std::string const                     &str,
                            std::vector <Matcher <char const *> > &matchers)
     {
         matchers.push_back (_);
     }
 
-    void MatchExact (std::string                     const &str,
+    void MatchExact (std::string const                     &str,
                      std::vector <Matcher <char const *> > &matchers)
     {
         matchers.push_back (StrEq (str));
@@ -163,8 +154,8 @@ namespace
 
     std::vector <char const *> ArgumentsToVector (CommandLineArguments const &args)
     {
-        return ToVector (Arguments (args),
-                         ArgumentCount (args));
+        return ytest::ToVector (Arguments (args),
+                                ArgumentCount (args));
     }
 }
 
