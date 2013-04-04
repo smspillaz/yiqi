@@ -16,6 +16,7 @@ namespace yiqi
     namespace commandline
     {
         typedef std::vector <const char *> ArgvVector;
+        class Environment;
     }
 
     namespace instrumentation
@@ -41,10 +42,10 @@ namespace yiqi
 
         typedef std::vector <char *> EnvironmentVector;
 
-        void RelaunchIfNecessary (commandline::ArgvVector const &argv,
-                                  EnvironmentVector       const &env,
-                                  Tool const                    &tool,
-                                  SystemCalls const             &system);
+        void RelaunchIfNecessary (commandline::ArgvVector  const &argv,
+                                  commandline::Environment const &env,
+                                  Tool const                     &tool,
+                                  SystemCalls const              &system);
 
     }
 }

@@ -92,8 +92,9 @@ void
 ReExecution::IgnoreCallsOnSyscalls ()
 {
     EXPECT_CALL (*syscalls, ExeExists (_)).Times (AtLeast (0));
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _)).Times (AtLeast (0));
+    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (AtLeast (0));
     EXPECT_CALL (*syscalls, GetExecutablePath ()).Times (AtLeast (0));
+    EXPECT_CALL (*syscalls, GetSystemEnvironment ()).Times (AtLeast (0));
 }
 
 void
@@ -107,13 +108,13 @@ TEST_F (ReExecution, SkipIfNoInstrumentationWrapper)
 {
     /* Never call the system calls */
     EXPECT_CALL (*syscalls, ExeExists (_)).Times (0);
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _)).Times (0);
+    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
 
     ON_CALL (*tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (NoInstrumentation));
 
     yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                yexec::EnvironmentVector (),
+                                ycom::Environment (),
                                 *tool,
                                 *syscalls);
 }
@@ -124,7 +125,7 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInSinglePath)
                                              "/" + MockInstrumentation);
 
     /* Never call ExecInPlace */
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _)).Times (0);
+    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
 
     ON_CALL (*tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (MockInstrumentation));
@@ -134,7 +135,7 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInSinglePath)
         .WillByDefault (Return (false));
 
     yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                yexec::EnvironmentVector (),
+                                ycom::Environment (),
                                 *tool,
                                 *syscalls);
 }
@@ -147,7 +148,7 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInMultiplePaths)
                                                    "/" + MockInstrumentation);
 
     /* Never call ExecInPlace */
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _)).Times (0);
+    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
 
     /* We should expect that ExeExists is called twice */
     EXPECT_CALL (*syscalls, ExeExists (_)).Times (2);
@@ -162,7 +163,7 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInMultiplePaths)
         .WillByDefault (Return (false));
 
     yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                yexec::EnvironmentVector (),
+                                ycom::Environment (),
                                 *tool,
                                 *syscalls);
 }
@@ -314,14 +315,15 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
         matchers.push_back (StrEq (argv[i]));
 
     EXPECT_CALL (*syscalls, ExecInPlace (StrEq (ExpectedCheckedBinary),
-                                         ArrayFitsMatchers (matchers)))
+                                         ArrayFitsMatchers (matchers),
+                                         _))
         .Times (1);
 
     /* We need to convert to an ArgvVector here */
     ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
 
     yexec::RelaunchIfNecessary (vec,
-                                yexec::EnvironmentVector (),
+                                ycom::Environment (),
                                 *tool,
                                 *syscalls);
 }
@@ -334,7 +336,7 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
                                                    "/" + MockInstrumentation);
 
     /* Never call ExecInPlace */
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _)).Times (0);
+    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
 
     /* We should expect that ExeExists is called twice */
     EXPECT_CALL (*syscalls, ExeExists (_)).Times (2);
@@ -356,14 +358,15 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
         matchers.push_back (StrEq (argv[i]));
 
     EXPECT_CALL (*syscalls, ExecInPlace (StrEq (SecondExpectedCheckedBinary),
-                                         ArrayFitsMatchers (matchers)))
+                                         ArrayFitsMatchers (matchers),
+                                         _))
         .Times (1);
 
     /* We need to convert to an ArgvVector here */
     ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
 
     yexec::RelaunchIfNecessary (vec,
-                                yexec::EnvironmentVector (),
+                                ycom::Environment (),
                                 *tool,
                                 *syscalls);
 }

@@ -38,17 +38,28 @@ namespace yiqi
 		     * and throws if the operation fails
 		     * @param binary the fully-qualified binary path to
 		     * execute
-		     * @param a arguments to pass to the binary
+		     * @param argv arguments to pass to the binary
+		     * @param e a pointer to a null-terminated array of
+		     * char const * of system environment variables with
+		     * the format KEY=value
 		     * @throws std::system_error if execvp failed
 		     */
 		    virtual void ExecInPlace (char const         *binary,
-					      char const * const *a) const = 0;
+					      char const * const *argv,
+					      char const * const *e) const = 0;
 
 		    /**
 		     * @brief GetExecutablePath
 		     * @return a colon-delimited set of executable paths
 		     */
 		    virtual std::string GetExecutablePath () const = 0;
+
+		    /**
+		     * @brief GetSystemEnvironment
+		     * @return a null-terminated array of strings representing the
+		     * current process environment, with the format KEY=value
+		     */
+		    virtual char const * const * GetSystemEnvironment () const = 0;
 
 		protected:
 

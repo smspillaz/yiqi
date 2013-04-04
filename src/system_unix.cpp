@@ -23,8 +23,10 @@ namespace
 
             bool ExeExists (std::string const &f) const;
             void ExecInPlace (char const         *binary,
-                              char const * const *a) const;
+                              char const * const *argv,
+                              char const * const *environ) const;
             std::string GetExecutablePath () const;
+            char const * const * GetSystemEnvironment () const;
     };
 }
 
@@ -39,9 +41,12 @@ UNIXCalls::ExeExists (std::string const &file) const
 
 void
 UNIXCalls::ExecInPlace (char const         *binary,
-                        char const * const *a) const
+                        char const * const *argv,
+                        char const * const *env) const
 {
-    int result = execvp (binary, const_cast <char * const *> (a));
+    int result = execvpe (binary,
+                          const_cast <char * const *> (argv),
+                          const_cast <char * const *> (env));
 
     if (result == -1)
         throw std::system_error (std::error_code (errno,
@@ -58,4 +63,10 @@ UNIXCalls::GetExecutablePath () const
         return std::string (path);
 
     return std::string ();
+}
+
+char const * const *
+UNIXCalls::GetSystemEnvironment () const
+{
+    return const_cast <char const * const *> (environ);
 }

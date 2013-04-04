@@ -16,10 +16,10 @@ namespace ycom = yiqi::commandline;
 namespace yexec = yiqi::execution;
 namespace ysys = yiqi::system;
 
-void yexec::RelaunchIfNecessary (ycom::ArgvVector const         &argv,
-                                 yexec::EnvironmentVector const &env,
-                                 Tool const                     &tool,
-                                 SystemCalls const              &system)
+void yexec::RelaunchIfNecessary (ycom::ArgvVector const  &argv,
+                                 ycom::Environment const &env,
+                                 Tool const              &tool,
+                                 SystemCalls const       &system)
 {
     std::string const &wrapper (tool.InstrumentationWrapper ());
 
@@ -50,6 +50,7 @@ void yexec::RelaunchIfNecessary (ycom::ArgvVector const         &argv,
 
         /* Program ends here in the normal case */
         system.ExecInPlace (executable.c_str (),
-                            execArgv);
+                            execArgv,
+                            env.underlyingEnvironmentArray ());
     }
 }

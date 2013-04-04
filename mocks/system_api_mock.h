@@ -32,10 +32,13 @@ namespace yiqi
 
                         MOCK_CONST_METHOD1 (ExeExists,
                                             bool (std::string const &));
-                        MOCK_CONST_METHOD2 (ExecInPlace,
+                        MOCK_CONST_METHOD3 (ExecInPlace,
                                             void (char const         *,
+                                                  char const * const *,
                                                   char const * const *));
                         MOCK_CONST_METHOD0 (GetExecutablePath, std::string ());
+                        MOCK_CONST_METHOD0 (GetSystemEnvironment,
+                                            char const * const * ());
                 };
             }
         }
