@@ -10,11 +10,13 @@
 #include "commandline.h"
 #include "instrumentation_tool.h"
 #include "test_util.h"
+#include "value_type_test.h"
 
 #include "instrumentation_mock.h"
 
 using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
+using ::testing::IsNull;
 using ::testing::Matcher;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
@@ -138,4 +140,161 @@ TEST (CommandLine, VectorToArgv)
 
     EXPECT_THAT (argv,
                  ElementsAreArray (matchers));
+}
+
+namespace
+{
+    std::string const MockEnvKey ("MOCK");
+    std::string const MockerEnvKey ("MOCKER");
+    std::string const MockEnvValue ("mock");
+    std::string const MockEnvKeyValue (MockEnvKey + "=" + MockEnvValue);
+
+    static char const * const NonDefaultMockEnvp[] =
+    {
+        MockEnvKeyValue.c_str (),
+        NULL
+    };
+}
+
+namespace yiqi
+{
+    namespace testing
+    {
+        template <>
+        class ValueTypeConstructor <ycom::Environment>
+        {
+            public:
+
+                ycom::Environment ConstructWithNonDefaultData ();
+                bool HasNonDefaultConstructor ();
+                bool Mutate (ycom::Environment &env);
+                bool Overloaded ();
+        };
+    }
+
+    namespace commandline
+    {
+        std::ostream & operator<< (std::ostream &os, Environment const &env);
+    }
+}
+
+std::ostream &
+ycom::operator<< (std::ostream &os, Environment const &env)
+{
+    std::string const nullTerminator ("null-terminator");
+    auto envVector (ytest::ToVector <char const *> (
+                        env.underlyingEnvironmentArray (),
+                        env.underlyingEnvironmentArrayLen ()));
+    for (size_t i = 0; i < envVector.size (); ++i)
+    {
+        char const *element = envVector[i];
+        os << "element #" << i << " : "
+           << (element ? std::string (envVector[i]) :
+                         nullTerminator) << " "
+           << std::endl;
+    }
+
+    return os;
+}
+
+ycom::Environment
+ytest::ValueTypeConstructor <ycom::Environment>::ConstructWithNonDefaultData ()
+{
+    return ycom::Environment (NonDefaultMockEnvp);
+}
+
+bool
+ytest::ValueTypeConstructor <ycom::Environment>::HasNonDefaultConstructor ()
+{
+    return true;
+}
+
+bool
+ytest::ValueTypeConstructor <ycom::Environment>::Mutate (ycom::Environment &e)
+{
+    e.insert (MockerEnvKey.c_str (),
+              MockEnvValue.c_str ());
+    return true;
+}
+
+bool
+ytest::ValueTypeConstructor <ycom::Environment>::Overloaded ()
+{
+    return true;
+}
+
+typedef ::testing::Types <ycom::Environment> YComValueConformanceTypes;
+INSTANTIATE_TYPED_TEST_CASE_P (CommandEnvironment,
+                               ValueTypeConformance,
+                               YComValueConformanceTypes);
+
+
+class ProgramEnvironmentValueDefault :
+    public ::testing::Test
+{
+    protected:
+
+        ycom::Environment environment;
+};
+
+TEST_F (ProgramEnvironmentValueDefault, OneElementOnConstruction)
+{
+    ycom::Environment environment;
+    EXPECT_EQ (1, environment.underlyingEnvironmentArrayLen ());
+}
+
+TEST_F (ProgramEnvironmentValueDefault, FirstElementIsNullOnConstruction)
+{
+    ycom::Environment environment;
+    EXPECT_THAT (environment.underlyingEnvironmentArray ()[0], IsNull ());
+}
+
+class ProgramEnvironmentValueNonDefault :
+    public ::testing::Test
+{
+    public:
+
+        ProgramEnvironmentValueNonDefault () :
+            environment (NonDefaultMockEnvp)
+        {
+        }
+
+    protected:
+
+        ycom::Environment environment;
+};
+
+TEST_F (ProgramEnvironmentValueNonDefault, TwoElementsOnConstruction)
+{
+    EXPECT_EQ (2, environment.underlyingEnvironmentArrayLen ());
+}
+
+TEST_F (ProgramEnvironmentValueNonDefault, FirstElementMatchesEnvp)
+{
+    EXPECT_THAT (environment.underlyingEnvironmentArray ()[0],
+            StrEq (NonDefaultMockEnvp[0]));
+}
+
+TEST_F (ProgramEnvironmentValueNonDefault, SecondElementIsNullTerminator)
+{
+    EXPECT_THAT (environment.underlyingEnvironmentArray ()[1],
+                 IsNull ());
+}
+
+TEST_F (ProgramEnvironmentValueNonDefault, InsertNewBeforeNullTerminator)
+{
+    std::string const ExpectedValue (MockerEnvKey + "=" + MockEnvValue);
+
+    environment.insert (MockerEnvKey.c_str (), MockEnvValue.c_str ());
+    ASSERT_EQ (3, environment.underlyingEnvironmentArrayLen ());
+    EXPECT_THAT (environment.underlyingEnvironmentArray ()[1],
+                 StrEq (ExpectedValue));
+}
+
+TEST_F (ProgramEnvironmentValueNonDefault, LastElementIsNullTerminator)
+{
+    environment.insert (MockerEnvKey.c_str (), MockEnvValue.c_str ());
+    ASSERT_EQ (3, environment.underlyingEnvironmentArrayLen ());
+    EXPECT_THAT (environment.underlyingEnvironmentArray ()[2],
+                 IsNull ());
 }

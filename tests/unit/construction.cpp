@@ -7,7 +7,6 @@
  */
 
 #include <vector>
-#include <functional>
 
 #include <gmock/gmock.h>
 
@@ -33,38 +32,6 @@ namespace po = boost::program_options;
 
 namespace
 {
-    /**
-    * @brief The ExceptionCleanup class provides a method to guaruntee
-    * cleanup of a function if an exception is thrown before commit is
-    * set to true
-    */
-    class ExceptionCleanup
-    {
-        public:
-
-            typedef std::function <void ()> Func;
-            ExceptionCleanup (Func const &func,
-                              bool       &commit) :
-                mFunc (func),
-                mCommit (commit)
-            {
-            }
-
-            ~ExceptionCleanup ()
-            {
-                if (!mCommit)
-                    mFunc ();
-            }
-
-        private:
-
-            ExceptionCleanup (ExceptionCleanup const &) = delete;
-            ExceptionCleanup & operator= (ExceptionCleanup const &) = delete;
-
-            Func mFunc;
-            bool &mCommit;
-    };
-
     typedef ytest::CommandLineArguments CommandLineArguments;
     int ArgumentCount (ytest::CommandLineArguments const &args)
     {

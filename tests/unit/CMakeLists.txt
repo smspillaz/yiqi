@@ -18,8 +18,10 @@ set (YIQI_UNIT_TESTS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/exceptioncleanup.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/value_type_test.h)
 
 add_executable (${YIQI_UNIT_TESTS_BINARY}
                 ${YIQI_UNIT_TESTS_SRCS})
