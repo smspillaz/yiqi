@@ -9,8 +9,15 @@
 #ifndef YIQI_REEXECUTION_H
 #define YIQI_REEXECUTION_H
 
+#include <vector>
+
 namespace yiqi
 {
+    namespace commandline
+    {
+        typedef std::vector <const char *> ArgvVector;
+    }
+
     namespace instrumentation
     {
         namespace tools
@@ -31,10 +38,9 @@ namespace yiqi
     {
         typedef instrumentation::tools::Tool Tool;
         typedef system::api::SystemCalls SystemCalls;
-        void RelaunchIfNecessary (int                argc,
-                                  char const * const *argv,
-                                  Tool const         &tool,
-                                  SystemCalls const  &system);
+        void RelaunchIfNecessary (commandline::ArgvVector const &cmd,
+                                  Tool const                    &tool,
+                                  SystemCalls const             &system);
 
     }
 }

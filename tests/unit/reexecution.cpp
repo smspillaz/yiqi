@@ -8,6 +8,8 @@
 
 #include <gmock/gmock.h>
 
+#include "commandline.h"
+
 #include "instrumentation_tool.h"
 #include "system_api.h"
 
@@ -29,6 +31,7 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
 
+namespace ycom = yiqi::commandline;
 namespace yexec = yiqi::execution;
 namespace yit = yiqi::instrumentation::tools;
 namespace ymock = yiqi::mock;
@@ -109,8 +112,10 @@ TEST_F (ReExecution, SkipIfNoInstrumentationWrapper)
     ON_CALL (*tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (NoInstrumentation));
 
-    yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
-                                ytest::Arguments (args),
+    char const * const *argv (ytest::Arguments (args));
+    ycom::ArgvVector   vec (ytest::ToVector (argv,
+                                             ytest::ArgumentCount (args)));
+    yexec::RelaunchIfNecessary (vec,
                                 *tool,
                                 *syscalls);
 }
@@ -130,8 +135,10 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInSinglePath)
     ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
         .WillByDefault (Return (false));
 
-    yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
-                                ytest::Arguments (args),
+    char const * const *argv (ytest::Arguments (args));
+    ycom::ArgvVector   vec (ytest::ToVector (argv,
+                                             ytest::ArgumentCount (args)));
+    yexec::RelaunchIfNecessary (vec,
                                 *tool,
                                 *syscalls);
 }
@@ -158,8 +165,12 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInMultiplePaths)
     ON_CALL (*syscalls, ExeExists (SecondExpectedCheckedBinary))
         .WillByDefault (Return (false));
 
-    yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
-                                ytest::Arguments (args),
+    /* We need to convert to an ArgvVector here */
+    char const * const *argv (ytest::Arguments (args));
+    ycom::ArgvVector   vec (ytest::ToVector (argv,
+                                             ytest::ArgumentCount (args)));
+
+    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
                                 *tool,
                                 *syscalls);
 }
@@ -305,19 +316,19 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
     ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
         .WillByDefault (Return (true));
 
-    std::vector <Matcher <char const *> > matchers =
-    {
-        StrEq (MockInstrumentation),
-        StrEq (ytest::MockProgramName ()),
-        StrEq (MockArgument)
-    };
+    char const * const                    *argv (ytest::Arguments (args));
+    std::vector <Matcher <char const *> > matchers;
+    for (int i = 0; i < ytest::ArgumentCount (args); ++i)
+        matchers.push_back (StrEq (argv[i]));
 
     EXPECT_CALL (*syscalls, ExecInPlace (StrEq (ExpectedCheckedBinary),
                                          ArrayFitsMatchers (matchers)))
         .Times (1);
 
-    yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
-                                ytest::Arguments (args),
+    /* We need to convert to an ArgvVector here */
+    ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
+
+    yexec::RelaunchIfNecessary (vec,
                                 *tool,
                                 *syscalls);
 }
@@ -346,19 +357,19 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
     ON_CALL (*syscalls, ExeExists (SecondExpectedCheckedBinary))
         .WillByDefault (Return (true));
 
-    std::vector <Matcher <char const *> > matchers =
-    {
-        StrEq (MockInstrumentation),
-        StrEq (ytest::MockProgramName ()),
-        StrEq (MockArgument)
-    };
+    char const * const                    *argv (ytest::Arguments (args));
+    std::vector <Matcher <char const *> > matchers;
+    for (int i = 0; i < ytest::ArgumentCount (args); ++i)
+        matchers.push_back (StrEq (argv[i]));
 
     EXPECT_CALL (*syscalls, ExecInPlace (StrEq (SecondExpectedCheckedBinary),
                                          ArrayFitsMatchers (matchers)))
         .Times (1);
 
-    yexec::RelaunchIfNecessary (ytest::ArgumentCount (args),
-                                ytest::Arguments (args),
+    /* We need to convert to an ArgvVector here */
+    ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
+
+    yexec::RelaunchIfNecessary (vec,
                                 *tool,
                                 *syscalls);
 }

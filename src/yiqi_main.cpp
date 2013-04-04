@@ -61,13 +61,10 @@ int main (int argc, char **argv)
                                                              argv,
                                                              desc));
 
-    if (!tool->InstrumentationWrapper ().empty ())
-    {
-        ycom::CommandArguments args (ycom::BuildCommandLine (argc,
-                                                             argv,
-                                                             *tool));
-        ycom::ArgvVector       argv (ycom::StringVectorToArgv (args));
-    }
+    ycom::CommandArguments args (ycom::BuildCommandLine (argc,
+                                                         argv,
+                                                         *tool));
+    ycom::ArgvVector       argvVec (ycom::StringVectorToArgv (args));
 
     return RUN_ALL_TESTS ();
 }

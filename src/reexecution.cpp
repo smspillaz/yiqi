@@ -6,19 +6,19 @@
  * See LICENCE.md for Copyright information
  */
 
+#include "commandline.h"
 #include "instrumentation_tool.h"
 #include "reexecution.h"
 #include "system_api.h"
 #include "systempaths.h"
 
+namespace ycom = yiqi::commandline;
 namespace yexec = yiqi::execution;
 namespace ysys = yiqi::system;
 
-/* TODO: the argc and argv here should be for the launched process not the original one */
-void yexec::RelaunchIfNecessary (int                argc,
-                                 char const * const *argv,
-                                 Tool const         &tool,
-                                 SystemCalls const  &system)
+void yexec::RelaunchIfNecessary (ycom::ArgvVector const &com,
+                                 Tool const             &tool,
+                                 SystemCalls const      &system)
 {
     std::string const &wrapper (tool.InstrumentationWrapper ());
 
@@ -39,13 +39,13 @@ void yexec::RelaunchIfNecessary (int                argc,
         if (!system.ExeExists (executable))
             continue;
 
-        char const * const execArgv[] =
-        {
-            wrapper.c_str (),
-            argv[0],
-            tool.WrapperOptions ().c_str (),
-            NULL
-        };
+        char const * execArgv[com.size () + 1];
+
+        /* It must be null-terminated */
+        for (size_t i = 0; i < com.size (); ++i)
+            execArgv[i] = com[i];
+
+        execArgv[com.size ()] = NULL;
 
         /* Program ends here in the normal case */
         system.ExecInPlace (executable.c_str (),
