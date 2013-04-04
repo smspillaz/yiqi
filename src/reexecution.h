@@ -38,7 +38,11 @@ namespace yiqi
     {
         typedef instrumentation::tools::Tool Tool;
         typedef system::api::SystemCalls SystemCalls;
-        void RelaunchIfNecessary (commandline::ArgvVector const &cmd,
+
+        typedef std::vector <char *> EnvironmentVector;
+
+        void RelaunchIfNecessary (commandline::ArgvVector const &argv,
+                                  EnvironmentVector       const &env,
                                   Tool const                    &tool,
                                   SystemCalls const             &system);
 

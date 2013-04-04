@@ -112,10 +112,8 @@ TEST_F (ReExecution, SkipIfNoInstrumentationWrapper)
     ON_CALL (*tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (NoInstrumentation));
 
-    char const * const *argv (ytest::Arguments (args));
-    ycom::ArgvVector   vec (ytest::ToVector (argv,
-                                             ytest::ArgumentCount (args)));
-    yexec::RelaunchIfNecessary (vec,
+    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
+                                yexec::EnvironmentVector (),
                                 *tool,
                                 *syscalls);
 }
@@ -135,10 +133,8 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInSinglePath)
     ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
         .WillByDefault (Return (false));
 
-    char const * const *argv (ytest::Arguments (args));
-    ycom::ArgvVector   vec (ytest::ToVector (argv,
-                                             ytest::ArgumentCount (args)));
-    yexec::RelaunchIfNecessary (vec,
+    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
+                                yexec::EnvironmentVector (),
                                 *tool,
                                 *syscalls);
 }
@@ -165,12 +161,8 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInMultiplePaths)
     ON_CALL (*syscalls, ExeExists (SecondExpectedCheckedBinary))
         .WillByDefault (Return (false));
 
-    /* We need to convert to an ArgvVector here */
-    char const * const *argv (ytest::Arguments (args));
-    ycom::ArgvVector   vec (ytest::ToVector (argv,
-                                             ytest::ArgumentCount (args)));
-
     yexec::RelaunchIfNecessary (ycom::ArgvVector (),
+                                yexec::EnvironmentVector (),
                                 *tool,
                                 *syscalls);
 }
@@ -329,6 +321,7 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
     ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
 
     yexec::RelaunchIfNecessary (vec,
+                                yexec::EnvironmentVector (),
                                 *tool,
                                 *syscalls);
 }
@@ -370,6 +363,7 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
     ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
 
     yexec::RelaunchIfNecessary (vec,
+                                yexec::EnvironmentVector (),
                                 *tool,
                                 *syscalls);
 }
