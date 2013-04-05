@@ -254,6 +254,23 @@ TEST_F (NullTerminatedArrayDefault, FirstElementIsNullOnConstruction)
     EXPECT_THAT (nullTerminatedArray.underlyingArray ()[0], IsNull ());
 }
 
+TEST_F (NullTerminatedArrayDefault, InsertAndUndoInsert)
+{
+    std::vector <std::string> const vector =
+    {
+        MockItem1,
+        MockItem2,
+    };
+
+    nullTerminatedArray.append (vector);
+    nullTerminatedArray.eraseAppended (vector);
+    ASSERT_EQ (1, nullTerminatedArray.underlyingArrayLen ());
+
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[0],
+                 IsNull ());
+}
+
+
 class NullTerminatedArrayNonDefault :
     public ::testing::Test
 {
@@ -285,12 +302,67 @@ TEST_F (NullTerminatedArrayNonDefault, SecondElementIsNullTerminator)
     EXPECT_THAT (nullTerminatedArray.underlyingArray ()[1],
                  IsNull ());
 }
+
 TEST_F (NullTerminatedArrayNonDefault, InsertNewBeforeNullTerminator)
 {
     nullTerminatedArray.append (MockItem2);
     ASSERT_EQ (3, nullTerminatedArray.underlyingArrayLen ());
     EXPECT_THAT (nullTerminatedArray.underlyingArray ()[1],
                  StrEq (MockItem2));
+}
+
+TEST_F (NullTerminatedArrayNonDefault, InsertNewVecBeforeNullTerminator)
+{
+    std::vector <std::string> const vector =
+    {
+        MockItem1,
+        MockItem2,
+    };
+
+    nullTerminatedArray.append (vector);
+    ASSERT_EQ (4, nullTerminatedArray.underlyingArrayLen ());
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[1],
+                 StrEq (MockItem1));
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[2],
+                 StrEq (MockItem2));
+}
+
+TEST_F (NullTerminatedArrayNonDefault, InsertAndUndoInsertPartial)
+{
+    nullTerminatedArray.append (MockItem1);
+
+    std::vector <std::string> const vector =
+    {
+        MockItem1,
+        MockItem2,
+    };
+
+    nullTerminatedArray.append (vector);
+    nullTerminatedArray.eraseAppended (vector);
+    ASSERT_EQ (3, nullTerminatedArray.underlyingArrayLen ());
+
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[0],
+                 StrEq (NonDefaultValuesp[0]));
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[2],
+                 IsNull ());
+}
+
+TEST_F (NullTerminatedArrayNonDefault, InsertAndUndoInsert)
+{
+    std::vector <std::string> const vector =
+    {
+        MockItem1,
+        MockItem2,
+    };
+
+    nullTerminatedArray.append (vector);
+    nullTerminatedArray.eraseAppended (vector);
+    ASSERT_EQ (2, nullTerminatedArray.underlyingArrayLen ());
+
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[0],
+                 StrEq (NonDefaultValuesp[0]));
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[1],
+                 IsNull ());
 }
 
 TEST_F (NullTerminatedArrayNonDefault, LastElementIsNullTerminator)

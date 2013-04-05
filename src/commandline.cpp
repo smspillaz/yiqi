@@ -9,6 +9,9 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <vector>
+
+#include <cstring>
 
 #include <assert.h>
 
@@ -199,56 +202,151 @@ ycom::NullTermArray::operator!= (NullTermArray const &lhs) const
 void
 ycom::NullTermArray::append (std::string const &value)
 {
+    std::vector <std::string> vec =
+    {
+        value
+    };
+
+    append (vec);
+}
+
+void
+ycom::NullTermArray::eraseAppended (StringVector const &values)
+{
+    /* Start search from at least values.size () from the end */
+    auto searchStartPoint = priv->storedNewStrings.end () -
+                            (values.size ());
+    auto firstStoredNewStringsIterator =
+        std::find (searchStartPoint,
+                   priv->storedNewStrings.end (),
+                   values.front ());
+
+    if (firstStoredNewStringsIterator != priv->storedNewStrings.end ())
+    {
+        auto lastStoredNewStringIterator =
+            firstStoredNewStringsIterator;
+
+        bool foundLastString = false;
+
+        /* Keep going until either the end, or until the block
+         * where we've inserted stops. We already have the first
+         * iterator, so move directly to the second */
+        for (auto it = (values.begin () + 1);
+             it != values.end ();
+             ++it)
+        {
+            ++lastStoredNewStringIterator;
+
+            if (lastStoredNewStringIterator ==
+                    priv->storedNewStrings.end ())
+                break;
+
+            if (*lastStoredNewStringIterator != *it)
+            {
+                foundLastString = true;
+                break;
+            }
+        }
+
+        /* We need to put the last string iterator at
+         * one past the position we intend to erase
+         * inclusive if it didn't happen already */
+        if (!foundLastString)
+            ++lastStoredNewStringIterator;
+
+        auto findPointerInVectorFunc =
+            [&firstStoredNewStringsIterator](char const *str) -> bool {
+                /* We want to compare the pointers, as it was pointers
+                 * that were inserted, not new values */
+                return firstStoredNewStringsIterator->c_str () == str;
+            };
+
+        /* Handle the duplicate-pointers edge case by
+         * starting from end - distance (first, last) - 1 */
+        auto searchStartPoint =
+            priv->vector.end () - std::distance (firstStoredNewStringsIterator,
+                                                 lastStoredNewStringIterator) - 1;
+        auto firstPointerInVector =
+            std::find_if (searchStartPoint,
+                          priv->vector.end (),
+                          findPointerInVectorFunc);
+
+        if (firstPointerInVector != priv->vector.end ())
+        {
+            bool foundLastPointer = false;
+
+            /* Keep going until we find the end of strings
+             * that were stored here. We already have the first
+             * iterator, so move directly to the second */
+            auto lastPointerInVector = firstPointerInVector;
+
+            for (auto it = (values.begin () + 1);
+                 it != values.end ();
+                 ++it)
+            {
+                ++lastPointerInVector;
+
+                if (lastPointerInVector == priv->vector.end ())
+                    break;
+
+                if (*lastPointerInVector != it->c_str ())
+                {
+                    foundLastPointer = true;
+                    break;
+                }
+            }
+
+            /* We need to put the last string iterator at
+             * one past the position we intend to erase
+             * inclusive if it didn't happen already */
+            if (!foundLastPointer)
+                ++lastPointerInVector;
+
+            /* Erase this from the vector of pointers */
+            priv->vector.erase (firstPointerInVector,
+                                lastPointerInVector);
+        }
+
+        /* Erase this block from the vector of stored
+         * new strings */
+        priv->storedNewStrings.erase (firstStoredNewStringsIterator,
+                                      lastStoredNewStringIterator);
+    }
+}
+
+void
+ycom::NullTermArray::append (std::vector <std::string> const &vec)
+{
     bool commit = false;
-    yu::ExceptionCleanup cleanup ([&] {
+    auto cleanupFunc = std::bind (&ycom::NullTermArray::eraseAppended,
+                                  this,
+                                  vec);
+    yu::ExceptionCleanup cleanup (cleanupFunc, commit);
 
-        /* Roll back storage of new string */
-        auto storedNewStringsIterator =
-            std::find (priv->storedNewStrings.begin (),
-                       priv->storedNewStrings.end (),
-                       value);
+    /* Reserve some more space */
+    size_t oldLength = priv->storedNewStrings.size ();
 
-        char const *storedStringPtr = nullptr;
+    priv->storedNewStrings.insert (priv->storedNewStrings.end (),
+                                   vec.begin (),
+                                   vec.end ());
 
-        if (storedNewStringsIterator != priv->storedNewStrings.end ())
-        {
-            storedStringPtr = storedNewStringsIterator->c_str ();
-            priv->storedNewStrings.erase (storedNewStringsIterator);
-        }
+    /* Go to first newly stored string */
+    auto firstNewlyStoredString (priv->storedNewStrings.begin ());
+    std::advance (firstNewlyStoredString, oldLength);
 
-        /* Only if set to a value - we do not
-         * want to remove the null-terminator from
-         * the vector */
-        if (storedStringPtr)
-        {
-            /* If we have a stored string ptr, try and
-             * find that and remove it too */
-            auto arrayIterator = std::find (priv->vector.begin (),
-                                            priv->vector.end (),
-                                            storedStringPtr);
+    for (auto it = firstNewlyStoredString;
+         it != priv->storedNewStrings.end ();
+         ++it)
+    {
+        /* Should be null-terminator */
+        auto nullTerminatorPosition (priv->vector.end () - 1);
 
-            if (arrayIterator != priv->vector.end ())
-                priv->vector.erase (arrayIterator);
-        }
-    }, commit);
+        assert (*nullTerminatorPosition == NULL);
 
-    /* Store a new string so that we can point to it
-     * later */
-    priv->storedNewStrings.push_back (value);
-
-    /* Should be null-terminator */
-    auto rit (priv->vector.rbegin ());
-
-    assert (*rit == NULL);
-
-    /* Go back to the one before it */
-    ++rit;
-
-    /* it will point to the null-terminator */
-    std::vector <char const *>::iterator it (rit.base ());
-
-    /* insert the new keyEqValue before it */
-    priv->vector.insert (it, priv->storedNewStrings.back ().c_str ());
+        /* Insert the next pointer before the null terminator */
+        priv->vector.insert (nullTerminatorPosition,
+                             it->c_str ());
+    }
 
     commit = true;
 }

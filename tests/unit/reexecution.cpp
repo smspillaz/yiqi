@@ -21,6 +21,7 @@
 #include "array_fits_matchers.h"
 
 #include "test_util.h"
+#include "reexecution_tests_shared.h"
 
 #include "constants.h"
 #include "reexecution.h"
@@ -47,40 +48,7 @@ namespace ymockit = ymock::instrumentation::tools;
 namespace ymocksysapi = ymock::system::api;
 namespace ysysapi = yiqi::system::api;
 namespace ytest = yiqi::testing;
-
-namespace
-{
-    std::string const NoInstrumentation ("");
-    std::string const MockInstrumentation ("mocktool");
-    std::string const MockArgument ("--mock");
-
-    std::string const NoExecutablePath ("");
-    std::vector <std::string> const MockExecutablePaths =
-    {
-        std::string ("/mock/executable/path/"),
-        std::string ("/executable/mock/path/")
-    };
-    std::string const MultiMockExecutablePath (MockExecutablePaths[0] + ":" +
-                                               MockExecutablePaths[1]);
-
-    std::vector <std::string> const InitialMockArgv =
-    {
-    };
-
-    std::vector <std::string> const ExpectedMockArgv =
-    {
-        MockInstrumentation,
-        ytest::MockProgramName (),
-        MockArgument
-    };
-
-    std::string const MockEnv ("MOCK=mock");
-    char const * const ProvidedEnvironment[] =
-    {
-        MockEnv.c_str (),
-        NULL
-    };
-}
+namespace ytestrexec = yiqi::testing::reexecution;
 
 class FindExecutable :
     public ::testing::Test
@@ -118,9 +86,9 @@ TEST_F (FindExecutable, ThrowLogicErrorOnEmptyWrapper)
 TEST_F (FindExecutable, ThrowRuntimeErrorOnEmptyPath)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
-        .WillByDefault (Return (NoExecutablePath));
+        .WillByDefault (Return (ytestrexec::NoExecutablePath));
 
     EXPECT_THROW ({
       yexec::FindExecutable (tool, syscalls);
@@ -130,9 +98,9 @@ TEST_F (FindExecutable, ThrowRuntimeErrorOnEmptyPath)
 TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInOnePath)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (MockExecutablePaths[0]));
+            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
     ON_CALL (syscalls, ExeExists (_))
         .WillByDefault (Return (false));
 
@@ -144,9 +112,9 @@ TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInOnePath)
 TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInMultiplePaths)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (MultiMockExecutablePath));
+            .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
     ON_CALL (syscalls, ExeExists (_))
         .WillByDefault (Return (false));
 
@@ -157,14 +125,14 @@ TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInMultiplePaths)
 
 TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundInOnePath)
 {
-    std::string const ExpectedPath (MockExecutablePaths[0] +
+    std::string const ExpectedPath (ytestrexec::MockExecutablePaths[0] +
                                     "/" +
-                                    MockInstrumentation);
+                                    ytestrexec::MockInstrumentation);
 
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (MockExecutablePaths[0]));
+            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
     ON_CALL (syscalls, ExeExists (ExpectedPath))
         .WillByDefault (Return (true));
 
@@ -173,17 +141,17 @@ TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundInOnePath)
 
 TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundOtherPath)
 {
-    std::string const NoFindPath (MockExecutablePaths[0] +
+    std::string const NoFindPath (ytestrexec::MockExecutablePaths[0] +
                                   "/" +
-                                  MockInstrumentation);
-    std::string const ExpectedPath (MockExecutablePaths[1] +
+                                  ytestrexec::MockInstrumentation);
+    std::string const ExpectedPath (ytestrexec::MockExecutablePaths[1] +
                                     "/" +
-                                    MockInstrumentation);
+                                    ytestrexec::MockInstrumentation);
 
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
-        .WillByDefault (Return (MultiMockExecutablePath));
+        .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
     ON_CALL (syscalls, ExeExists (NoFindPath))
         .WillByDefault (Return (false));
     ON_CALL (syscalls, ExeExists (ExpectedPath))
@@ -195,109 +163,13 @@ TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundOtherPath)
     EXPECT_EQ (ExpectedPath, yexec::FindExecutable (tool, syscalls));
 }
 
-#if 0
-
-class ReExecution :
-    public ::testing::Test
-{
-    public:
-
-        ReExecution () :
-            args (ytest::GenerateCommandLine (InitialMockArgv)),
-            env (ProvidedEnvironment)
-        {
-            syscalls.IgnoreCalls ();
-
-            /* We don't need the system environment, executable path
-             * or to determine if any executables exist. All that has been
-             * done for us already */
-            EXPECT_CALL (syscalls, GetSystemEnvironment ()).Times (0);
-            EXPECT_CALL (syscalls, GetExecutablePath ()).Times (0);
-            EXPECT_CALL (syscalls, ExeExists (_)).Times (0);
-        }
-
-    protected:
-
-        ymocksysapi::SystemCalls    syscalls;
-        ytest::CommandLineArguments args;
-        ycom::ArgvVector            argvVector;
-        ycom::NullTermArray         argv;
-        ycom::NullTermArray         env;
-};
-
-TEST_F (ReExecution, SkipIfNoInstrumentationWrapper)
-{
-    /* Never call the system calls */
-    EXPECT_CALL (*syscalls, ExeExists (_)).Times (0);
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    ON_CALL (*tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (NoInstrumentation));
-
-    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                ycom::NullTermArray (),
-                                *tool,
-                                *syscalls);
-}
-
-TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInSinglePath)
-{
-    std::string const ExpectedCheckedBinary (MockExecutablePath +
-                                             "/" + MockInstrumentation);
-
-    /* Never call ExecInPlace */
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    ON_CALL (*tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
-    ON_CALL (*syscalls, GetExecutablePath ())
-        .WillByDefault (Return (MockExecutablePath));
-    ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
-        .WillByDefault (Return (false));
-
-    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                ycom::NullTermArray (),
-                                *tool,
-                                *syscalls);
-}
-
-TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInMultiplePaths)
-{
-    std::string const FirstExpectedCheckedBinary (MockExecutablePath +
-                                                  "/" + MockInstrumentation);
-    std::string const SecondExpectedCheckedBinary (MockExecutablePath +
-                                                   "/" + MockInstrumentation);
-
-    /* Never call ExecInPlace */
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    /* We should expect that ExeExists is called twice */
-    EXPECT_CALL (*syscalls, ExeExists (_)).Times (2);
-
-    ON_CALL (*tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
-    ON_CALL (*syscalls, GetExecutablePath ())
-        .WillByDefault (Return (MultiMockExecutablePath));
-    ON_CALL (*syscalls, ExeExists (FirstExpectedCheckedBinary))
-        .WillByDefault (Return (false));
-    ON_CALL (*syscalls, ExeExists (SecondExpectedCheckedBinary))
-        .WillByDefault (Return (false));
-
-    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                ycom::NullTermArray (),
-                                *tool,
-                                *syscalls);
-}
-
-#endif
-
 class GetArgvForTool :
     public ::testing::Test
 {
     public:
 
         GetArgvForTool () :
-            args (ytest::GenerateCommandLine (InitialMockArgv))
+            args (ytest::GenerateCommandLine (ytestrexec::InitialMockArgv))
         {
             tool.IgnoreCalls ();
         }
@@ -311,7 +183,7 @@ class GetArgvForTool :
 TEST_F (GetArgvForTool, AtLeastOneArgumentInReturnedArgvWithNoWrapper)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (NoInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -323,7 +195,7 @@ TEST_F (GetArgvForTool, AtLeastOneArgumentInReturnedArgvWithNoWrapper)
 TEST_F (GetArgvForTool, AtLeastTwoArgumentsInReturnedArgvWithWrapper)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -335,9 +207,9 @@ TEST_F (GetArgvForTool, AtLeastTwoArgumentsInReturnedArgvWithWrapper)
 TEST_F (GetArgvForTool, AtLeastThreeArgumentsInReturnedArgvWithWrapperAndOpts)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (MockArgument));
+        .WillByDefault (ReturnRef (ytestrexec::MockArgument));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -349,20 +221,21 @@ TEST_F (GetArgvForTool, AtLeastThreeArgumentsInReturnedArgvWithWrapperAndOpts)
 TEST_F (GetArgvForTool, FirstArgvIsInstrumentation)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
     ASSERT_EQ (argv.underlyingArrayLen (), 3); // 2 + null-term
-    EXPECT_THAT (argv.underlyingArray ()[0], StrEq (MockInstrumentation));
+    EXPECT_THAT (argv.underlyingArray ()[0],
+                 StrEq (ytestrexec::MockInstrumentation));
 }
 
 TEST_F (GetArgvForTool, SecondArgvIsProgramName)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -375,9 +248,9 @@ TEST_F (GetArgvForTool, SecondArgvIsProgramName)
 TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (MockArgument));
+        .WillByDefault (ReturnRef (ytestrexec::MockArgument));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -387,7 +260,7 @@ TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
     {
         _,
         _,
-        StrEq (MockArgument),
+        StrEq (ytestrexec::MockArgument),
         IsNull ()
     };
 
@@ -428,7 +301,7 @@ class GetEnvForTool :
 
             /* By default, return the process environment */
             ON_CALL (syscalls, GetSystemEnvironment ())
-                .WillByDefault (Return (ProvidedEnvironment));
+                .WillByDefault (Return (ytestrexec::ProvidedEnvironment));
         }
 
     protected:
@@ -440,7 +313,7 @@ class GetEnvForTool :
 TEST_F (GetEnvForTool, AtLeastTwoMembers)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (NoInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
 
@@ -450,13 +323,13 @@ TEST_F (GetEnvForTool, AtLeastTwoMembers)
 TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (NoInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
 
     size_t const arrayLen = environment.underlyingArrayLen ();
     std::vector <Matcher <char const *> > matchers;
-    char const * const *sysEnvPtr = ProvidedEnvironment;
+    char const * const *sysEnvPtr = ytestrexec::ProvidedEnvironment;
 
     for (size_t i = 0;
          i < arrayLen;
@@ -475,13 +348,13 @@ TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
 TEST_F (GetEnvForTool, OnlyTheFirstMembersInSysEnvironmentIfNoInstrumentation)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (NoInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
 
     size_t const arrayLen = environment.underlyingArrayLen ();
     std::vector <Matcher <char const *> > matchers;
-    char const * const *sysEnvPtr = ProvidedEnvironment;
+    char const * const *sysEnvPtr = ytestrexec::ProvidedEnvironment;
 
     for (size_t i = 0;
          i < arrayLen;
@@ -500,13 +373,13 @@ TEST_F (GetEnvForTool, OnlyTheFirstMembersInSysEnvironmentIfNoInstrumentation)
 TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
 {
     ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
 
     size_t const arrayLen = environment.underlyingArrayLen ();
     std::vector <Matcher <char const *> > matchers;
-    char const * const *sysEnvPtr = ProvidedEnvironment;
+    char const * const *sysEnvPtr = ytestrexec::ProvidedEnvironment;
 
     for (size_t i = 0;
          i < arrayLen;
@@ -519,7 +392,7 @@ TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
             std::stringstream ss;
             ss << yconst::YiqiToolEnvKey ()
                << "="
-               << MockInstrumentation;
+               << ytestrexec::MockInstrumentation;
             matchers.push_back (StrEq (ss.str ()));
         }
         else
@@ -679,129 +552,3 @@ TEST_F (Relaunch, VerifyCStyleEnv)
                                 _1, _2),
                      syscalls);
 }
-
-#if 0
-
-/*
- * These functions are doing too much:
- * 1. Fetching the instrumentation tool name
- * 2. Finding the right binary
- * 3. Setting the env
- * 4. Creating a null-terminated argv list
- * 5. calling ExecInPlace
- */
-TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
-{
-    std::string const ExpectedCheckedBinary (MockExecutablePath +
-                                             "/" + MockInstrumentation);
-
-    ON_CALL (*tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
-    ON_CALL (*tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (MockArgument));
-    ON_CALL (*syscalls, GetExecutablePath ())
-        .WillByDefault (Return (MockExecutablePath));
-    ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
-        .WillByDefault (Return (true));
-
-    char const * const                    *argv (ytest::Arguments (args));
-    std::vector <Matcher <char const *> > matchers;
-    for (int i = 0; i < ytest::ArgumentCount (args); ++i)
-        matchers.push_back (StrEq (argv[i]));
-
-    EXPECT_CALL (*syscalls, ExecInPlace (StrEq (ExpectedCheckedBinary),
-                                         ArrayFitsMatchers (matchers),
-                                         _))
-        .Times (1);
-
-    /* We need to convert to an ArgvVector here */
-    ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
-
-    yexec::RelaunchIfNecessary (vec,
-                                ycom::NullTermArray (),
-                                *tool,
-                                *syscalls);
-}
-
-TEST_F (ReExecution, ExecIfExecutableExistsInSinglePathWithAppendedEnv)
-{
-    std::string const ExpectedCheckedBinary (MockExecutablePath +
-                                             "/" + MockInstrumentation);
-
-    ON_CALL (*tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
-    ON_CALL (*tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (MockArgument));
-    ON_CALL (*syscalls, GetExecutablePath ())
-        .WillByDefault (Return (MockExecutablePath));
-    ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
-        .WillByDefault (Return (true));
-
-    ycom::NullTermArray ExpectedExecEnv (env);
-    ExpectedExecEnv.insert (yconst::YiqiToolEnvKey (),
-                            MockInstrumentation.c_str ());
-
-    auto ExpectedEnvp (ExpectedExecEnv.underlyingEnvironmentArray ());
-    size_t ExpectedExecEnvLenSansNullTerminator =
-        ExpectedExecEnv.underlyingEnvironmentArrayLen () - 1;
-
-    std::vector <Matcher <char const *> > matchers;
-    for (size_t i = 0;
-         i < ExpectedExecEnvLenSansNullTerminator;
-         ++i)
-        matchers.push_back (StrEq (ExpectedEnvp[i]));
-
-    EXPECT_CALL (*syscalls, ExecInPlace (StrEq (ExpectedCheckedBinary),
-                                         _,
-                                         ArrayFitsMatchers (matchers)))
-        .Times (1);
-    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
-                                env,
-                                *tool,
-                                *syscalls);
-}
-
-TEST_F (ReExecution, ExecIfExecutableExistsInSecondaryPath)
-{
-    std::string const FirstExpectedCheckedBinary (MockExecutablePath +
-                                                  "/" + MockInstrumentation);
-    std::string const SecondExpectedCheckedBinary (ExecutableMockPath +
-                                                   "/" + MockInstrumentation);
-
-    /* Never call ExecInPlace */
-    EXPECT_CALL (*syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    /* We should expect that ExeExists is called twice */
-    EXPECT_CALL (*syscalls, ExeExists (_)).Times (2);
-
-    ON_CALL (*tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (MockInstrumentation));
-    ON_CALL (*tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (MockArgument));
-    ON_CALL (*syscalls, GetExecutablePath ())
-        .WillByDefault (Return (MultiMockExecutablePath));
-    ON_CALL (*syscalls, ExeExists (FirstExpectedCheckedBinary))
-        .WillByDefault (Return (false));
-    ON_CALL (*syscalls, ExeExists (SecondExpectedCheckedBinary))
-        .WillByDefault (Return (true));
-
-    char const * const                    *argv (ytest::Arguments (args));
-    std::vector <Matcher <char const *> > matchers;
-    for (int i = 0; i < ytest::ArgumentCount (args); ++i)
-        matchers.push_back (StrEq (argv[i]));
-
-    EXPECT_CALL (*syscalls, ExecInPlace (StrEq (SecondExpectedCheckedBinary),
-                                         ArrayFitsMatchers (matchers),
-                                         _))
-        .Times (1);
-
-    /* We need to convert to an ArgvVector here */
-    ycom::ArgvVector vec (ytest::ToVector (argv, ytest::ArgumentCount (args)));
-
-    yexec::RelaunchIfNecessary (vec,
-                                ycom::NullTermArray (),
-                                *tool,
-                                *syscalls);
-}
-
-#endif

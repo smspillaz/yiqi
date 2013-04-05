@@ -103,9 +103,13 @@ yexec::GetToolArgv (Tool const        &tool,
     ycom::CommandArguments args (ycom::BuildCommandLine (currentArgc,
                                                          currentArgv,
                                                          tool));
-    ycom::ArgvVector       argvVec (ycom::StringVectorToArgv (args));
 
-    return ycom::NullTermArray (&argvVec[0]);
+    /* We have to insert everything maually as NullTermArray must
+     * allocate storage for the new strings */
+    ycom::NullTermArray array;
+    array.append (args);
+
+    return array;
 }
 
 ycom::NullTermArray
