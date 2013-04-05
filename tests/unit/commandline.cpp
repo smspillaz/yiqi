@@ -231,7 +231,7 @@ ytest::ValueTypeConstructor <ycom::NullTermArray>::Overloaded ()
 }
 
 typedef ::testing::Types <ycom::NullTermArray> YComValueConformanceTypes;
-INSTANTIATE_TYPED_TEST_CASE_P (CommandEnvironment,
+INSTANTIATE_TYPED_TEST_CASE_P (NullTermArray,
                                ValueTypeConformance,
                                YComValueConformanceTypes);
 

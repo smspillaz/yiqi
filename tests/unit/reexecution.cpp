@@ -18,6 +18,8 @@
 #include "instrumentation_mock.h"
 #include "system_api_mock.h"
 
+#include "array_fits_matchers.h"
+
 #include "test_util.h"
 
 #include "constants.h"
@@ -39,6 +41,7 @@ namespace yconst = yiqi::constants;
 namespace ycom = yiqi::commandline;
 namespace yexec = yiqi::execution;
 namespace yit = yiqi::instrumentation::tools;
+namespace ymatch = yiqi::matchers;
 namespace ymock = yiqi::mock;
 namespace ymockit = ymock::instrumentation::tools;
 namespace ymocksysapi = ymock::system::api;
@@ -288,133 +291,6 @@ TEST_F (ReExecution, NoExecIfExecutableDoesNotExistInMultiplePaths)
 
 #endif
 
-template <typename ArrayType>
-class ArrayMatcher :
-    public MatcherInterface <ArrayType const *>
-{
-    public:
-
-        ArrayMatcher (std::vector <Matcher <ArrayType> > const &matchers) :
-            mMatchers (matchers)
-        {
-        }
-
-        void DescribeTo (std::ostream *os) const
-        {
-            size_t n (count ());
-
-            if (n == 0)
-            {
-                *os << "matching no elements";
-                return;
-            }
-            else if (n == 1)
-            {
-                *os << "matches the first element which is ";
-                mMatchers[0].DescribeTo (os);
-            }
-            else
-            {
-                *os << "matches the first "
-                    << n << " elements which are"
-                    << std::endl;
-
-                for (size_t i = 0; i < n; ++i)
-                {
-                    *os << "element #" << n << " ";
-                    mMatchers[i].DescribeTo (os);
-                    *os << "," << std::endl;
-                }
-            }
-        }
-
-        void DescribeNegationTo (std::ostream *os) const
-        {
-            size_t n (count ());
-
-            ASSERT_TRUE (n > 0) << "matching zero elements must "
-                                   "always pass";
-
-            if (n == 1)
-            {
-                *os << "doesn't match the first element which is ";
-                mMatchers[0].DescribeTo (os);
-            }
-            else
-            {
-                *os << "doesn't match the first "
-                    << n << " elements which are"
-                    << std::endl;
-
-                for (size_t i = 0; i < n; ++i)
-                {
-                    *os << "element #" << n << " ";
-                    mMatchers[i].DescribeTo (os);
-                    *os << "," << std::endl;
-                }
-            }
-        }
-
-        bool MatchAndExplain (ArrayType const     *arr,
-                              MatchResultListener *listener) const
-        {
-            size_t n (count ());
-
-            /* We can pass instantly if we are not matching any
-             * of the elements */
-            if (n == 0)
-                return true;
-            else
-            {
-                if (arr)
-                {
-                    for (size_t i = 0; i < n; ++i)
-                    {
-                        ::testing::internal::StringMatchResultListener s;
-                        bool success = mMatchers[i].MatchAndExplain (arr[i],
-                                                                     &s);
-
-                        if (!success)
-                        {
-                            std::ostream *stream (listener->stream ());
-                            *listener << "whose element #" << i
-                                      << "doesn't match";
-                            ::testing::internal::PrintIfNotEmpty (s.str (),
-                                                                  stream);
-                            return false;
-                        }
-                    }
-                }
-                else
-                {
-                    std::ostream *os = listener->stream ();
-                    if (os)
-                        *os << std::string ("tries to match elements in an "
-                                            "empty array") << std::endl;
-
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-    private:
-
-        size_t count () const
-        {
-            return mMatchers.size ();
-        }
-
-        std::vector <Matcher <ArrayType> > const mMatchers;
-};
-
-template <typename T>
-inline Matcher <T const *> ArrayFitsMatchers (std::vector <Matcher <T> > const &matchers)
-{
-    return MakeMatcher (new ArrayMatcher <T> (matchers));
-}
-
 class GetArgvForTool :
     public ::testing::Test
 {
@@ -517,7 +393,7 @@ TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
 
     ASSERT_EQ (argv.underlyingArrayLen (), 4); // 3 + null-term
     EXPECT_THAT (argv.underlyingArray (),
-                 ArrayFitsMatchers (matchers));
+                 ymatch::ArrayFitsMatchers (matchers));
 }
 
 TEST_F (GetArgvForTool, FinalArgvIsNull)
@@ -593,7 +469,7 @@ TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
     }
 
     EXPECT_THAT (environment.underlyingArray (),
-                 ArrayFitsMatchers (matchers)); // tool env + null-term
+                 ymatch::ArrayFitsMatchers (matchers)); // tool env + null-term
 }
 
 TEST_F (GetEnvForTool, OnlyTheFirstMembersInSysEnvironmentIfNoInstrumentation)
@@ -618,7 +494,7 @@ TEST_F (GetEnvForTool, OnlyTheFirstMembersInSysEnvironmentIfNoInstrumentation)
     }
 
     EXPECT_THAT (environment.underlyingArray (),
-                 ArrayFitsMatchers (matchers)); // tool env + null-term
+                 ymatch::ArrayFitsMatchers (matchers)); // tool env + null-term
 }
 
 TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
@@ -651,7 +527,7 @@ TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
     }
 
     EXPECT_THAT (environment.underlyingArray (),
-                 ArrayFitsMatchers (matchers)); // tool env + null-term
+                 ymatch::ArrayFitsMatchers (matchers)); // tool env + null-term
 }
 
 namespace
@@ -660,14 +536,14 @@ namespace
     {
         public:
 
-            MOCK_CONST_METHOD2 (Executable,
-                                std::string (yit::Tool const            &,
-                                             ysysapi::SystemCalls const &));
-            MOCK_CONST_METHOD1 (Argv,
-                                ycom::NullTermArray (yit::Tool const &));
-            MOCK_CONST_METHOD2 (Environment,
-                                ycom::NullTermArray (yit::Tool            const &,
-                                                     ysysapi::SystemCalls const &));
+            MOCK_METHOD2 (Executable,
+                          std::string (yit::Tool const            &,
+                                       ysysapi::SystemCalls const &));
+            MOCK_METHOD1 (Argv,
+                          ycom::NullTermArray (yit::Tool const &));
+            MOCK_METHOD2 (Environment,
+                          ycom::NullTermArray (yit::Tool            const &,
+                                               ysysapi::SystemCalls const &));
     };
 }
 
@@ -749,7 +625,7 @@ TEST_F (Relaunch, VerifyCStyleArguments)
         .WillOnce (Return (ArgvArray));
 
     EXPECT_CALL (syscalls, ExecInPlace (_,
-                                        ArrayFitsMatchers (matchers),
+                                        ymatch::ArrayFitsMatchers (matchers),
                                         _));
 
     yexec::Relaunch (tool,
@@ -790,7 +666,7 @@ TEST_F (Relaunch, VerifyCStyleEnv)
 
     EXPECT_CALL (syscalls, ExecInPlace (_,
                                         _,
-                                        ArrayFitsMatchers (matchers)));
+                                        ymatch::ArrayFitsMatchers (matchers)));
 
     yexec::Relaunch (tool,
                      [](yit::Tool const &t, ysysapi::SystemCalls const &c) {

@@ -7,6 +7,7 @@
 include_directories (${YIQI_INTERNAL_INCLUDE_DIRECTORY}
                      ${YIQI_INTERNAL_SOURCE_DIRECTORY}
                      ${YIQI_MOCKS_DIRECTORY}
+                     ${YIQI_MATCHERS_DIRECTORY}
                      ${YIQI_EXTERNAL_INCLUDE_DIRS})
 
 set (YIQI_UNIT_TESTS_BINARY
@@ -29,6 +30,7 @@ add_executable (${YIQI_UNIT_TESTS_BINARY}
 target_link_libraries (${YIQI_UNIT_TESTS_BINARY}
                        ${YIQI_LIBRARY}
                        ${YIQI_MOCKS_LIBRARY}
+                       ${YIQI_MATCHERS_LIBRARY}
                        ${GTEST_LIBRARY}
                        ${GTEST_MAIN_LIBRARY}
                        ${GMOCK_LIBRARY}
