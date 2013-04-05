@@ -22,41 +22,41 @@ Proposed Usage
 
 Link your tests to the yiqi_main library. Then you can provide the tooling you wish to use on the command line:
 
-./your_test_binary --yiqi_instrumentation="memcheck"
+./your_test_binary --yiqi_tool memcheck
 
 By default, Yiqi will not perform instrumentation. However, should instrumentation be required, it will re-exec your test under valgrind for you.
 
 Yiqi needs to know when your client code begins and ends so it can skip providing statistics on test code. To do that, you can either use the provided macro CLIENT_CODE, or if you don't like macros, provide a functor () to ExecuteClientCode (); For example:
 
-TEST_F (Fixture, Test)
-{
-    int x = 0;
-    int y = 1;
+    TEST_F (Fixture, Test)
+    {
+        int x = 0;
+        int y = 1;
 
-    int result = 0;
+        int result = 0;
 
-    CLIENT_CODE ({
-         result = client::do_something (x, y);
-    })
+        CLIENT_CODE ({
+             result = client::do_something (x, y);
+        })
 
-    EXPECT_EQ (1, result);
-}
+        EXPECT_EQ (1, result);
+    }
 
 Or, without the macro:
 
-TEST_F (Fixture, Test)
-{
-    int x = 0;
-    int y = 1;
+    TEST_F (Fixture, Test)
+    {
+        int x = 0;
+        int y = 1;
 
-    int result = 0;
+        int result = 0;
 
-    ExecuteClientCode ([&]() {
-        result = client::do_something (x, y);
+        ExecuteClientCode ([&]() {
+            result = client::do_something (x, y);
+        }
+
+        EXPECT_EQ (1, result);
     }
-
-    EXPECT_EQ (1, result);
-}
 
 Yiqi will print some information that come from the instrumentation and fail your test if there are serious errors (for example, improper memory usage or definite leaks) that instrumentation detects. It wil also add this data to the gtest xml output, so that it can be tracked by continous-integration systems.
 
