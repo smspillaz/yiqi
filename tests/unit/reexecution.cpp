@@ -62,7 +62,6 @@ namespace
 
     std::vector <std::string> const InitialMockArgv =
     {
-        ytest::MockProgramName (),
     };
 
     std::vector <std::string> const ExpectedMockArgv =
@@ -488,8 +487,6 @@ TEST_F (GetArgvForTool, SecondArgvIsProgramName)
 {
     ON_CALL (tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (MockInstrumentation));
-    ON_CALL (tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (MockArgument));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -503,6 +500,8 @@ TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
 {
     ON_CALL (tool, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (MockInstrumentation));
+    ON_CALL (tool, WrapperOptions ())
+        .WillByDefault (ReturnRef (MockArgument));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
                                                   ytest::ArgumentCount (args),
@@ -587,7 +586,7 @@ TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
          i < arrayLen;
          ++i)
     {
-        if (sysEnvPtr)
+        if (*sysEnvPtr)
             matchers.push_back (StrEq (*sysEnvPtr++));
         else
             matchers.push_back (_);
@@ -612,7 +611,7 @@ TEST_F (GetEnvForTool, OnlyTheFirstMembersInSysEnvironmentIfNoInstrumentation)
          i < arrayLen;
          ++i)
     {
-        if (sysEnvPtr)
+        if (*sysEnvPtr)
             matchers.push_back (StrEq (*sysEnvPtr++));
         else
             matchers.push_back (IsNull ());
@@ -637,7 +636,7 @@ TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
          i < arrayLen;
          ++i)
     {
-        if (sysEnvPtr)
+        if (*sysEnvPtr)
             matchers.push_back (StrEq (*sysEnvPtr++));
         else if (i < (arrayLen - 1))
         {
@@ -655,6 +654,160 @@ TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
                  ArrayFitsMatchers (matchers)); // tool env + null-term
 }
 
+namespace
+{
+    class MockFetchFunctions
+    {
+        public:
+
+            MOCK_CONST_METHOD2 (Executable,
+                                std::string (yit::Tool const            &,
+                                             ysysapi::SystemCalls const &));
+            MOCK_CONST_METHOD1 (Argv,
+                                ycom::NullTermArray (yit::Tool const &));
+            MOCK_CONST_METHOD2 (Environment,
+                                ycom::NullTermArray (yit::Tool            const &,
+                                                     ysysapi::SystemCalls const &));
+    };
+}
+
+class Relaunch :
+    public ::testing::Test
+{
+    public:
+
+        Relaunch ()
+        {
+            syscalls.IgnoreCalls ();
+
+            /* We only care about ExecInPlace */
+            EXPECT_CALL (syscalls, ExeExists (_)).Times (0);
+            EXPECT_CALL (syscalls, GetExecutablePath ()).Times (0);
+            EXPECT_CALL (syscalls, GetSystemEnvironment ()).Times (0);
+
+            /* No calls to tool */
+            EXPECT_CALL (tool, InstrumentationWrapper ()).Times (0);
+            EXPECT_CALL (tool, WrapperOptions ()).Times (0);
+            EXPECT_CALL (tool, ToolIdentifier ()).Times (0);
+        }
+
+    protected:
+
+        MockFetchFunctions       fetch;
+        ymocksysapi::SystemCalls syscalls;
+        ymockit::Tool            tool;
+};
+
+TEST_F (Relaunch, VerifyCStyleExecutable)
+{
+    using namespace std::placeholders;
+
+    std::string const MockExecutableLocation ("/mock/executable/location");
+
+    EXPECT_CALL (fetch, Executable (_, _))
+        .WillOnce (Return (MockExecutableLocation));
+
+    EXPECT_CALL (syscalls, ExecInPlace (StrEq (MockExecutableLocation),
+                                        _,
+                                        _));
+
+    yexec::Relaunch (tool,
+                     std::bind (&MockFetchFunctions::Executable, &fetch,
+                                _1, _2),
+                     [](yit::Tool const &t) {
+                         return yexec::NullTermArray ();
+                     },
+                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                         return yexec::NullTermArray ();
+                     },
+                     syscalls);
+}
+
+namespace
+{
+
+}
+
+TEST_F (Relaunch, VerifyCStyleArguments)
+{
+    using namespace std::placeholders;
+
+    std::vector <char const *> const ArgvVector =
+    {
+        "Item1",
+        "Item2",
+        "Item3",
+        nullptr
+    };
+    ycom::NullTermArray const ArgvArray (&ArgvVector[0]);
+
+    std::vector <Matcher <char const *> > matchers;
+    for (char const *argvItem : ArgvVector)
+    {
+        if (argvItem)
+            matchers.push_back (StrEq (argvItem));
+        else
+            matchers.push_back (IsNull ());
+    }
+
+    EXPECT_CALL (fetch, Argv (_))
+        .WillOnce (Return (ArgvArray));
+
+    EXPECT_CALL (syscalls, ExecInPlace (_,
+                                        ArrayFitsMatchers (matchers),
+                                        _));
+
+    yexec::Relaunch (tool,
+                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                         return std::string ();
+                     },
+                     std::bind (&MockFetchFunctions::Argv, &fetch, _1),
+                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                         return yexec::NullTermArray ();
+                     },
+                     syscalls);
+}
+
+TEST_F (Relaunch, VerifyCStyleEnv)
+{
+    using namespace std::placeholders;
+
+    std::vector <char const *> const EnvVector =
+    {
+        "ITEM1=Item1",
+        "ITEM2=Item2",
+        "ITEM3=Item3",
+        nullptr
+    };
+    ycom::NullTermArray const EnvArray (&EnvVector[0]);
+
+    std::vector <Matcher <char const *> > matchers;
+    for (char const *envItem : EnvVector)
+    {
+        if (envItem)
+            matchers.push_back (StrEq (envItem));
+        else
+            matchers.push_back (IsNull ());
+    }
+
+    EXPECT_CALL (fetch, Environment (_, _))
+        .WillOnce (Return (EnvArray));
+
+    EXPECT_CALL (syscalls, ExecInPlace (_,
+                                        _,
+                                        ArrayFitsMatchers (matchers)));
+
+    yexec::Relaunch (tool,
+                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                         return std::string ();
+                     },
+                     [](yit::Tool const &t) {
+                         return yexec::NullTermArray ();
+                     },
+                     std::bind (&MockFetchFunctions::Environment, &fetch,
+                                _1, _2),
+                     syscalls);
+}
 
 #if 0
 

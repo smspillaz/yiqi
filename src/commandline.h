@@ -56,6 +56,7 @@ namespace yiqi
         /**
          * @brief The NullTermArray represents an array of char const *
          * which will always be terminated by a NULL
+         * @todo supply a move constructor
          */
         class NullTermArray
         {

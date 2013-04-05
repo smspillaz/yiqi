@@ -100,12 +100,25 @@ yexec::GetToolArgv (Tool const        &tool,
                     int                currentArgc,
                     char const * const *currentArgv)
 {
-    return ycom::NullTermArray ();
+    ycom::CommandArguments args (ycom::BuildCommandLine (currentArgc,
+                                                         currentArgv,
+                                                         tool));
+    ycom::ArgvVector       argvVec (ycom::StringVectorToArgv (args));
+
+    return ycom::NullTermArray (&argvVec[0]);
 }
 
 ycom::NullTermArray
 yexec::GetToolEnv (Tool const        &tool,
                    SystemCalls const &system)
 {
-    return ycom::NullTermArray ();
+    std::string const &wrapper (tool.InstrumentationWrapper ());
+    ycom::NullTermArray environment (system.GetSystemEnvironment ());
+
+    if (!wrapper.empty ())
+        ycom::InsertEnvironmentPair (environment,
+                                     yconst::YiqiToolEnvKey (),
+                                     wrapper.c_str ());
+
+    return environment;
 }
