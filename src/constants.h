@@ -28,6 +28,13 @@ namespace yiqi
          */
         char const * ValgrindToolOptionPrefix ();
 
+        /**
+         * @brief YiqiToolEnvKey
+         * @return the key value (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
+         * for the instrumented-process environment)
+         */
+        char const * YiqiToolEnvKey ();
+
 
         /**
          * @brief YiqiToolOption

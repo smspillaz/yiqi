@@ -18,6 +18,7 @@
 
 #include "test_util.h"
 
+#include "constants.h"
 #include "reexecution.h"
 
 using ::testing::_;
@@ -31,6 +32,7 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
 
+namespace yconst = yiqi::constants;
 namespace ycom = yiqi::commandline;
 namespace yexec = yiqi::execution;
 namespace yit = yiqi::instrumentation::tools;
@@ -62,6 +64,14 @@ namespace
         ytest::MockProgramName (),
         MockArgument
     };
+
+    std::string const MockEnv ("MOCK=mock");
+
+    char const * const ProvidedEnvironment[] =
+    {
+        MockEnv.c_str (),
+        NULL
+    };
 }
 
 class ReExecution :
@@ -72,7 +82,8 @@ class ReExecution :
         ReExecution () :
             tool (new ymockit::Tool),
             syscalls (new ymocksysapi::SystemCalls),
-            args (ytest::GenerateCommandLine (InitialMockArgv))
+            args (ytest::GenerateCommandLine (InitialMockArgv)),
+            env (ProvidedEnvironment)
         {
             IgnoreCallsOnTool ();
             IgnoreCallsOnSyscalls ();
@@ -86,6 +97,7 @@ class ReExecution :
         std::unique_ptr <ymockit::Tool>            tool;
         std::unique_ptr <ymocksysapi::SystemCalls> syscalls;
         ytest::CommandLineArguments                args;
+        ycom::Environment                          env;
 };
 
 void
@@ -295,6 +307,14 @@ inline Matcher <T const *> ArrayFitsMatchers (std::vector <Matcher <T> > const &
     return MakeMatcher (new ArrayMatcher <T> (matchers));
 }
 
+/*
+ * These functions are doing too much:
+ * 1. Fetching the instrumentation tool name
+ * 2. Finding the right binary
+ * 3. Setting the env
+ * 4. Creating a null-terminated argv list
+ * 5. calling ExecInPlace
+ */
 TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
 {
     std::string const ExpectedCheckedBinary (MockExecutablePath +
@@ -324,6 +344,42 @@ TEST_F (ReExecution, ExecIfExecutableExistsInSinglePath)
 
     yexec::RelaunchIfNecessary (vec,
                                 ycom::Environment (),
+                                *tool,
+                                *syscalls);
+}
+
+TEST_F (ReExecution, ExecIfExecutableExistsInSinglePathWithAppendedEnv)
+{
+    std::string const ExpectedCheckedBinary (MockExecutablePath +
+                                             "/" + MockInstrumentation);
+
+    ON_CALL (*tool, InstrumentationWrapper ())
+        .WillByDefault (ReturnRef (MockInstrumentation));
+    ON_CALL (*tool, WrapperOptions ())
+        .WillByDefault (ReturnRef (MockArgument));
+    ON_CALL (*syscalls, GetExecutablePath ())
+        .WillByDefault (Return (MockExecutablePath));
+    ON_CALL (*syscalls, ExeExists (ExpectedCheckedBinary))
+        .WillByDefault (Return (true));
+
+    ycom::Environment ExpectedExecEnv (env);
+    ExpectedExecEnv.insert (yconst::YiqiToolEnvKey (),
+                            MockInstrumentation.c_str ());
+
+    auto ExpectedEnvp (ExpectedExecEnv.underlyingEnvironmentArray ());
+
+    std::vector <Matcher <char const *> > matchers;
+    for (size_t i = 0;
+         i < ExpectedExecEnv.underlyingEnvironmentArrayLen ();
+         ++i)
+        matchers.push_back (StrEq (ExpectedEnvp[i]));
+
+    EXPECT_CALL (*syscalls, ExecInPlace (StrEq (ExpectedCheckedBinary),
+                                         _,
+                                         ArrayFitsMatchers (matchers)))
+        .Times (1);
+    yexec::RelaunchIfNecessary (ycom::ArgvVector (),
+                                env,
                                 *tool,
                                 *syscalls);
 }

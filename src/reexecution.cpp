@@ -7,6 +7,7 @@
  */
 
 #include "commandline.h"
+#include "constants.h"
 #include "instrumentation_tool.h"
 #include "reexecution.h"
 #include "system_api.h"

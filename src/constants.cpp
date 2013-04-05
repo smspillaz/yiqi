@@ -34,6 +34,13 @@ yconst::YiqiToolOption ()
     return tool;
 }
 
+char const *
+yconst::YiqiToolEnvKey ()
+{
+    static char const *key = "__YIQI_INSTRUMENTATION_TOOL_ACTIVE";
+    return key;
+}
+
 yconst::ToolsArray const & yconst::InstrumentationToolNames()
 {
     static ToolsArray const names =
