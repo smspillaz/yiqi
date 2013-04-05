@@ -13,7 +13,7 @@ include (FindPkgConfig)
 set (Boost_USE_STATIC_LIBS ON)
 
 pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
-find_package (Boost 1.49 COMPONENTS program_options)
+find_package (Boost 1.49 COMPONENTS program_options iostreams)
 find_package (GTest QUIET)
 
 if (NOT GTEST_FOUND)

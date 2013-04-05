@@ -41,6 +41,13 @@ yconst::YiqiToolEnvKey ()
     return key;
 }
 
+char const *
+yconst::YiqiRunningUnderHeader ()
+{
+    static char const *header = "[YIQI] RUNNING UNDER INSTRUMENTATION: ";
+    return header;
+}
+
 yconst::ToolsArray const & yconst::InstrumentationToolNames()
 {
     static ToolsArray const names =
@@ -50,7 +57,8 @@ yconst::ToolsArray const & yconst::InstrumentationToolNames()
             { InstrumentationTool::Timer, "timer" },
             { InstrumentationTool::Memcheck, "memcheck" },
             { InstrumentationTool::Callgrind, "callgrind" },
-            { InstrumentationTool::Cachegrind, "cachegrind" }
+            { InstrumentationTool::Cachegrind, "cachegrind" },
+            { InstrumentationTool::Passthrough, "passthrough" }
         }
     };
 

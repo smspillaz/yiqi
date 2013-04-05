@@ -35,6 +35,14 @@ namespace yiqi
          */
         char const * YiqiToolEnvKey ();
 
+        /**
+         * @brief YiqiRunningUnderHeader
+         * @return message header when detected to be running under an
+         * instrumentation tool (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
+         * is set)
+         */
+        char const * YiqiRunningUnderHeader ();
+
 
         /**
          * @brief YiqiToolOption
@@ -56,7 +64,8 @@ namespace yiqi
             Timer = 1,
             Memcheck = 2,
             Callgrind = 3,
-            Cachegrind = 4
+            Cachegrind = 4,
+            Passthrough = 5
         };
 
         struct InstrumentationToolName
@@ -65,7 +74,7 @@ namespace yiqi
             char const          *name;
         };
 
-        typedef std::array <InstrumentationToolName, 5> ToolsArray;
+        typedef std::array <InstrumentationToolName, 6> ToolsArray;
         /**
          * @brief InstrumentationToolNames
          * @return an array of all instrumentation tool names

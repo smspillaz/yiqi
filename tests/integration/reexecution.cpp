@@ -63,6 +63,9 @@ class ReExecutionIntegration :
             /* Provide an environment */
             ON_CALL (syscalls, GetSystemEnvironment ())
                 .WillByDefault (Return (ytestrexec::ProvidedEnvironment));
+
+            ON_CALL (tool, InstrumentationName ())
+                .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
         }
 
     protected:
@@ -190,8 +193,8 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightArgv)
     std::vector <Matcher <char const *> > matchers =
     {
         StrEq (ytestrexec::MockInstrumentation),
-        StrEq (ytest::MockProgramName ()),
         StrEq (ytestrexec::MockArgument),
+        StrEq (ytest::MockProgramName ()),
         IsNull ()
     };
 

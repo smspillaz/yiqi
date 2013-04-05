@@ -67,6 +67,7 @@ yc::MakeSpecifiedTool (yconst::InstrumentationTool toolID)
         { yconst::InstrumentationTool::Memcheck, yit::MakeMemcheckTool },
         { yconst::InstrumentationTool::Callgrind, yit::MakeCallgrindTool },
         { yconst::InstrumentationTool::Cachegrind, yit::MakeCachegrindTool },
+        { yconst::InstrumentationTool::Passthrough, yit::MakePassthroughTool },
     };
 
     ToolFactory const factory = toolConstructors.at (toolID);

@@ -7,20 +7,26 @@
  */
 #include <gtest/gtest.h>
 
+#include <iostream>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 
 #include <unistd.h>
 
 #include "commandline.h"
+#include "constants.h"
 #include "construction.h"
 #include "instrumentation_tool.h"
+#include "reexecution.h"
 #include "systempaths.h"
 #include "system_api.h"
 #include "system_implementation.h"
 
 namespace po = boost::program_options;
+namespace yconst = yiqi::constants;
 namespace ycom = yiqi::commandline;
+namespace yexec = yiqi::execution;
 namespace yc = yiqi::construction;
 namespace yit = yiqi::instrumentation::tools;
 namespace ysys = yiqi::system;
@@ -54,17 +60,34 @@ int main (int argc, char **argv)
     ::testing::InitGoogleTest (&argc, argv);
     ::testing::AddGlobalTestEnvironment(new YiqiEnvironment);
 
-    po::options_description desc (yc::FetchOptionsDescription ());
+    char const *activeTool = getenv (yconst::YiqiToolEnvKey ());
 
-    /* Figure out if we need to re-exec here under valgrind */
-    yit::Tool::Unique tool (yc::ParseOptionsToToolUniquePtr (argc,
-                                                             argv,
-                                                             desc));
+    if (activeTool)
+    {
+        std::cout << yconst::YiqiRunningUnderHeader ()
+                  << std::string (activeTool)
+                  << std::endl;
+    }
+    else
+    {
+        po::options_description desc (yc::FetchOptionsDescription ());
 
-    ycom::CommandArguments args (ycom::BuildCommandLine (argc,
-                                                         argv,
-                                                         *tool));
-    ycom::ArgvVector       argvVec (ycom::StringVectorToArgv (args));
+        /* Figure out if we need to re-exec here under valgrind */
+        yit::Tool::Unique tool (yc::ParseOptionsToToolUniquePtr (argc,
+                                                                 argv,
+                                                                 desc));
+
+        /* We can skip a bit if there is no instrumentation wrapper */
+        if (!tool->InstrumentationWrapper ().empty ())
+        {
+            ysysapi::SystemCalls::Unique calls (ysysapi::MakeUNIXSystemCalls ());
+
+            yexec::RelaunchCurrentProgram (*tool,
+                                           argc,
+                                           argv,
+                                           *calls);
+        }
+    }
 
     return RUN_ALL_TESTS ();
 }

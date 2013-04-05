@@ -58,7 +58,7 @@ namespace yiqi
 
                         for (size_t i = 0; i < n; ++i)
                         {
-                            *os << "element #" << n << " ";
+                            *os << "element #" << i << " ";
                             mMatchers[i].DescribeTo (os);
                             *os << "," << std::endl;
                         }
@@ -85,7 +85,7 @@ namespace yiqi
 
                         for (size_t i = 0; i < n; ++i)
                         {
-                            *os << "element #" << n << " ";
+                            *os << "element #" << i << " ";
                             mMatchers[i].DescribeTo (os);
                             *os << "," << std::endl;
                         }

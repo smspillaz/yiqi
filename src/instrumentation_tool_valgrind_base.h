@@ -30,6 +30,7 @@ namespace yiqi
 
                         std::string const & InstrumentationWrapper () const;
                         std::string const & WrapperOptions () const;
+                        std::string const & InstrumentationName () const;
 
                         virtual std::string const & ToolAdditionalOptions () const = 0;
                 };

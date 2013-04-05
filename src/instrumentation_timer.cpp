@@ -22,6 +22,7 @@ namespace
 
             std::string const & InstrumentationWrapper () const;
             std::string const & WrapperOptions () const;
+            std::string const & InstrumentationName () const;
             yconst::InstrumentationTool ToolIdentifier () const;
     };
 }
@@ -30,6 +31,14 @@ yconst::InstrumentationTool
 TimerTool::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::Timer;
+}
+
+std::string const &
+TimerTool::InstrumentationName () const
+{
+    static std::string const name (
+        yconst::StringFromTool (ToolIdentifier ()));
+    return name;
 }
 
 std::string const &

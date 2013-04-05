@@ -46,6 +46,14 @@ namespace yiqi
 		    virtual std::string const & InstrumentationWrapper () const = 0;
 
 		    /**
+		     * @brief InstrumentationName
+		     * @return The name of the instrumentation that we are
+		     * running under, which may be a specific tool of the
+		     * instrumentation wrapper
+		     */
+		    virtual std::string const & InstrumentationName () const = 0;
+
+		    /**
 		     * @brief WrapperOptions
 		     * @return Options to pass to that wrapper
 		     */

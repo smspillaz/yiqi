@@ -42,14 +42,14 @@ ycom::BuildCommandLine (int                 argc,
     if (!wrapper.empty ())
         arguments.push_back (wrapper);
 
-    /* The name of this test binary */
-    arguments.push_back (argv[0]);
-
     /* Tool arguments */
     std::string const &toolOption (tool.WrapperOptions ());
 
     if (!toolOption.empty ())
         arguments.push_back (toolOption);
+
+    /* The name of this test binary */
+    arguments.push_back (argv[0]);
 
     return arguments;
 }
@@ -208,6 +208,22 @@ ycom::NullTermArray::append (std::string const &value)
     };
 
     append (vec);
+}
+
+void
+ycom::NullTermArray::removeAnyMatching (RemoveFunc const &remover)
+{
+    auto wrapper = [this, &remover](char const *str) -> bool {
+        if (str)
+            return remover (str);
+        else
+            return false;
+    };
+
+    priv->vector.erase (std::remove_if (priv->vector.begin (),
+                                        priv->vector.end (),
+                                        wrapper),
+                        priv->vector.end ());
 }
 
 void

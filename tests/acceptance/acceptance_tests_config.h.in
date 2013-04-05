@@ -1,0 +1,29 @@
+/*
+ * acceptance_tests_config.h.in:
+ * Provides some build-time specific variables for
+ * the acceptance tests
+ *
+ * See LICENCE.md for Copyright information
+ */
+
+#include <string>
+
+#ifndef YIQI_ACCEPTANCE_TESTS_CONFIG_H
+#define YIQI_ACCEPTANCE_TESTS_CONFIG_H
+
+namespace yiqi
+{
+    namespace testing
+    {
+        namespace acceptance
+        {
+            typedef std::string const Constant;
+            Constant passthrough ("@YIQI_PASSTHROUGH_EXEC_BINARY_LOCATION@");
+            Constant simpleTest ("@YIQI_SIMPLE_TEST_EXEC_BINARY_LOCATION@");
+            Constant pthruPath ("@YIQI_PASSTHROUGH_EXEC_BINARY_DIRECTORY@");
+        }
+    }
+}
+
+
+#endif // YIQI_ACCEPTANCE_TESTS_CONFIG_H

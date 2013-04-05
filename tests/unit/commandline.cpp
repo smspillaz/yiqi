@@ -115,8 +115,8 @@ TEST_F (BuildCommandLine, ReturnWrapperAndOptions)
     Matcher <std::string> matchers[] =
     {
         StrEq (MockWrapper),
-        StrEq (ytest::MockProgramName ()),
-        StrEq (MockOptions)
+        StrEq (MockOptions),
+        StrEq (ytest::MockProgramName ())
     };
 
     EXPECT_THAT (args,
@@ -285,6 +285,16 @@ class NullTerminatedArrayNonDefault :
 
         ycom::NullTermArray nullTerminatedArray;
 };
+
+TEST_F (NullTerminatedArrayNonDefault, RemoveDefaultValue)
+{
+    nullTerminatedArray.removeAnyMatching ([](char const *str) -> bool {
+        return strstr (NonDefaultValuesp[0], str) != NULL;
+    });
+
+    ASSERT_EQ (1, nullTerminatedArray.underlyingArrayLen ());
+    EXPECT_THAT (nullTerminatedArray.underlyingArray ()[0], IsNull ());
+}
 
 TEST_F (NullTerminatedArrayNonDefault, TwoElementsOnConstruction)
 {

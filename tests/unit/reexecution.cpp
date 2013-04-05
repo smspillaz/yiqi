@@ -259,8 +259,8 @@ TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
     std::vector <Matcher <char const *> > matchers =
     {
         _,
-        _,
         StrEq (ytestrexec::MockArgument),
+        _,
         IsNull ()
     };
 
@@ -289,9 +289,10 @@ class GetEnvForTool :
             tool.IgnoreCalls();
             syscalls.IgnoreCalls ();
 
-            /* Don't need the tool id or args */
+            /* Don't need the tool id, wrapper or args */
             EXPECT_CALL (tool, ToolIdentifier ()).Times (0);
             EXPECT_CALL (tool, WrapperOptions ()).Times (0);
+            EXPECT_CALL (tool, InstrumentationWrapper ()).Times (0);
 
             /* Don't need to check if executables exist, the exec path
              * or exec things */
@@ -310,20 +311,20 @@ class GetEnvForTool :
         ymocksysapi::SystemCalls syscalls;
 };
 
-TEST_F (GetEnvForTool, AtLeastTwoMembers)
+TEST_F (GetEnvForTool, ToolWithNoInstrumentationThrows)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, InstrumentationName ())
         .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
-    ycom::NullTermArray environment (yexec::GetToolEnv (tool,
-                                                        syscalls));
-
-    EXPECT_GE (environment.underlyingArrayLen (), 2); // tool env + null-term
+    EXPECT_THROW ({
+        ycom::NullTermArray environment (yexec::GetToolEnv (tool,
+                                                            syscalls));
+    }, std::logic_error);
 }
 
 TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
+    ON_CALL (tool, InstrumentationName ())
+        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
 
@@ -345,34 +346,9 @@ TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
                  ymatch::ArrayFitsMatchers (matchers)); // tool env + null-term
 }
 
-TEST_F (GetEnvForTool, OnlyTheFirstMembersInSysEnvironmentIfNoInstrumentation)
-{
-    ON_CALL (tool, InstrumentationWrapper ())
-        .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
-    ycom::NullTermArray environment (yexec::GetToolEnv (tool,
-                                                        syscalls));
-
-    size_t const arrayLen = environment.underlyingArrayLen ();
-    std::vector <Matcher <char const *> > matchers;
-    char const * const *sysEnvPtr = ytestrexec::ProvidedEnvironment;
-
-    for (size_t i = 0;
-         i < arrayLen;
-         ++i)
-    {
-        if (*sysEnvPtr)
-            matchers.push_back (StrEq (*sysEnvPtr++));
-        else
-            matchers.push_back (IsNull ());
-    }
-
-    EXPECT_THAT (environment.underlyingArray (),
-                 ymatch::ArrayFitsMatchers (matchers)); // tool env + null-term
-}
-
 TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, InstrumentationName ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));

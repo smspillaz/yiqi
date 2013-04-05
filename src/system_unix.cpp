@@ -33,7 +33,7 @@ namespace
 bool
 UNIXCalls::ExeExists (std::string const &file) const
 {
-    if (access (file.c_str (), X_OK))
+    if (access (file.c_str (), X_OK) == 0)
         return true;
 
     return false;
@@ -58,7 +58,7 @@ UNIXCalls::ExecInPlace (char const         *binary,
 std::string
 UNIXCalls::GetExecutablePath () const
 {
-    char const *path = getenv ("path");
+    char const *path = getenv ("PATH");
     if (path)
         return std::string (path);
 
@@ -69,4 +69,10 @@ char const * const *
 UNIXCalls::GetSystemEnvironment () const
 {
     return const_cast <char const * const *> (environ);
+}
+
+ysysapi::SystemCalls::Unique
+ysysapi::MakeUNIXSystemCalls ()
+{
+    return ysysapi::SystemCalls::Unique (new UNIXCalls ());
 }

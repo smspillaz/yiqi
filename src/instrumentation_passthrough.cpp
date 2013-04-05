@@ -1,5 +1,5 @@
 /*
- * instrumentation_none.h:
+ * instrumentation_passthrough.cpp:
  * Provides an implementation of a yiqi::instrumentation::tools::Tool
  * which does not perform any instrumentation at all
  *
@@ -15,7 +15,7 @@ namespace yit = yiqi::instrumentation::tools;
 
 namespace
 {
-    class NoneTool :
+    class PassthroughTool :
         public yit::Tool
     {
         private:
@@ -27,36 +27,36 @@ namespace
     };
 }
 
+yconst::InstrumentationTool
+PassthroughTool::ToolIdentifier () const
+{
+    return yconst::InstrumentationTool::Passthrough;
+}
+
 std::string const &
-NoneTool::InstrumentationName () const
+PassthroughTool::InstrumentationWrapper () const
+{
+    static std::string const wrapper ("passthrough");
+    return wrapper;
+}
+
+std::string const &
+PassthroughTool::InstrumentationName () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));
     return name;
 }
 
-yconst::InstrumentationTool
-NoneTool::ToolIdentifier () const
-{
-    return yconst::InstrumentationTool::None;
-}
-
 std::string const &
-NoneTool::InstrumentationWrapper () const
+PassthroughTool::WrapperOptions () const
 {
-    static std::string const wrapper ("");
-    return wrapper;
-}
-
-std::string const &
-NoneTool::WrapperOptions () const
-{
-    static std::string const options ("");
+    static std::string const options ("--passthrough");
     return options;
 }
 
 yit::ToolUniquePtr
-yit::MakeNoneTool ()
+yit::MakePassthroughTool ()
 {
-    return yit::ToolUniquePtr (new NoneTool ());
+    return yit::ToolUniquePtr (new PassthroughTool ());
 }

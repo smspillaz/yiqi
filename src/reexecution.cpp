@@ -11,6 +11,8 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <unistd.h>
+
 #include "commandline.h"
 #include "constants.h"
 #include "instrumentation_tool.h"
@@ -116,13 +118,15 @@ ycom::NullTermArray
 yexec::GetToolEnv (Tool const        &tool,
                    SystemCalls const &system)
 {
-    std::string const &wrapper (tool.InstrumentationWrapper ());
+    std::string const &name (tool.InstrumentationName ());
     ycom::NullTermArray environment (system.GetSystemEnvironment ());
 
-    if (!wrapper.empty ())
+    if (!name.empty ())
         ycom::InsertEnvironmentPair (environment,
                                      yconst::YiqiToolEnvKey (),
-                                     wrapper.c_str ());
+                                     name.c_str ());
+    else
+        throw std::logic_error ("provided tool with no InstrumentationName");
 
     return environment;
 }

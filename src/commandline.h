@@ -10,6 +10,7 @@
 #ifndef YIQI_COMMANDLINE_H
 #define YIQI_COMMANDLINE_H
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -100,6 +101,17 @@ namespace yiqi
                  * @param values the values to append
                  */
                 void append (StringVector const &values);
+
+                typedef std::function <bool (char const *)>  RemoveFunc;
+
+                /**
+                 * @brief removeAnyMatching calls remover for each member
+                 * of the underlying vector and removes any for which
+                 * operator (char const *) return true;
+                 * @remover a callback to invoke to determine what should
+                 * be removed
+                 */
+                void removeAnyMatching (RemoveFunc const &remover);
 
                 /**
                  * @brief eraseAppended finds a block of appended values in

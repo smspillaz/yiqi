@@ -32,10 +32,18 @@ yitv::ToolBase::WrapperOptions () const
 
     std::call_once (fillStringStreamOnce, [&]() {
         ss << yconst::ValgrindToolOptionPrefix ()
-           << yconst::StringFromTool (ToolIdentifier ()) << " "
+           << yconst::StringFromTool (ToolIdentifier ())
            << ToolAdditionalOptions ();
     });
 
     static std::string const options (ss.str ());
     return options;
+}
+
+std::string const &
+yitv::ToolBase::InstrumentationName () const
+{
+    static std::string const name (
+        yconst::StringFromTool (ToolIdentifier ()));
+    return name;
 }

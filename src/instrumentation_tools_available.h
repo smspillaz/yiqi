@@ -26,6 +26,7 @@ namespace yiqi
             ToolUniquePtr MakeMemcheckTool ();
             ToolUniquePtr MakeCallgrindTool ();
             ToolUniquePtr MakeCachegrindTool ();
+            ToolUniquePtr MakePassthroughTool ();
         }
     }
 }

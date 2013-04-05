@@ -36,6 +36,8 @@ namespace yiqi
                                             std::string const & ());
                         MOCK_CONST_METHOD0 (WrapperOptions,
                                             std::string const & ());
+                        MOCK_CONST_METHOD0 (InstrumentationName,
+                                            std::string const & ());
                         MOCK_CONST_METHOD0 (ToolIdentifier,
                                             ToolID ());
                 };
