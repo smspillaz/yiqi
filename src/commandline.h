@@ -43,9 +43,9 @@ namespace yiqi
                                            Tool const          &tool);
 
         /**
-         * @brief StringVectorToArgv turns a CommandArguments into vector
-         * of char const *, suitable for passing a into the execvp family
-         * of system calls
+         * @brief StringVectorToArgv turns a CommandArguments into a
+         * null-terminated vector of char const *, suitable for
+         * passing a into the execvp family of system calls
          * @param args a CommandArguments to turn into a const array
          * @return a const vector of strings, suitable for the execvp family
          * of system calls
@@ -54,65 +54,74 @@ namespace yiqi
         ArgvVector const StringVectorToArgv (CommandArguments const &args);
 
         /**
-         * @brief The Environment value represents a set of program environment
-         * variables, suitable for passing to execvpe ()
+         * @brief The NullTermArray represents an array of char const *
+         * which will always be terminated by a NULL
          */
-        class Environment
+        class NullTermArray
         {
             public:
 
-                Environment ();
-                ~Environment ();
+                NullTermArray ();
+                ~NullTermArray ();
 
                 /**
-                 * @brief Environment creates a representation of the passed
-                 * envp as an indepedent copy of those environment variables
+                 * @brief NullTermArray
                  * @pre envp must be NULL-terminated
                  * @pre envp may not be NULL
                  * @param envp a null-terminated pointer to a char const *
-                 * representing the environment to manipulate
+                 * representing the NullTermArray to manipulate
                  */
-                explicit Environment (char const * const *envp);
-                Environment (Environment const &);
-                Environment & operator= (Environment rhs);
+                explicit NullTermArray (char const * const *array);
+                NullTermArray (NullTermArray const &);
+                NullTermArray & operator= (NullTermArray rhs);
 
-                bool operator== (Environment const &rhs) const;
-                bool operator!= (Environment const &rhs) const;
+                bool operator== (NullTermArray const &rhs) const;
+                bool operator!= (NullTermArray const &rhs) const;
 
                 /**
-                 * @brief insert inserts a new variable value pair
-                 * @param variable
-                 * @param value
+                 * @brief append appends a new std::string const &value to the
+                 * end of the NullTermArray, just before the null-terminator. It
+                 * will also provide storage for value, so value can be a temporary.
                  * @throws std::out_of_memory if the underlying vector
-                 * cannot allocate space for the new variable-value pair
+                 * cannot allocate space for the new value
+                 * @param value the value to append
                  */
-                void insert (const char *variable,
-                             const char *value);
+                void append (std::string const &value);
 
                 /**
-                 * @brief underlyingEnvironmentArray
-                 * @return the underlying null-terminated list of environment
-                 * variables suitable for passing to execvpe ()
+                 * @brief underlyingArray
+                 * @return the underlying array of char const *
                  */
-                char const * const * underlyingEnvironmentArray () const;
+                char const * const * underlyingArray () const;
 
                 /**
-                 * @brief underlyingEnvironmentArrayLen
+                 * @brief underlyingArrayLen
                  * @return the number of elements in the underlying array
                  * including the null-terminator
                  */
-                size_t underlyingEnvironmentArrayLen () const;
+                size_t underlyingArrayLen () const;
 
                 class Private;
 
-                friend void swap (Environment &lhs, Environment &rhs);
+                friend void swap (NullTermArray &lhs, NullTermArray &rhs);
 
             private:
 
                 std::unique_ptr <Private> priv;
         };
 
-        void swap (Environment &lhs, Environment &rhs);
+        /**
+         * @brief InsertEnvironmentPair inserts a new key=value pair into
+         * the provided NullTermArray
+         * @param array a yiqi::commandline::NullTermArray
+         * @param key the KEY value
+         * @param value the value
+         */
+        void InsertEnvironmentPair (NullTermArray &array,
+                                    char const    *key,
+                                    char const    *value);
+
+        void swap (NullTermArray &lhs, NullTermArray &rhs);
     }
 }
 

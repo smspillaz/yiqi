@@ -30,6 +30,8 @@ namespace yiqi
                         SystemCalls ();
                         ~SystemCalls ();
 
+                        void IgnoreCalls ();
+
                         MOCK_CONST_METHOD1 (ExeExists,
                                             bool (std::string const &));
                         MOCK_CONST_METHOD3 (ExecInPlace,

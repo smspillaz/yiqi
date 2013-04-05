@@ -61,7 +61,6 @@ TEST_F (ExceptionCleanup, CleanupOnThrowIfNotCommit)
     try
     {
         yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding (), commit);
-        std::cout << "before end .." << std::endl;
     }
     catch (...)
     {

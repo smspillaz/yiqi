@@ -30,6 +30,8 @@ namespace yiqi
                         Tool ();
                         ~Tool ();
 
+                        void IgnoreCalls ();
+
                         MOCK_CONST_METHOD0 (InstrumentationWrapper,
                                             std::string const & ());
                         MOCK_CONST_METHOD0 (WrapperOptions,

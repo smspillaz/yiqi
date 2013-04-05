@@ -59,6 +59,8 @@ ycom::StringVectorToArgv (CommandArguments const &args)
     for (auto const &arg : args)
         argv.push_back (arg.c_str ());
 
+    argv.push_back (nullptr);
+
     return argv;
 }
 
@@ -66,12 +68,12 @@ namespace yiqi
 {
     namespace commandline
     {
-        class Environment::Private
+        class NullTermArray::Private
         {
             public:
 
                 Private ();
-                explicit Private (char const * const *envp);
+                explicit Private (char const * const *array);
                 Private (Private const &);
                 Private & operator= (Private rhs);
 
@@ -80,7 +82,7 @@ namespace yiqi
 
                 friend void swap (Private &lhs, Private &rhs);
 
-                std::vector <char const *> environment;
+                std::vector <char const *> vector;
                 std::vector <std::string>  storedNewStrings;
 
             private:
@@ -88,46 +90,46 @@ namespace yiqi
                 static size_t arrayLength (char const * const *);
         };
 
-        void swap (Environment::Private &lhs,
-                   Environment::Private &rhs);
+        void swap (NullTermArray::Private &lhs,
+                   NullTermArray::Private &rhs);
     }
 }
 
 size_t
-ycom::Environment::Private::arrayLength (char const * const *envp)
+ycom::NullTermArray::Private::arrayLength (char const * const *array)
 {
     size_t size = 0;
-    for (; envp[size] != NULL; ++size);
+    for (; array[size] != NULL; ++size);
     return size + 1;
 }
 
-ycom::Environment::Private::Private ()
+ycom::NullTermArray::Private::Private ()
 {
     /* Always start with a null-terminator */
-    environment.push_back (NULL);
+    vector.push_back (NULL);
 }
 
-ycom::Environment::Private::Private (char const * const *envp) :
-    environment (envp, envp + arrayLength (envp))
+ycom::NullTermArray::Private::Private (char const * const *array) :
+    vector (array, array + arrayLength (array))
 {
 }
 
-ycom::Environment::Private::Private (Private const &priv) :
-    environment (priv.environment)
+ycom::NullTermArray::Private::Private (Private const &priv) :
+    vector (priv.vector)
 {
 }
 
 void
-ycom::swap (Environment::Private &lhs,
-            Environment::Private &rhs)
+ycom::swap (NullTermArray::Private &lhs,
+            NullTermArray::Private &rhs)
 {
     using std::swap;
 
-    swap (lhs.environment, rhs.environment);
+    swap (lhs.vector, rhs.vector);
 }
 
-ycom::Environment::Private &
-ycom::Environment::Private::operator= (Private rhs)
+ycom::NullTermArray::Private &
+ycom::NullTermArray::Private::operator= (Private rhs)
 {
     using ycom::swap;
 
@@ -136,71 +138,67 @@ ycom::Environment::Private::operator= (Private rhs)
 }
 
 bool
-ycom::Environment::Private::operator== (Private const &rhs) const
+ycom::NullTermArray::Private::operator== (Private const &rhs) const
 {
-    return environment == rhs.environment;
+    return vector == rhs.vector;
 }
 
 bool
-ycom::Environment::Private::operator!= (Private const &rhs) const
+ycom::NullTermArray::Private::operator!= (Private const &rhs) const
 {
     return !(*this == rhs);
 }
 
-ycom::Environment::Environment () :
+ycom::NullTermArray::NullTermArray () :
     priv (new Private ())
 {
 }
 
-ycom::Environment::~Environment ()
+ycom::NullTermArray::~NullTermArray ()
 {
 }
 
-ycom::Environment::Environment (char const * const *envp) :
+ycom::NullTermArray::NullTermArray (char const * const *envp) :
     priv (new Private (envp))
 {
 }
 
-ycom::Environment::Environment (Environment const &env) :
+ycom::NullTermArray::NullTermArray (NullTermArray const &env) :
     priv (new Private (*env.priv))
 {
 }
 
 void
-ycom::swap (Environment &lhs, Environment &rhs)
+ycom::swap (NullTermArray &lhs, NullTermArray &rhs)
 {
     using std::swap;
     swap (*lhs.priv, *rhs.priv);
 }
 
-ycom::Environment &
-ycom::Environment::operator= (Environment rhs)
+ycom::NullTermArray &
+ycom::NullTermArray::operator= (NullTermArray rhs)
 {
     swap (*this, rhs);
     return *this;
 }
 
 bool
-ycom::Environment::operator== (Environment const &rhs) const
+ycom::NullTermArray::operator== (NullTermArray const &rhs) const
 {
-    Environment::Private const &pref = *priv;
-    Environment::Private const &rhsref = *rhs.priv;
+    NullTermArray::Private const &pref = *priv;
+    NullTermArray::Private const &rhsref = *rhs.priv;
     return pref == rhsref;
 }
 
 bool
-ycom::Environment::operator!= (Environment const &lhs) const
+ycom::NullTermArray::operator!= (NullTermArray const &lhs) const
 {
     return !(*this == lhs);
 }
 
 void
-ycom::Environment::insert (char const *variable,
-                           char const *value)
+ycom::NullTermArray::append (std::string const &value)
 {
-    std::string const KeyEqValue (std::string (variable) +
-                                  "=" +
-                                  std::string (value));
     bool commit = false;
     yu::ExceptionCleanup cleanup ([&] {
 
@@ -208,7 +206,7 @@ ycom::Environment::insert (char const *variable,
         auto storedNewStringsIterator =
             std::find (priv->storedNewStrings.begin (),
                        priv->storedNewStrings.end (),
-                       KeyEqValue);
+                       value);
 
         char const *storedStringPtr = nullptr;
 
@@ -225,21 +223,21 @@ ycom::Environment::insert (char const *variable,
         {
             /* If we have a stored string ptr, try and
              * find that and remove it too */
-            auto environmentIterator = std::find (priv->environment.begin (),
-                                                  priv->environment.end (),
-                                                  storedStringPtr);
+            auto arrayIterator = std::find (priv->vector.begin (),
+                                            priv->vector.end (),
+                                            storedStringPtr);
 
-            if (environmentIterator != priv->environment.end ())
-                priv->environment.erase (environmentIterator);
+            if (arrayIterator != priv->vector.end ())
+                priv->vector.erase (arrayIterator);
         }
     }, commit);
 
     /* Store a new string so that we can point to it
      * later */
-    priv->storedNewStrings.push_back (KeyEqValue);
+    priv->storedNewStrings.push_back (value);
 
     /* Should be null-terminator */
-    auto rit (priv->environment.rbegin ());
+    auto rit (priv->vector.rbegin ());
 
     assert (*rit == NULL);
 
@@ -250,19 +248,30 @@ ycom::Environment::insert (char const *variable,
     std::vector <char const *>::iterator it (rit.base ());
 
     /* insert the new keyEqValue before it */
-    priv->environment.insert (it, priv->storedNewStrings.back ().c_str ());
+    priv->vector.insert (it, priv->storedNewStrings.back ().c_str ());
 
     commit = true;
 }
 
-char const * const *
-ycom::Environment::underlyingEnvironmentArray () const
+void
+ycom::InsertEnvironmentPair (NullTermArray &array,
+                             char const    *key,
+                             char const    *value)
 {
-    return &(priv->environment[0]);
+    std::string const KeyEqValue (std::string (key) +
+                                  "=" +
+                                  std::string (value));
+    array.append (KeyEqValue);
+}
+
+char const * const *
+ycom::NullTermArray::underlyingArray () const
+{
+    return &(priv->vector[0]);
 }
 
 size_t
-ycom::Environment::underlyingEnvironmentArrayLen () const
+ycom::NullTermArray::underlyingArrayLen () const
 {
-    return priv->environment.size ();
+    return priv->vector.size ();
 }
