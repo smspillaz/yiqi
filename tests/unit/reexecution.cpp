@@ -723,11 +723,6 @@ TEST_F (Relaunch, VerifyCStyleExecutable)
                      syscalls);
 }
 
-namespace
-{
-
-}
-
 TEST_F (Relaunch, VerifyCStyleArguments)
 {
     using namespace std::placeholders;
