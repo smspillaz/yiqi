@@ -13,40 +13,11 @@
 
 namespace yconst = yiqi::constants;
 
-char const *
-yconst::ValgrindWrapper ()
-{
-    static char const *valgrind = "valgrind";
-    return valgrind;
-}
-
-char const *
-yconst::ValgrindToolOptionPrefix ()
-{
-    static char const *prefix = "--tool=";
-    return prefix;
-}
-
-char const *
-yconst::YiqiToolOption ()
-{
-    static char const *tool = "yiqi_tool";
-    return tool;
-}
-
-char const *
-yconst::YiqiToolEnvKey ()
-{
-    static char const *key = "__YIQI_INSTRUMENTATION_TOOL_ACTIVE";
-    return key;
-}
-
-char const *
-yconst::YiqiRunningUnderHeader ()
-{
-    static char const *header = "[YIQI] RUNNING UNDER INSTRUMENTATION: ";
-    return header;
-}
+char const * yconst::ValgrindWrapper = "valgrind";
+char const * yconst::ValgrindToolOptionPrefix = "--tool=";
+char const * yconst::YiqiToolOption = "yiqi_tool";
+char const * yconst::YiqiToolEnvKey = "__YIQI_INSTRUMENTATION_TOOL_ACTIVE";
+char const * yconst::YiqiRunningUnderHeader = "[YIQI] RUNNING UNDER INSTRUMENTATION: ";
 
 yconst::ToolsArray const & yconst::InstrumentationToolNames()
 {

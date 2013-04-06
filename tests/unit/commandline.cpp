@@ -93,7 +93,7 @@ TEST_F (BuildCommandLine, NoWrapperOrOptionsJustArgvReturnsArgvAt0)
                                        ytest::Arguments (originalArgs),
                                        *instrumentation));
 
-    Matcher <std::string> matchers[] = { StrEq (ytest::MockProgramName ()) };
+    Matcher <std::string> matchers[] = { StrEq (ytest::MockProgramName) };
 
     EXPECT_THAT (args,
                  ElementsAreArray (matchers));
@@ -116,7 +116,7 @@ TEST_F (BuildCommandLine, ReturnWrapperAndOptions)
     {
         StrEq (MockWrapper),
         StrEq (MockOptions),
-        StrEq (ytest::MockProgramName ())
+	StrEq (ytest::MockProgramName)
     };
 
     EXPECT_THAT (args,

@@ -29,7 +29,7 @@ yc::FetchOptionsDescription ()
 {
     po::options_description description ("Options");
     description.add_options ()
-        (yconst::YiqiToolOption (),
+	(yconst::YiqiToolOption,
          po::value <std::string> ()->default_value (GetNoneString ()),
          "Tool");
 
@@ -48,8 +48,8 @@ yc::ParseOptionsForTool(int                argc,
                variableMap);
     po::notify (variableMap);
 
-    if (variableMap.count (yconst::YiqiToolOption ()))
-        return variableMap[yconst::YiqiToolOption ()].as <std::string> ();
+    if (variableMap.count (yconst::YiqiToolOption))
+	return variableMap[yconst::YiqiToolOption].as <std::string> ();
 
     return GetNoneString ();
 }

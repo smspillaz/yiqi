@@ -305,7 +305,7 @@ namespace
     std::string const passthroughTool (
         yconst::StringFromTool (yconst::InstrumentationTool::Passthrough));
     std::string const dashdashYiqiToolOption (
-        std::string ("--") + yconst::YiqiToolOption ());
+	std::string ("--") + yconst::YiqiToolOption);
 }
 
 
@@ -354,7 +354,7 @@ TEST_F (DirectlyExecuteSimpleTest, ExecuteWithToolArgsRunningUnderMsg)
     EXPECT_THAT (output,
                  Contains (
                      AllOf (
-                         HasSubstr (yconst::YiqiRunningUnderHeader ()),
+			 HasSubstr (yconst::YiqiRunningUnderHeader),
                          HasSubstr (passthroughTool))));
 }
 

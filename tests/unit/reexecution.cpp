@@ -242,7 +242,7 @@ TEST_F (GetArgvForTool, SecondArgvIsProgramName)
                                                   ytest::Arguments (args)));
 
     ASSERT_EQ (argv.underlyingArrayLen (), 3); // 2 + null-term
-    EXPECT_THAT (argv.underlyingArray ()[1], StrEq (ytest::MockProgramName ()));
+    EXPECT_THAT (argv.underlyingArray ()[1], StrEq (ytest::MockProgramName));
 }
 
 TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
@@ -366,7 +366,7 @@ TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
         else if (i < (arrayLen - 1))
         {
             std::stringstream ss;
-            ss << yconst::YiqiToolEnvKey ()
+	    ss << yconst::YiqiToolEnvKey
                << "="
                << ytestrexec::MockInstrumentation;
             matchers.push_back (StrEq (ss.str ()));

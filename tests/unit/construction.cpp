@@ -46,7 +46,7 @@ namespace
     /* Constants */
     static std::string const MockTool ("mock");
     static std::string const ArgYiqiToolOption (std::string ("--") +
-                                                yconst::YiqiToolOption ());
+						yconst::YiqiToolOption);
 
     std::vector <std::string> const SampleCommandArguments =
     {
@@ -121,7 +121,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
     std::vector <Matcher <char const *> > matchers;
-    MatchAnythingFor (ytest::MockProgramName (), matchers);
+    MatchAnythingFor (ytest::MockProgramName, matchers);
 
     for (std::string const &str : SampleCommandArguments)
         MatchExact (str, matchers);
@@ -144,7 +144,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasFirstArgAsMockProgramName
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
     std::vector <Matcher <char const *> > matchers;
-    MatchExact (ytest::MockProgramName (), matchers);
+    MatchExact (ytest::MockProgramName, matchers);
 
     for (std::string const &str : SampleCommandArguments)
         MatchAnythingFor (str, matchers);

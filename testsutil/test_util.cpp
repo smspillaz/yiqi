@@ -10,6 +10,8 @@
 
 namespace ytest = yiqi::testing;
 
+char const *ytest::MockProgramName = "mock_program_name";
+
 int
 ytest::ArgumentCount (CommandLineArguments const &args)
 {
@@ -22,19 +24,12 @@ ytest::Arguments (CommandLineArguments const &args)
     return &(std::get <1> (args))[0];
 }
 
-std::string const &
-ytest::MockProgramName ()
-{
-    static std::string const & name ("mock_program_name");
-    return name;
-}
-
 ytest::CommandLineArguments
 ytest::GenerateCommandLine (std::vector<std::string> const &arguments)
 {
     std::vector <const char *> charArguments;
 
-    charArguments.push_back (MockProgramName ().c_str ());
+    charArguments.push_back (MockProgramName);
 
     for (std::string const &str : arguments)
         charArguments.push_back (str.c_str ());

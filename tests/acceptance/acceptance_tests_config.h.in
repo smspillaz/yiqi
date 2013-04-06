@@ -25,5 +25,4 @@ namespace yiqi
     }
 }
 
-
 #endif // YIQI_ACCEPTANCE_TESTS_CONFIG_H

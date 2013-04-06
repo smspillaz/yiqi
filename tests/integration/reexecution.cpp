@@ -194,7 +194,7 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightArgv)
     {
         StrEq (ytestrexec::MockInstrumentation),
         StrEq (ytestrexec::MockArgument),
-        StrEq (ytest::MockProgramName ()),
+	StrEq (ytest::MockProgramName),
         IsNull ()
     };
 
@@ -226,7 +226,7 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightEnvp)
 
     ycom::NullTermArray ExpectedExecEnv (ytestrexec::ProvidedEnvironment);
     ycom::InsertEnvironmentPair (ExpectedExecEnv,
-                                 yconst::YiqiToolEnvKey (),
+				 yconst::YiqiToolEnvKey,
                                  ytestrexec::MockInstrumentation.c_str ());
 
     auto ExpectedEnvp (ExpectedExecEnv.underlyingArray ());

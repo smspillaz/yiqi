@@ -60,11 +60,11 @@ int main (int argc, char **argv)
     ::testing::InitGoogleTest (&argc, argv);
     ::testing::AddGlobalTestEnvironment(new YiqiEnvironment);
 
-    char const *activeTool = getenv (yconst::YiqiToolEnvKey ());
+    char const *activeTool = getenv (yconst::YiqiToolEnvKey);
 
     if (activeTool)
     {
-        std::cout << yconst::YiqiRunningUnderHeader ()
+	std::cout << yconst::YiqiRunningUnderHeader
                   << std::string (activeTool)
                   << std::endl;
     }

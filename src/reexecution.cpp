@@ -123,7 +123,7 @@ yexec::GetToolEnv (Tool const        &tool,
 
     if (!name.empty ())
         ycom::InsertEnvironmentPair (environment,
-                                     yconst::YiqiToolEnvKey (),
+				     yconst::YiqiToolEnvKey,
                                      name.c_str ());
     else
         throw std::logic_error ("provided tool with no InstrumentationName");
