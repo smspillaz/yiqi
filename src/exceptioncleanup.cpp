@@ -12,11 +12,16 @@
 
 namespace yu = yiqi::util;
 
-yu::ExceptionCleanup::ExceptionCleanup (Func const &func,
-                                        bool       &commit) :
+yu::ExceptionCleanup::ExceptionCleanup (Func const &func) :
     mFunc (func),
-    mCommit (commit)
+    mCommit (false)
 {
+}
+
+void
+yu::ExceptionCleanup::commit ()
+{
+    mCommit = true;
 }
 
 yu::ExceptionCleanup::~ExceptionCleanup ()

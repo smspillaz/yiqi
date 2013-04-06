@@ -46,21 +46,20 @@ class ExceptionCleanup :
 
 TEST_F (ExceptionCleanup, NoThrowNoCleanup)
 {
-    bool commit = true;
-    yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding (), commit);
+    yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
+    cleanup.commit ();
 
     EXPECT_CALL (verifier, Cleanup ()).Times (0);
 }
 
 TEST_F (ExceptionCleanup, CleanupOnThrowIfNotCommit)
 {
-    bool commit = false;
-
     EXPECT_CALL (verifier, Cleanup ()).Times (1);
 
     try
     {
-        yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding (), commit);
+	yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
+	throw std::exception ();
     }
     catch (...)
     {
@@ -69,14 +68,12 @@ TEST_F (ExceptionCleanup, CleanupOnThrowIfNotCommit)
 
 TEST_F (ExceptionCleanup, NoCleanupOnThrowIfCommit)
 {
-    bool commit = false;
-
     EXPECT_CALL (verifier, Cleanup ()).Times (0);
 
     try
     {
-        yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding (), commit);
-        commit = true;
+	yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
+	cleanup.commit ();
         throw std::exception ();
     }
     catch (...)

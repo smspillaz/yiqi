@@ -333,11 +333,10 @@ ycom::NullTermArray::eraseAppended (StringVector const &values)
 void
 ycom::NullTermArray::append (std::vector <std::string> const &vec)
 {
-    bool commit = false;
     auto cleanupFunc = std::bind (&ycom::NullTermArray::eraseAppended,
                                   this,
                                   vec);
-    yu::ExceptionCleanup cleanup (cleanupFunc, commit);
+    yu::ExceptionCleanup cleanup (cleanupFunc);
 
     /* Reserve some more space */
     size_t oldLength = priv->storedNewStrings.size ();
@@ -364,7 +363,7 @@ ycom::NullTermArray::append (std::vector <std::string> const &vec)
                              it->c_str ());
     }
 
-    commit = true;
+    cleanup.commit ();
 }
 
 void
