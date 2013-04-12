@@ -116,7 +116,7 @@ TEST_F (BuildCommandLine, ReturnWrapperAndOptions)
     {
         StrEq (MockWrapper),
         StrEq (MockOptions),
-	StrEq (ytest::MockProgramName)
+    StrEq (ytest::MockProgramName)
     };
 
     EXPECT_THAT (args,

@@ -46,7 +46,7 @@ namespace
     /* Constants */
     static std::string const MockTool ("mock");
     static std::string const ArgYiqiToolOption (std::string ("--") +
-						yconst::YiqiToolOption);
+                                                yconst::YiqiToolOption);
 
     std::vector <std::string> const SampleCommandArguments =
     {

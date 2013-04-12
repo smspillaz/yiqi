@@ -366,7 +366,7 @@ TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
         else if (i < (arrayLen - 1))
         {
             std::stringstream ss;
-	    ss << yconst::YiqiToolEnvKey
+            ss << yconst::YiqiToolEnvKey
                << "="
                << ytestrexec::MockInstrumentation;
             matchers.push_back (StrEq (ss.str ()));

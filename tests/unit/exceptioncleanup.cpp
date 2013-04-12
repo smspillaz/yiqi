@@ -58,8 +58,8 @@ TEST_F (ExceptionCleanup, CleanupOnThrowIfNotCommit)
 
     try
     {
-	yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
-	throw std::exception ();
+        yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
+        throw std::exception ();
     }
     catch (...)
     {
@@ -72,13 +72,11 @@ TEST_F (ExceptionCleanup, NoCleanupOnThrowIfCommit)
 
     try
     {
-	yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
-	cleanup.commit ();
+        yu::ExceptionCleanup cleanup (verifier.CleanupFuncBinding ());
+        cleanup.commit ();
         throw std::exception ();
     }
     catch (...)
     {
     }
 }
-
-
