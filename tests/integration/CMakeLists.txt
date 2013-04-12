@@ -20,6 +20,12 @@ set (YIQI_INTEGRATION_TESTS_SRCS
 add_executable (${YIQI_INTEGRATION_TESTS_BINARY}
                 ${YIQI_INTEGRATION_TESTS_SRCS})
 
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${YIQI_INTEGRATION_TESTS_BINARY}
+                                               WARN_ONLY)
+
 target_link_libraries (${YIQI_INTEGRATION_TESTS_BINARY}
                        ${YIQI_LIBRARY}
                        ${YIQI_MOCKS_LIBRARY}

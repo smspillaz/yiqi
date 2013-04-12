@@ -53,14 +53,20 @@ include_directories (${YIQI_PASSTHROUGH_EXEC_SOURCE_DIRECTORY}
                      ${YIQI_EXTERNAL_INCLUDE_DIRS}
                      ${CMAKE_CURRENT_BINARY_DIR})
 
-set (YIQI_ACCEPTANCE_TESTS yiqi_acceptance_tests)
+set (YIQI_ACCEPTANCE_TESTS_BINARY yiqi_acceptance_tests)
 set (YIQI_ACCEPTANCE_TESTS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecute_through_passthrough.cpp)
 
-add_executable (${YIQI_ACCEPTANCE_TESTS}
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${YIQI_ACCEPTANCE_TESTS_BINARY}
+                                               WARN_ONLY)
+
+add_executable (${YIQI_ACCEPTANCE_TESTS_BINARY}
                 ${YIQI_ACCEPTANCE_TESTS_SRCS})
 
-target_link_libraries (${YIQI_ACCEPTANCE_TESTS}
+target_link_libraries (${YIQI_ACCEPTANCE_TESTS_BINARY}
                        ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY}
                        ${YIQI_LIBRARY}
                        ${YIQI_MOCKS_LIBRARY}

@@ -13,6 +13,12 @@ set (YIQI_MAIN_SRCS
 add_library (${YIQI_MAIN_LIBRARY} STATIC
              ${YIQI_MAIN_SRCS})
 
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${YIQI_MAIN_LIBRARY}
+                                               WARN_ONLY)
+
 set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
@@ -35,3 +41,9 @@ add_library (${YIQI_LIBRARY} STATIC
 
 target_link_libraries (${YIQI_LIBRARY}
                        ${YIQI_EXTERNAL_LIBRARIES})
+
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${YIQI_LIBRARY}
+                                               WARN_ONLY)

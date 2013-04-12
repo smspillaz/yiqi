@@ -8,11 +8,6 @@ set (YIQI_SIMPLE_TEST_SRCS
 add_executable (${YIQI_SIMPLE_TEST_EXEC}
                 ${YIQI_SIMPLE_TEST_SRCS})
 
-message (${YIQI_SIMPLE_TEST_EXEC}
-                       ${YIQI_MAIN_LIBRARY}
-                       ${YIQI_LIBRARY}
-                       ${GTEST_LIBRARY})
-
 target_link_libraries (${YIQI_SIMPLE_TEST_EXEC}
                        ${YIQI_MAIN_LIBRARY}
                        ${YIQI_LIBRARY}
