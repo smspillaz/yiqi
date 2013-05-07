@@ -383,7 +383,7 @@ namespace
     std::string const passthroughTool (
         yconst::StringFromTool (yconst::InstrumentationTool::Passthrough));
     std::string const dashdashYiqiToolOption (
-	std::string ("--") + yconst::YiqiToolOption);
+        std::string ("--") + yconst::YiqiToolOption);
 }
 
 
