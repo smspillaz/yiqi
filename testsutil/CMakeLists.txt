@@ -17,3 +17,9 @@ target_link_libraries (${YIQI_TESTS_UTIL_LIBRARY}
                        ${GTEST_LIBRARY}
                        ${GMOCK_LIBRARY}
                        ${GMOCK_MAIN_LIBRARY})
+
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${YIQI_TESTS_UTIL_LIBRARY}
+                                               ERROR)

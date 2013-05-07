@@ -8,13 +8,21 @@ project (YiqiInstrumentation)
 
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
-include (FindPkgConfig)
+# Search the following directories as well as
+# the global cmake directories for new modules
+set (YIQI_CMAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set (YIQI_VERAPP_CMAKE_DIRECTORY ${YIQI_CMAKE_DIRECTORY}/Vera++)
+set (CMAKE_MODULE_PATH
+     ${YIQI_VERAPP_CMAKE_DIRECTORY} ${CMAKE_MODULE_PATH})
 
 set (Boost_USE_STATIC_LIBS ON)
 
-pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
 find_package (Boost 1.49 COMPONENTS program_options iostreams)
 find_package (GTest QUIET)
+find_package (VeraPP REQUIRED)
+
+include (FindPkgConfig)
+pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
 
 if (NOT GTEST_FOUND)
 
@@ -60,6 +68,32 @@ find_library (GMOCK_MAIN_LIBRARY gmock_main)
 if (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
     message (SEND_ERROR "Google Test is required to build Yiqi")
 endif (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
+
+# Set up Vera++
+set (YIQI_VERAPP_OUTPUT_DIRECTORY
+     ${CMAKE_CURRENT_BINARY_DIR}/vera++)
+set (YIQI_VERAPP_SCRIPTS_OUTPUT_DIRECTORY
+     ${YIQI_VERAPP_OUTPUT_DIRECTORY}/scripts)
+set (YIQI_VERAPP_RULES_OUTPUT_DIRECTORY
+     ${YIQI_VERAPP_SCRIPTS_OUTPUT_DIRECTORY}/rules)
+set (YIQI_VERAPP_PROFILES_OUTPUT_DIRECTORY
+     ${YIQI_VERAPP_OUTPUT_DIRECTORY}/profiles)
+set (YIQI_VERAPP_SOURCE_DIRECTORY
+     ${CMAKE_CURRENT_SOURCE_DIR}/tools/vera++)
+set (YIQI_VERAPP_SCRIPTS_SOURCE_DIRECTORY
+    ${YIQI_VERAPP_SOURCE_DIRECTORY}/scripts)
+set (YIQI_VERAPP_RULES_SOURCE_DIRECTORY
+    ${YIQI_VERAPP_SCRIPTS_SOURCE_DIRECTORY}/rules/)
+set (YIQI_VERAPP_PROFILES_SOURCE_DIRECTORY
+    ${YIQI_VERAPP_SOURCE_DIRECTORY}/profiles/)
+
+set (YIQI_VERAPP_PROFILE yiqi)
+
+set (YIQI_VERAPP_IMPORT_RULES yiqi_verapp_import_rules)
+
+include (${YIQI_CMAKE_DIRECTORY}/VeraPPTargets.cmake)
+
+add_subdirectory (${YIQI_VERAPP_CMAKE_DIRECTORY})
 
 # -fPIC, -Wall and -Werror are mandatory
 set (COMPILER_FLAGS "-fPIC -Wall -Werror")

@@ -40,9 +40,9 @@ namespace yiqi
         char const * const * Arguments (CommandLineArguments const &args);
 
         /**
-	 * @brief MockProgramName the program name used by GenerateCommandLine
+     * @brief MockProgramName the program name used by GenerateCommandLine
          */
-	extern char const *MockProgramName;
+    extern char const *MockProgramName;
 
         /**
          * @brief GenerateCommandLine

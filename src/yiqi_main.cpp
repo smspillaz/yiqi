@@ -64,7 +64,7 @@ int main (int argc, char **argv)
 
     if (activeTool)
     {
-	std::cout << yconst::YiqiRunningUnderHeader
+    std::cout << yconst::YiqiRunningUnderHeader
                   << std::string (activeTool)
                   << std::endl;
     }

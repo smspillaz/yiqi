@@ -45,9 +45,10 @@ yconst::StringFromTool (InstrumentationTool toolValue)
     static std::once_flag  populateOnceFlag;
 
     std::call_once (populateOnceFlag, [&]() {
-        for (auto const &tool : yconst::InstrumentationToolNames ())
-            toolToStringMap[tool.tool] = tool.name;
-    });
+                        for (auto const &tool :
+                             yconst::InstrumentationToolNames ())
+                            toolToStringMap[tool.tool] = tool.name;
+                    });
 
     return toolToStringMap[toolValue];
 
@@ -62,9 +63,10 @@ yconst::ToolFromString (const std::string &str)
     static std::once_flag  populateOnceFlag;
 
     std::call_once (populateOnceFlag, [&]() {
-        for (auto const &tool : yconst::InstrumentationToolNames ())
-            stringToToolMap[tool.name] = tool.tool;
-    });
+                        for (auto const &tool :
+                             yconst::InstrumentationToolNames ())
+                            stringToToolMap[tool.name] = tool.tool;
+                    });
 
     return stringToToolMap[str];
 }
