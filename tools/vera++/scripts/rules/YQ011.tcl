@@ -10,6 +10,7 @@ proc acceptPairs {} {
 
         set line [lindex $nextToken 1]
 
+        set processingIndex $index
         incr index
 
         # Initially set vitiatingLine and vitiatingColumn
@@ -22,9 +23,48 @@ proc acceptPairs {} {
             set vitiatingLine [lindex $nextToken 1]
             set vitiatingColumn [lindex $nextToken 2]
             continue
-        } elseif {$tokenValue == "\["} {
+        } elseif {$tokenValue == "EXPECT_NO_THROW"} {
             set vitiatingLine [lindex $nextToken 1]
             set vitiatingColumn [lindex $nextToken 2]
+            continue
+        } elseif {$tokenValue == "\["} {
+
+            # If we hit a lambda declaration, we need
+            # to go back to either the first (
+            # of that line or the first token
+            # of that line and use that as the column
+            set vitiatingLine [lindex $nextToken 1]
+            set currentIndexOnLine $processingIndex
+            set evaluatingIndex $currentIndexOnLine
+
+            while {"true"} {
+                set previousIndex [expr {$evaluatingIndex - 1}]
+                set previousToken [lindex $parens $previousIndex]
+                set previousLine [lindex $previousToken 1]
+                set previousValue [lindex $previousToken 0]
+                set previousType [lindex $previousToken 3]
+
+                # Always decrement evaluatingIndex
+                set evaluatingIndex $previousIndex
+
+                if {$previousLine != $vitiatingLine} {
+                    break;
+                } elseif {$previousType == "space"} {
+                    # Ignore spaces
+                    continue;
+                } elseif {$previousType == "newline"} {
+                    break;
+                } elseif {$previousValue == "\("} {
+                    break;
+                }
+
+                # The is the index we actually want to revert
+                # back to later
+                set currentIndexOnLine $evaluatingIndex
+            }
+
+            set currentTokenOnLine [lindex $parens $currentIndexOnLine]
+            set vitiatingColumn [lindex $currentTokenOnLine 2]
             continue
         }
 

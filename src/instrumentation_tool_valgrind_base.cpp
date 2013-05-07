@@ -31,10 +31,10 @@ yitv::ToolBase::WrapperOptions () const
     static std::once_flag    fillStringStreamOnce;
 
     std::call_once (fillStringStreamOnce, [&]() {
-        ss << yconst::ValgrindToolOptionPrefix
-           << yconst::StringFromTool (ToolIdentifier ())
-           << ToolAdditionalOptions ();
-    });
+                        ss << yconst::ValgrindToolOptionPrefix
+                           << yconst::StringFromTool (ToolIdentifier ())
+                           << ToolAdditionalOptions ();
+                    });
 
     static std::string const options (ss.str ());
     return options;
