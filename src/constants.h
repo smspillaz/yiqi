@@ -17,34 +17,34 @@ namespace yiqi
     namespace constants
     {
         /**
-	 * @brief ValgrindWrapperthe binary name for valgrind
+         * @brief ValgrindWrapperthe binary name for valgrind
          */
-	extern char const * ValgrindWrapper;
+        extern char const * ValgrindWrapper;
 
         /**
-	 * @brief ValgrindToolOption the prefix for specifying a valgrind tool
+         * @brief ValgrindToolOption the prefix for specifying a valgrind tool
          */
-	extern char const * ValgrindToolOptionPrefix;
+        extern char const * ValgrindToolOptionPrefix;
 
         /**
-	 * @brief YiqiToolEnvKey the key value (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
-	 * for the instrumented-process environment)
+         * @brief YiqiToolEnvKey the key value (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
+         * for the instrumented-process environment)
          */
-	extern char const * YiqiToolEnvKey;
+        extern char const * YiqiToolEnvKey;
 
         /**
-	 * @brief YiqiRunningUnderHeader message header when detected to be running under an
-	 * instrumentation tool (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
-	 * is set)
+         * @brief YiqiRunningUnderHeader message header when detected to be running under an
+         * instrumentation tool (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
+         * is set)
          */
-	extern char const * YiqiRunningUnderHeader;
+        extern char const * YiqiRunningUnderHeader;
 
 
         /**
-	 * @brief YiqiToolOption the current string describing how to specify
-	 * the instrumentation tool on the command line
+         * @brief YiqiToolOption the current string describing how to specify
+         * the instrumentation tool on the command line
          */
-	extern char const * YiqiToolOption;
+        extern char const * YiqiToolOption;
 
         /**
          * @brief The InstrumentationTools enum lists

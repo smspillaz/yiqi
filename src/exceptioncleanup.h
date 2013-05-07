@@ -14,19 +14,19 @@ namespace yiqi
     namespace util
     {
         /**
-        * @brief The ExceptionCleanup class provides a method to guaruntee
-	* cleanup of a function if an exception is thrown the commit () member
-	* is called
-        */
+         * @brief The ExceptionCleanup class provides a method to guaruntee
+         * cleanup of a function if an exception is thrown the commit () member
+         * is called
+         */
         class ExceptionCleanup
         {
             public:
 
                 typedef std::function <void ()> Func;
-		ExceptionCleanup (Func const &func);
+                ExceptionCleanup (Func const &func);
                 ~ExceptionCleanup ();
 
-		void commit ();
+                void commit ();
 
             private:
 
@@ -34,7 +34,7 @@ namespace yiqi
                 ExceptionCleanup & operator= (ExceptionCleanup const &) = delete;
 
                 Func mFunc;
-		bool mCommit;
+                bool mCommit;
         };
     }
 }
