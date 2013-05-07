@@ -126,7 +126,6 @@ namespace
 
             RedirectedFileDescriptor (int from,
                                       int &to) :
-                mFromFd (from),
                 mToFd (to)
             {
                 /* Make 'to' take the old file descriptor's place */
@@ -146,8 +145,7 @@ namespace
 
         private:
 
-        int mFromFd;
-        int &mToFd;
+            int &mToFd;
     };
 
     pid_t launchBinary (std::string const  &executable,
