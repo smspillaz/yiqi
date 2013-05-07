@@ -17,7 +17,7 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${YIQI_MAIN_LIBRARY}
-                                               WARN_ONLY)
+                                               ERROR)
 
 set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
@@ -46,4 +46,4 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${YIQI_LIBRARY}
-                                               WARN_ONLY)
+                                               ERROR)
