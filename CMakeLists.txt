@@ -17,7 +17,7 @@ set (CMAKE_MODULE_PATH
 
 set (Boost_USE_STATIC_LIBS ON)
 
-find_package (Boost 1.49 COMPONENTS program_options iostreams)
+find_package (Boost 1.46 COMPONENTS program_options iostreams)
 find_package (GTest QUIET)
 find_package (VeraPP REQUIRED)
 
@@ -97,7 +97,7 @@ add_subdirectory (${YIQI_VERAPP_CMAKE_DIRECTORY})
 
 # -fPIC, -Wall and -Werror are mandatory
 set (COMPILER_FLAGS "-fPIC -Wall -Werror")
-set (CXX_CXX11_FLAGS "-std=c++11")
+set (CXX_CXX11_FLAGS "-std=c++0x")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMPILER_FLAGS} ${CXX_CXX11_FLAGS}")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMPILER_FLAGS}")
 
