@@ -39,7 +39,7 @@ namespace
     {
         public:
 
-            virtual ~YiqiEnvironment () = default;
+            virtual ~YiqiEnvironment () {};
             virtual void SetUp ();
             virtual void TearDown ();
     };
