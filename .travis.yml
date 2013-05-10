@@ -3,9 +3,8 @@ compiler:
   - gcc
   - clang
 before_install:
+  - git submodule update --init --recursive
   - sudo apt-add-repository -y ppa:smspillaz/verapp-latest
   - sudo apt-get update -qq
-  - sudo apt-get install -qq libboost-iostreams-dev libboost-program-options-dev libboost-dev libgtest-dev google-mock valgrind vera++
-  - git submodule init
-  - git submodule update
+  - sudo apt-get install -qq `cat DEPENDENCIES`
 script: mkdir build && cd build && cmake .. && make && cd tests && ./unit/yiqi_unit_tests && ./integration/yiqi_integration_tests && ./acceptance/yiqi_acceptance_tests

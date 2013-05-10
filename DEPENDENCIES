@@ -1,0 +1,7 @@
+libboost-iostreams-dev
+libboost-program-options-dev
+libboost-dev
+libgtest-dev
+google-mock
+valgrind
+vera++
