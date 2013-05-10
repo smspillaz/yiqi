@@ -23,7 +23,6 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/exceptioncleanup.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool_valgrind_base.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
