@@ -75,6 +75,7 @@ namespace yiqi
                  */
                 explicit NullTermArray (char const * const *array);
                 NullTermArray (NullTermArray const &);
+                NullTermArray (NullTermArray &&);
                 NullTermArray & operator= (NullTermArray rhs);
 
                 bool operator== (NullTermArray const &rhs) const;

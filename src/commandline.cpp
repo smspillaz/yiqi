@@ -171,6 +171,11 @@ ycom::NullTermArray::NullTermArray (NullTermArray const &env) :
 {
 }
 
+ycom::NullTermArray::NullTermArray (NullTermArray &&env) :
+    priv (std::move (env.priv))
+{
+}
+
 void
 ycom::swap (NullTermArray &lhs, NullTermArray &rhs)
 {
@@ -188,6 +193,10 @@ ycom::NullTermArray::operator= (NullTermArray rhs)
 bool
 ycom::NullTermArray::operator== (NullTermArray const &rhs) const
 {
+    /* Either is null */
+    if ((!priv && rhs.priv) || (priv && !rhs.priv))
+        return false;
+
     NullTermArray::Private const &pref = *priv;
     NullTermArray::Private const &rhsref = *rhs.priv;
     return pref == rhsref;
