@@ -21,7 +21,7 @@ namespace yitv = yiqi::instrumentation::tools::valgrind;
 namespace
 {
     class CachegrindTool :
-            public yitv::ToolBase
+        public yitv::ToolBase
     {
         private:
 
