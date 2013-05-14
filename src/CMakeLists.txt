@@ -21,9 +21,13 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
 
 set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/commandline.h
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/construction.h
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
      ${CMAKE_CURRENT_SOURCE_DIR}/exceptioncleanup.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool.h
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool_valgrind_base.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
@@ -33,7 +37,11 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_cachegrind.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_passthrough.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.h
      ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_api.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_implementation.h
      ${CMAKE_CURRENT_SOURCE_DIR}/system_unix.cpp)
 
 add_library (${YIQI_LIBRARY} STATIC

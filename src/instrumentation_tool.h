@@ -19,63 +19,63 @@ namespace yiqi
 {
     namespace instrumentation
     {
-	namespace tools
-	{
-	    /**
-	     * @brief An interface which describes some of the construction
-	     * parameters for the environment, including how the program should
-	     * be instrumented and also some details on callbacks into that
-	     * instrumentation.
-	     *
-	     * An instance of this interface is usually constructed by
-	     * ParseOptionsToParameters()
-	     */
-	    class Tool
-	    {
-		public:
+        namespace tools
+        {
+            /**
+             * @brief An interface which describes some of the construction
+             * parameters for the environment, including how the program should
+             * be instrumented and also some details on callbacks into that
+             * instrumentation.
+             *
+             * An instance of this interface is usually constructed by
+             * ParseOptionsToParameters()
+             */
+            class Tool
+            {
+                public:
 
-		    typedef std::unique_ptr <Tool> Unique;
-		    typedef yiqi::constants::InstrumentationTool ToolID;
+                    typedef std::unique_ptr <Tool> Unique;
+                    typedef yiqi::constants::InstrumentationTool ToolID;
 
-		    virtual ~Tool () {};
+                    virtual ~Tool () {};
 
-		    /**
-		     * @brief InstrumentationWrapper
-		     * @return The wrapper program used for instrumentation
-		     */
-		    virtual std::string const & InstrumentationWrapper () const = 0;
+                    /**
+                     * @brief InstrumentationWrapper
+                     * @return The wrapper program used for instrumentation
+                     */
+                    virtual std::string const & InstrumentationWrapper () const = 0;
 
-		    /**
-		     * @brief InstrumentationName
-		     * @return The name of the instrumentation that we are
-		     * running under, which may be a specific tool of the
-		     * instrumentation wrapper
-		     */
-		    virtual std::string const & InstrumentationName () const = 0;
+                    /**
+                     * @brief InstrumentationName
+                     * @return The name of the instrumentation that we are
+                     * running under, which may be a specific tool of the
+                     * instrumentation wrapper
+                     */
+                    virtual std::string const & InstrumentationName () const = 0;
 
-		    /**
-		     * @brief WrapperOptions
-		     * @return Options to pass to that wrapper
-		     */
-		    virtual std::string const & WrapperOptions () const = 0;
+                    /**
+                     * @brief WrapperOptions
+                     * @return Options to pass to that wrapper
+                     */
+                    virtual std::string const & WrapperOptions () const = 0;
 
-		    /**
-		     * @brief ToolIdentifier
-		     * @return Fetches an identifier for the current tool
-		     */
-		    virtual ToolID ToolIdentifier () const = 0;
+                    /**
+                     * @brief ToolIdentifier
+                     * @return Fetches an identifier for the current tool
+                     */
+                    virtual ToolID ToolIdentifier () const = 0;
 
-		protected:
+                protected:
 
-		    Tool () = default;
+                    Tool () = default;
 
-		private:
+                private:
 
-		    Tool (Tool const &) = delete;
-		    Tool & operator=(Tool const &) = delete;
-	    };
+                    Tool (Tool const &) = delete;
+                    Tool & operator=(Tool const &) = delete;
+            };
 
-	}
+        }
     }
 }
 

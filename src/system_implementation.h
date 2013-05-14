@@ -15,13 +15,13 @@ namespace yiqi
 {
     namespace system
     {
-	namespace api
-	{
-	    class SystemCalls;
-	    typedef std::unique_ptr <SystemCalls> SystemCallsUnique;
+        namespace api
+        {
+            class SystemCalls;
+            typedef std::unique_ptr <SystemCalls> SystemCallsUnique;
 
-	    SystemCallsUnique MakeUNIXSystemCalls ();
-	}
+            SystemCallsUnique MakeUNIXSystemCalls ();
+        }
     }
 }
 
