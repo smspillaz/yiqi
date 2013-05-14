@@ -21,7 +21,7 @@ namespace yitv = yiqi::instrumentation::tools::valgrind;
 namespace
 {
     class CallgrindTool :
-            public yitv::ToolBase
+        public yitv::ToolBase
     {
         private:
 
