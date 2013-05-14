@@ -48,8 +48,7 @@ namespace ytp = yiqi::testing::passthrough;
 
 namespace
 {
-    class Pipe :
-        boost::noncopyable
+    class Pipe
     {
         public:
 
@@ -86,10 +85,12 @@ namespace
         private:
 
             int mPipe[2];
+
+            Pipe (Pipe const &) = delete;
+            Pipe & operator= (Pipe const &) = delete;
     };
 
-    class FileDescriptorBackup :
-        boost::noncopyable
+    class FileDescriptorBackup
     {
         public:
 
@@ -117,14 +118,19 @@ namespace
 
             int mOriginalFd;
             int mBackupFd;
+
+            FileDescriptorBackup (FileDescriptorBackup const &) = delete;
+
+            FileDescriptorBackup &
+            operator= (FileDescriptorBackup const &) = delete;
+
     };
 
-    class RedirectedFileDescriptor :
-        boost::noncopyable
+    class RedirectedDescriptor
     {
         public:
 
-            RedirectedFileDescriptor (int from,
+            RedirectedDescriptor (int from,
                                       int &to) :
                 mToFd (to)
             {
@@ -133,7 +139,7 @@ namespace
                     throw std::runtime_error (strerror (errno));
             }
 
-            ~RedirectedFileDescriptor ()
+            ~RedirectedDescriptor ()
             {
                 if (mToFd &&
                     close (mToFd) == -1)
@@ -146,6 +152,11 @@ namespace
         private:
 
             int &mToFd;
+
+            RedirectedDescriptor (RedirectedDescriptor const &) = delete;
+
+            RedirectedDescriptor &
+            operator= (RedirectedDescriptor const &) = delete;
     };
 
     pid_t launchBinary (std::string const  &executable,
@@ -170,7 +181,7 @@ namespace
         /* Replace the current process stderr and stdout with the write end
          * of the pipes. Now when someone tries to write to stderr or stdout
          * they'll write to our pipes instead */
-        RedirectedFileDescriptor pipedStdout (STDOUT_FILENO, stdoutWriteEnd);
+        RedirectedDescriptor pipedStdout (STDOUT_FILENO, stdoutWriteEnd);
 
         /* Fork process, child gets a copy of the pipe write ends
          * - the original pipe write ends will be closed on exec
