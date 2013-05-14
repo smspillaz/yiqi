@@ -7,7 +7,9 @@ include_directories (${YIQI_INTERNAL_INCLUDE_DIRECTORY}
 
 set (YIQI_MOCKS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_mock.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/system_api_mock.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_mock.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_api_mock.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_api_mock.h)
 
 add_library (${YIQI_MOCKS_LIBRARY}
              ${YIQI_MOCKS_SRCS})
