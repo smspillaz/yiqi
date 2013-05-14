@@ -20,6 +20,9 @@
  *    with operator==
  * 7. operator== and operator!= are Associative
  * 8. The type implements swap () and swap is Associative
+ * 9. The type implements a move constructor and move
+ *    constructor invalidates the old object (tested by
+ *    inequality from moved-to and moved-from)
  *
  *
  * See LICENCE.md for Copyright information
@@ -290,22 +293,33 @@ TYPED_TEST_P (ValueTypeConformance, InverseInequalityAndEqualityOperators)
 
 TYPED_TEST_P (ValueTypeConformance, ImplementsSwapRetainsEquality)
 {
+    using std::swap;
+
     TypeParam value (this->initialValue);
     bool      initialEquality = (value == this->initialValue);
 
-    std::swap (value, this->initialValue);
+    swap (value, this->initialValue);
 
     EXPECT_EQ (initialEquality, value == this->initialValue);
 }
 
 TYPED_TEST_P (ValueTypeConformance, ImplementsSwapRetainsInequality)
 {
+    using std::swap;
+
     TypeParam value (this->initialValue);
     bool      initialInequality = (value != this->initialValue);
 
-    std::swap (value, this->initialValue);
+    swap (value, this->initialValue);
 
     EXPECT_EQ (initialInequality, value != this->initialValue);
+}
+
+TYPED_TEST_P (ValueTypeConformance, MoveConstructorInvalidatesOldValue)
+{
+    TypeParam value (std::move (this->initialValue));
+
+    EXPECT_NE (value, this->initialValue);
 }
 
 REGISTER_TYPED_TEST_CASE_P (ValueTypeConformance,
@@ -323,6 +337,7 @@ REGISTER_TYPED_TEST_CASE_P (ValueTypeConformance,
                             AssociativeInequalityOperators,
                             InverseInequalityAndEqualityOperators,
                             ImplementsSwapRetainsEquality,
-                            ImplementsSwapRetainsInequality);
+                            ImplementsSwapRetainsInequality,
+                            MoveConstructorInvalidatesOldValue);
 
 #endif // YIQI_VALUE_TYPE_TEST_H
