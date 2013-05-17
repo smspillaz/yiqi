@@ -11,17 +11,17 @@
 #include <stdexcept>
 #include <vector>
 
+#include <folly/ScopeGuard.h>
+
 #include <cstring>
 
 #include <assert.h>
 
 #include "commandline.h"
-#include "exceptioncleanup.h"
 #include "instrumentation_tool.h"
 
 namespace ycom = yiqi::commandline;
 namespace yit = yiqi::instrumentation::tools;
-namespace yu = yiqi::util;
 
 ycom::CommandArguments
 ycom::BuildCommandLine (int                 argc,
@@ -342,10 +342,10 @@ ycom::NullTermArray::eraseAppended (StringVector const &values)
 void
 ycom::NullTermArray::append (std::vector <std::string> const &vec)
 {
-    auto cleanupFunc = std::bind (&ycom::NullTermArray::eraseAppended,
+    auto cleanup = folly::makeGuard (
+                       std::bind (&ycom::NullTermArray::eraseAppended,
                                   this,
-                                  vec);
-    yu::ExceptionCleanup cleanup (cleanupFunc);
+                                  vec));
 
     /* Reserve some more space */
     size_t oldLength = priv->storedNewStrings.size ();
@@ -372,7 +372,7 @@ ycom::NullTermArray::append (std::vector <std::string> const &vec)
                              it->c_str ());
     }
 
-    cleanup.commit ();
+    cleanup.dismiss ();
 }
 
 void

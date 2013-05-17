@@ -15,7 +15,8 @@ set (YIQI_INTEGRATION_TESTS_BINARY
      yiqi_integration_tests)
 
 set (YIQI_INTEGRATION_TESTS_SRCS
-     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/scopeguard.cpp)
 
 add_executable (${YIQI_INTEGRATION_TESTS_BINARY}
                 ${YIQI_INTEGRATION_TESTS_SRCS})
