@@ -19,9 +19,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
+#include "nonportable_gnu.h"
 
 #include <unistd.h>
 #include <fcntl.h>
