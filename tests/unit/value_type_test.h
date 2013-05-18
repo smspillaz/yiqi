@@ -35,6 +35,8 @@
 
 #include <gtest/gtest.h>
 
+using ::testing::ExitedWithCode;
+
 namespace yiqi
 {
     namespace testing
@@ -141,6 +143,8 @@ namespace yiqi
                 ValueTypeConstructor <ValueType> constructor;
                 return constructor.Mutate (value);
             }
+
+            char const *ValuesUnequalMessage = "Values are unequal";
         }
     }
 }
@@ -168,10 +172,17 @@ public ::testing::Test
         ValueType initialValue;
 };
 
+template <typename ValueType>
+class ValueTypeConformanceDeathTest :
+    public ValueTypeConformance <ValueType>
+{
+};
+
 TYPED_TEST_CASE_P (ValueTypeConformance);
+TYPED_TEST_CASE_P (ValueTypeConformanceDeathTest);
 
 /* If an exception is thrown during the construction of
-* initialValue then this test will fail */
+ * initialValue then this test will fail */
 TYPED_TEST_P (ValueTypeConformance, HasDefaultParameterlessConstructorNoThrow)
 {
 }
@@ -201,7 +212,8 @@ TYPED_TEST_P (ValueTypeConformance, CopyConstructionMeetsNoThrowGuaruntee)
 TYPED_TEST_P (ValueTypeConformance, CopyAssignmentMeetsNoThrowGuaruntee)
 {
     EXPECT_NO_THROW ({
-        TypeParam value = this->initialValue;
+        TypeParam value;
+        value = this->initialValue;
     });
 }
 
@@ -213,7 +225,8 @@ TYPED_TEST_P (ValueTypeConformance, CopyConstructionCreatesExactCopy)
 
 TYPED_TEST_P (ValueTypeConformance, CopyAssignmentCreatesExactCopy)
 {
-    TypeParam value (this->initialValue);
+    TypeParam value;
+    value = this->initialValue;
     EXPECT_EQ (value, this->initialValue);
 }
 
@@ -234,15 +247,19 @@ TYPED_TEST_P (ValueTypeConformance, CopyAssignmentCreatesIndependentCopy)
 {
     namespace ytesti = yiqi::testing::internal;
 
-    TypeParam value  = this->initialValue;
+    TypeParam value;
+    value = this->initialValue;
+
     if (ytesti::Mutate (value))
         EXPECT_NE (this->initialValue, value);
     else
         EXPECT_EQ (this->initialValue, value);
 }
 
-TYPED_TEST_P (ValueTypeConformance, CopyConstructionCreatesCopyNoSharedPointers)
+TYPED_TEST_P (ValueTypeConformanceDeathTest, SurviveCopyConstruction)
 {
+    namespace ytesti = yiqi::testing::internal;
+
     TypeParam *firstValue (new TypeParam ());
     TypeParam secondValue (*firstValue);
     TypeParam thirdValue (secondValue);
@@ -252,22 +269,41 @@ TYPED_TEST_P (ValueTypeConformance, CopyConstructionCreatesCopyNoSharedPointers)
     /* If secondValue was dependent on firstValue, eg,
      * dangling pointer, then this test will either crash,
      * fail, or yield errors in a memory checker */
-    EXPECT_EQ (thirdValue, secondValue);
+    EXPECT_EXIT ({
+        if (thirdValue != secondValue)
+        {
+            std::cerr << ytesti::ValuesUnequalMessage;
+            exit (1);
+        }
+        else
+            ::exit (0);
+    }, ExitedWithCode (0), "");
 }
 
-
-TYPED_TEST_P (ValueTypeConformance, CopyAssignmentCreatesCopyNoSharedPointers)
+TYPED_TEST_P (ValueTypeConformanceDeathTest, SurviveCopyAssignment)
 {
+    namespace ytesti = yiqi::testing::internal;
+
     TypeParam *firstValue (new TypeParam ());
     TypeParam secondValue = *firstValue;
-    TypeParam thirdValue = secondValue;
+    TypeParam thirdValue;
+
+    thirdValue = secondValue;
 
     delete firstValue;
 
     /* If secondValue was dependent on firstValue, eg,
      * dangling pointer, then this test will either crash,
      * fail, or yield errors in a memory checker */
-    EXPECT_EQ (thirdValue, secondValue);
+    EXPECT_EXIT ({
+        if (thirdValue != secondValue)
+        {
+            std::cerr << ytesti::ValuesUnequalMessage;
+            exit (1);
+        }
+        else
+            ::exit (0);
+    }, ExitedWithCode (0), "");
 }
 
 TYPED_TEST_P (ValueTypeConformance, AssociativeEqualityOperators)
@@ -329,8 +365,6 @@ REGISTER_TYPED_TEST_CASE_P (ValueTypeConformance,
                             CopyAssignmentMeetsNoThrowGuaruntee,
                             CopyConstructionCreatesExactCopy,
                             CopyAssignmentCreatesExactCopy,
-                            CopyConstructionCreatesCopyNoSharedPointers,
-                            CopyAssignmentCreatesCopyNoSharedPointers,
                             CopyConstructionCreatesIndependentCopy,
                             CopyAssignmentCreatesIndependentCopy,
                             AssociativeEqualityOperators,
@@ -339,5 +373,9 @@ REGISTER_TYPED_TEST_CASE_P (ValueTypeConformance,
                             ImplementsSwapRetainsEquality,
                             ImplementsSwapRetainsInequality,
                             MoveConstructorInvalidatesOldValue);
+
+REGISTER_TYPED_TEST_CASE_P (ValueTypeConformanceDeathTest,
+                            SurviveCopyConstruction,
+                            SurviveCopyAssignment);
 
 #endif // YIQI_VALUE_TYPE_TEST_H

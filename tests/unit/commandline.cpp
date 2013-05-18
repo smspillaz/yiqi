@@ -235,6 +235,10 @@ INSTANTIATE_TYPED_TEST_CASE_P (NullTermArray,
                                ValueTypeConformance,
                                YComValueConformanceTypes);
 
+INSTANTIATE_TYPED_TEST_CASE_P (NullTermArray,
+                               ValueTypeConformanceDeathTest,
+                               YComValueConformanceTypes);
+
 
 class NullTermArrayDefault :
     public ::testing::Test
