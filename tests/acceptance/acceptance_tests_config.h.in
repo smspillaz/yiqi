@@ -6,10 +6,10 @@
  * See LICENCE.md for Copyright information
  */
 
-#include <string>
-
 #ifndef YIQI_ACCEPTANCE_TESTS_CONFIG_H
 #define YIQI_ACCEPTANCE_TESTS_CONFIG_H
+
+#include <string>
 
 namespace yiqi
 {

@@ -24,7 +24,6 @@
  *    constructor invalidates the old object (tested by
  *    inequality from moved-to and moved-from)
  *
- *
  * See LICENCE.md for Copyright information
  */
 
@@ -155,7 +154,7 @@ namespace yiqi
  */
 template <typename ValueType>
 class ValueTypeConformance :
-public ::testing::Test
+    public ::testing::Test
 {
     public:
 

@@ -57,14 +57,14 @@ set (YIQI_ACCEPTANCE_TESTS_BINARY yiqi_acceptance_tests)
 set (YIQI_ACCEPTANCE_TESTS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecute_through_passthrough.cpp)
 
+add_executable (${YIQI_ACCEPTANCE_TESTS_BINARY}
+                ${YIQI_ACCEPTANCE_TESTS_SRCS})
+
 verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${YIQI_ACCEPTANCE_TESTS_BINARY}
                                                ERROR)
-
-add_executable (${YIQI_ACCEPTANCE_TESTS_BINARY}
-                ${YIQI_ACCEPTANCE_TESTS_SRCS})
 
 target_link_libraries (${YIQI_ACCEPTANCE_TESTS_BINARY}
                        ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY}
