@@ -15,20 +15,18 @@ proc acceptPairs {} {
 
         # Initially set vitiatingLine and vitiatingColumn
         # to -1 and if we find a token which might indicate the
-        # existence of either an EXPECT_THROW
+        # existence of either an EXPECT_* or ASSERT_* or
         # or a lambda then set it to the current
         # line and use that to override the position of the
         # leftmost paren
-        if {$tokenValue == "EXPECT_THROW"} {
-            set vitiatingLine [lindex $nextToken 1]
-            set vitiatingColumn [lindex $nextToken 2]
-            continue
-        } elseif {$tokenValue == "EXPECT_NO_THROW"} {
+        set expectation [string last "EXPECT_" $tokenValue]
+        set assertion [string last "ASSERT_" $tokenValue]
+
+        if {$expectation != -1 || $assertion != -1} {
             set vitiatingLine [lindex $nextToken 1]
             set vitiatingColumn [lindex $nextToken 2]
             continue
         } elseif {$tokenValue == "\["} {
-
             # If we hit a lambda declaration, we need
             # to go back to either the first (
             # of that line or the first token
