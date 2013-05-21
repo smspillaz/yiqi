@@ -235,97 +235,120 @@ ycom::NullTermArray::removeAnyMatching (RemoveFunc const &remover)
                         priv->vector.end ());
 }
 
-void
-ycom::NullTermArray::eraseAppended (StringVector const &values)
+namespace
 {
-    /* Start search from at least values.size () from the end */
-    auto searchStartPoint = priv->storedNewStrings.end () -
-                            (values.size ());
-    auto firstStoredNewStringsIterator =
-        std::find (searchStartPoint,
-                   priv->storedNewStrings.end (),
-                   values.front ());
-
-    if (firstStoredNewStringsIterator != priv->storedNewStrings.end ())
+    template <typename HSIter, typename Needles>
+    struct Pred
     {
-        auto lastStoredNewStringIterator =
-            firstStoredNewStringsIterator;
+        typedef typename Needles::const_iterator NIter;
+        typedef std::function <bool (HSIter const &, NIter const &)> Func;
+    };
 
-        bool foundLastString = false;
+    template <typename HSIter, typename N>
+    HSIter
+    rangeMatchingPredicate (N                                     &values,
+                            HSIter                          const &first,
+                            HSIter                          const &end,
+                            typename Pred <HSIter, N>::Func const &pred)
+    {
+        auto last = first;
+
+        bool foundLast = false;
 
         /* Keep going until either the end, or until the block
          * where we've inserted stops. We already have the first
          * iterator, so move directly to the second */
-        for (auto it = (values.begin () + 1);
+        for (typename N::const_iterator it (values.begin () + 1);
              it != values.end ();
              ++it)
         {
-            ++lastStoredNewStringIterator;
+            ++last;
 
-            if (lastStoredNewStringIterator ==
-                    priv->storedNewStrings.end ())
+            /* Exhausted first list, found the last matching
+             * iterator there that could match this list */
+            if (last == end)
                 break;
 
-            if (*lastStoredNewStringIterator != *it)
+            /* Found the first iterator that does not match */
+            if (!pred (last, it))
             {
-                foundLastString = true;
+                foundLast = true;
                 break;
             }
         }
 
-        /* We need to put the last string iterator at
+        /* We need to put the last iterator at
          * one past the position we intend to erase
          * inclusive if it didn't happen already */
-        if (!foundLastString)
-            ++lastStoredNewStringIterator;
+        if (!foundLast)
+            ++last;
 
-        auto findPointerInVectorFunc =
+        return last;
+    }
+}
+
+void
+ycom::NullTermArray::eraseAppended (StringVector const &values)
+{
+    typedef typename StringVector::iterator SVIterator;
+
+    SVIterator storedNewStringsEnd = priv->storedNewStrings.end ();
+    /* Start search from at least values.size () from the end */
+    auto searchStartPoint = storedNewStringsEnd -
+                            (values.size ());
+    SVIterator firstStoredNewStringsIterator =
+        std::find (searchStartPoint,
+                   storedNewStringsEnd,
+                   values.front ());
+
+    if (firstStoredNewStringsIterator != storedNewStringsEnd)
+    {
+        typedef typename StringVector::const_iterator CSVIterator;
+
+        auto stringsEqual =
+            [](SVIterator const &lhs, CSVIterator const &rhs) -> bool {
+                return *lhs == *rhs;
+            };
+
+        auto lastStoredNewStringIterator =
+            rangeMatchingPredicate (values,
+                                    firstStoredNewStringsIterator,
+                                    storedNewStringsEnd,
+                                    stringsEqual);
+
+        typedef std::vector <char const *>::iterator CVIterator;
+
+        /* Handle the duplicate-pointers edge case by
+         * starting from end - distance (first, last) - 1 */
+        CVIterator vectorEnd = priv->vector.end ();
+        auto searchStartPoint =
+            vectorEnd - std::distance (firstStoredNewStringsIterator,
+                                       lastStoredNewStringIterator) - 1;
+
+        auto pointerInVectorMatchingRawStringPointer =
             [&firstStoredNewStringsIterator](char const *str) -> bool {
                 /* We want to compare the pointers, as it was pointers
                  * that were inserted, not new values */
                 return firstStoredNewStringsIterator->c_str () == str;
             };
 
-        /* Handle the duplicate-pointers edge case by
-         * starting from end - distance (first, last) - 1 */
-        auto searchStartPoint =
-            priv->vector.end () - std::distance (firstStoredNewStringsIterator,
-                                                 lastStoredNewStringIterator) - 1;
-        auto firstPointerInVector =
+        CVIterator firstPointerInVector =
             std::find_if (searchStartPoint,
-                          priv->vector.end (),
-                          findPointerInVectorFunc);
+                          vectorEnd,
+                          pointerInVectorMatchingRawStringPointer);
 
-        if (firstPointerInVector != priv->vector.end ())
+        if (firstPointerInVector != vectorEnd)
         {
-            bool foundLastPointer = false;
+            auto stringEqualsCharacterArray =
+                [](CVIterator const &lhs, CSVIterator const &rhs) -> bool {
+                    return *lhs == rhs->c_str ();
+                };
 
-            /* Keep going until we find the end of strings
-             * that were stored here. We already have the first
-             * iterator, so move directly to the second */
-            auto lastPointerInVector = firstPointerInVector;
-
-            for (auto it = (values.begin () + 1);
-                 it != values.end ();
-                 ++it)
-            {
-                ++lastPointerInVector;
-
-                if (lastPointerInVector == priv->vector.end ())
-                    break;
-
-                if (*lastPointerInVector != it->c_str ())
-                {
-                    foundLastPointer = true;
-                    break;
-                }
-            }
-
-            /* We need to put the last string iterator at
-             * one past the position we intend to erase
-             * inclusive if it didn't happen already */
-            if (!foundLastPointer)
-                ++lastPointerInVector;
+            auto lastPointerInVector =
+                rangeMatchingPredicate (values,
+                                        firstPointerInVector,
+                                        vectorEnd,
+                                        stringEqualsCharacterArray);
 
             /* Erase this from the vector of pointers */
             priv->vector.erase (firstPointerInVector,
