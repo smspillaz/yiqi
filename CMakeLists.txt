@@ -19,7 +19,7 @@ set (Boost_USE_STATIC_LIBS ON)
 
 find_package (Boost 1.46 COMPONENTS program_options iostreams)
 find_package (GTest QUIET)
-find_package (VeraPP REQUIRED)
+find_package (VeraPP 1.2 REQUIRED)
 
 include (FindPkgConfig)
 pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
@@ -92,8 +92,6 @@ set (YIQI_VERAPP_PROFILE yiqi)
 set (YIQI_VERAPP_IMPORT_RULES yiqi_verapp_import_rules)
 
 include (${YIQI_CMAKE_DIRECTORY}/VeraPPTargets.cmake)
-
-add_subdirectory (${YIQI_VERAPP_CMAKE_DIRECTORY})
 
 # Set up Folly
 find_path (FOLLY_INCLUDE_DIR
