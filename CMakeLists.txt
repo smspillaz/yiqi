@@ -24,6 +24,48 @@ find_package (VeraPP 1.2 REQUIRED)
 include (FindPkgConfig)
 pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
 
+# We must try to find google-mock first, if that is unavailable then
+# building it will build both it and google-test
+find_library (GMOCK_LIBRARY gmock)
+find_library (GMOCK_MAIN_LIBRARY gmock_main)
+
+if (NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
+
+    set (GMOCK_INCLUDE_BASE "include/")
+
+    # Find the Google Mock include directory by
+    # searching the system paths
+    find_path (GMOCK_INCLUDE_DIR
+               gmock/gmock.h)
+
+    string (LENGTH ${GMOCK_INCLUDE_BASE} GMOCK_INCLUDE_BASE_LENGTH)
+    string (LENGTH ${GMOCK_INCLUDE_DIR} GMOCK_INCLUDE_DIR_LENGTH)
+
+    math (EXPR
+          GMOCK_INCLUDE_PREFIX_LENGTH
+          "${GMOCK_INCLUDE_DIR_LENGTH} - ${GMOCK_INCLUDE_BASE_LENGTH}")
+    string (SUBSTRING
+            ${GMOCK_INCLUDE_DIR}
+            0
+            ${GMOCK_INCLUDE_PREFIX_LENGTH}
+            GMOCK_INCLUDE_PREFIX)
+
+    set (GMOCK_SRC_DIR ${GMOCK_INCLUDE_PREFIX}/src/gmock)
+    set (GMOCK_INCLUDE_DIR ${GMOCK_INCLUDE_DIR})
+    set (GTEST_INCLUDE_DIR ${GMOCK_SRC_DIR}/gtest/include)
+
+    add_subdirectory (${GMOCK_SRC_DIR}
+                      ${CMAKE_CURRENT_BINARY_DIR}/src/gmock)
+
+    set (GMOCK_LIBRARY gmock)
+    set (GMOCK_MAIN_LIBRARY gmock_main)
+    set (GTEST_LIBRARY gtest)
+    set (GTEST_MAIN_LIBRARY gmock_main)
+    set (GTEST_BOTH_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} gtest gtest_main)
+    set (GTEST_FOUND TRUE)
+
+endif (NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
+
 if (NOT GTEST_FOUND)
 
     # Find the the Google Test include directory
@@ -61,9 +103,6 @@ if (NOT GTEST_FOUND)
     endif (GTEST_INCLUDE_DIR)
 
 endif (NOT GTEST_FOUND)
-
-find_library (GMOCK_LIBRARY gmock)
-find_library (GMOCK_MAIN_LIBRARY gmock_main)
 
 if (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
     message (SEND_ERROR "Google Test is required to build Yiqi")
@@ -124,7 +163,9 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMPILER_FLAGS}")
 set (YIQI_EXTERNAL_INCLUDE_DIRS
      ${YIQI_VALGRIND_INCLUDE_DIRS}
      ${Boost_INCLUDE_DIRS}
-     ${FOLLY_INCLUDE_DIR})
+     ${FOLLY_INCLUDE_DIR}
+     ${GTEST_INCLUDE_DIR}
+     ${GMOCK_INCLUDE_DIR})
 set (YIQI_EXTERNAL_LIBRARY_DIRS
      ${YIQI_VALGRIND_LIBRARY_DIRS}
      ${Boost_LIBRARY_DIRS})
