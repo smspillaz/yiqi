@@ -18,14 +18,14 @@ namespace yit = yiqi::instrumentation::tools;
 namespace yitv = yit::valgrind;
 
 std::string const &
-yitv::ToolBase::InstrumentationWrapper () const
+yitv::ProgramBase::InstrumentationWrapper () const
 {
     static std::string const wrapper (yconst::ValgrindWrapper);
     return wrapper;
 }
 
 std::string const &
-yitv::ToolBase::WrapperOptions () const
+yitv::ProgramBase::WrapperOptions () const
 {
     static std::stringstream ss;
     static std::once_flag    fillStringStreamOnce;
@@ -41,7 +41,7 @@ yitv::ToolBase::WrapperOptions () const
 }
 
 std::string const &
-yitv::ToolBase::InstrumentationName () const
+yitv::ProgramBase::InstrumentationName () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));

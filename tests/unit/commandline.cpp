@@ -53,7 +53,7 @@ class BuildCommandLine :
     public:
 
         BuildCommandLine () :
-            instrumentation (new ymockit::Tool)
+            instrumentation (new ymockit::Program)
         {
             /* We don't care about whether or not these functions are
              * called, we care about how the system under test handles
@@ -66,7 +66,7 @@ class BuildCommandLine :
 
     protected:
 
-        std::unique_ptr <ymockit::Tool> instrumentation;
+        std::unique_ptr <ymockit::Program> instrumentation;
 };
 
 TEST_F (BuildCommandLine, ThrowOnNoArgs)

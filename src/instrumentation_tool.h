@@ -30,14 +30,14 @@ namespace yiqi
              * An instance of this interface is usually constructed by
              * ParseOptionsToParameters()
              */
-            class Tool
+            class Program
             {
                 public:
 
-                    typedef std::unique_ptr <Tool> Unique;
+                    typedef std::unique_ptr <Program> Unique;
                     typedef yiqi::constants::InstrumentationTool ToolID;
 
-                    virtual ~Tool () {};
+                    virtual ~Program () {};
 
                     /**
                      * @brief InstrumentationWrapper
@@ -67,12 +67,12 @@ namespace yiqi
 
                 protected:
 
-                    Tool () = default;
+                    Program () = default;
 
                 private:
 
-                    Tool (Tool const &) = delete;
-                    Tool & operator=(Tool const &) = delete;
+                    Program (Program const &) = delete;
+                    Program & operator=(Program const &) = delete;
             };
 
         }

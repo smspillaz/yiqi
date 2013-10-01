@@ -69,7 +69,7 @@ class FindExecutable :
 
     protected:
 
-        ymockit::Tool            tool;
+        ymockit::Program         tool;
         ymocksysapi::SystemCalls syscalls;
 };
 
@@ -176,7 +176,7 @@ class GetArgvForTool :
 
     protected:
 
-        ymockit::Tool               tool;
+        ymockit::Program            tool;
         ytest::CommandLineArguments args;
 };
 
@@ -307,7 +307,7 @@ class GetEnvForTool :
 
     protected:
 
-        ymockit::Tool            tool;
+        ymockit::Program            tool;
         ymocksysapi::SystemCalls syscalls;
 };
 
@@ -386,12 +386,12 @@ namespace
         public:
 
             MOCK_METHOD2 (Executable,
-                          std::string (yit::Tool const            &,
+                          std::string (yit::Program const         &,
                                        ysysapi::SystemCalls const &));
             MOCK_METHOD1 (Argv,
-                          ycom::NullTermArray (yit::Tool const &));
+                          ycom::NullTermArray (yit::Program const &));
             MOCK_METHOD2 (Environment,
-                          ycom::NullTermArray (yit::Tool            const &,
+                          ycom::NullTermArray (yit::Program         const &,
                                                ysysapi::SystemCalls const &));
     };
 }
@@ -420,7 +420,7 @@ class Relaunch :
 
         MockFetchFunctions       fetch;
         ymocksysapi::SystemCalls syscalls;
-        ymockit::Tool            tool;
+        ymockit::Program         tool;
 };
 
 TEST_F (Relaunch, VerifyCStyleExecutable)
@@ -439,10 +439,10 @@ TEST_F (Relaunch, VerifyCStyleExecutable)
     yexec::Relaunch (tool,
                      std::bind (&MockFetchFunctions::Executable, &fetch,
                                 _1, _2),
-                     [](yit::Tool const &t) {
+                     [](yit::Program const &t) {
                          return yexec::NullTermArray ();
                      },
-                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                     [](yit::Program const &t, ysysapi::SystemCalls const &c) {
                          return yexec::NullTermArray ();
                      },
                      syscalls);
@@ -478,11 +478,11 @@ TEST_F (Relaunch, VerifyCStyleArguments)
                                         _));
 
     yexec::Relaunch (tool,
-                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                     [](yit::Program const &t, ysysapi::SystemCalls const &c) {
                          return std::string ();
                      },
                      std::bind (&MockFetchFunctions::Argv, &fetch, _1),
-                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                     [](yit::Program const &t, ysysapi::SystemCalls const &c) {
                          return yexec::NullTermArray ();
                      },
                      syscalls);
@@ -518,10 +518,10 @@ TEST_F (Relaunch, VerifyCStyleEnv)
                                         ymatch::ArrayFitsMatchers (matchers)));
 
     yexec::Relaunch (tool,
-                     [](yit::Tool const &t, ysysapi::SystemCalls const &c) {
+                     [](yit::Program const &t, ysysapi::SystemCalls const &c) {
                          return std::string ();
                      },
-                     [](yit::Tool const &t) {
+                     [](yit::Program const &t) {
                          return yexec::NullTermArray ();
                      },
                      std::bind (&MockFetchFunctions::Environment, &fetch,

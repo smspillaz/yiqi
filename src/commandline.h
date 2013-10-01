@@ -21,13 +21,13 @@ namespace yiqi
     {
         namespace tools
         {
-            class Tool;
+            class Program;
         }
     }
 
     namespace commandline
     {
-        typedef yiqi::instrumentation::tools::Tool Tool;
+        typedef yiqi::instrumentation::tools::Program Tool;
         /**
          * @brief BuildCommandLine extracts a command line from the provided
          * parameters

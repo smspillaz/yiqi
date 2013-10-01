@@ -26,7 +26,7 @@ namespace yit = yiqi::instrumentation::tools;
 ycom::CommandArguments
 ycom::BuildCommandLine (int                 argc,
                         char const * const  *argv,
-                        yit::Tool const     &tool)
+                        yit::Program const  &tool)
 {
     if (argc < 1)
         throw std::runtime_error ("provided argc must have at "

@@ -19,12 +19,12 @@ namespace yiqi
         {
             namespace valgrind
             {
-                class ToolBase :
-                    public yiqi::instrumentation::tools::Tool
+                class ProgramBase :
+                    public yiqi::instrumentation::tools::Program
                 {
                     protected:
 
-                        ToolBase () = default;
+                        ProgramBase () = default;
 
                     private:
 

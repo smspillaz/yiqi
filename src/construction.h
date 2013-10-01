@@ -26,14 +26,14 @@ namespace yiqi
     {
         namespace tools
         {
-            class Tool;
+            class Program;
         }
     }
 
     namespace construction
     {
-        typedef yiqi::instrumentation::tools::Tool InstrumentationToolCommand;
-        typedef std::unique_ptr <InstrumentationToolCommand> ToolUniquePtr;
+        typedef yiqi::instrumentation::tools::Program ToolProgram;
+        typedef std::unique_ptr <ToolProgram> ProgramUniquePtr;
 
         /**
          * @brief FetchOptionsDescription returns the
@@ -58,12 +58,12 @@ namespace yiqi
          * @return An std::string with the current instrumentation tool
          */
         std::string
-        ParseOptionsForTool (int                argc,
-                             const char * const *argv,
-                             Options const      &description);
+        ParseOptionsForToolName (int                argc,
+                                 const char * const *argv,
+                                 Options const      &description);
 
-        ToolUniquePtr
-        MakeSpecifiedTool (yiqi::constants::InstrumentationTool);
+        ProgramUniquePtr
+        MakeProgramInfo (yiqi::constants::InstrumentationTool);
 
         /**
          * @brief ParseOptionsToParameters
@@ -75,7 +75,7 @@ namespace yiqi
          * or unknown option
          * @return A yiqi::construction::ToolUniquePtr object
          */
-        ToolUniquePtr
+        ProgramUniquePtr
         ParseOptionsToToolUniquePtr (int                argc,
                                      const char * const *argv,
                                      Options const      &description);
