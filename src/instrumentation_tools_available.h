@@ -18,8 +18,8 @@ namespace yiqi
     {
         namespace tools
         {
-            class Tool;
-            typedef std::unique_ptr <Tool> ToolUniquePtr;
+            class Program;
+            typedef std::unique_ptr <Program> ToolUniquePtr;
 
             ToolUniquePtr MakeNoneTool ();
             ToolUniquePtr MakeTimerTool ();

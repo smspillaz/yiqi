@@ -16,7 +16,7 @@ namespace yit = yiqi::instrumentation::tools;
 namespace
 {
     class NoneTool :
-        public yit::Tool
+        public yit::Program
     {
         private:
 

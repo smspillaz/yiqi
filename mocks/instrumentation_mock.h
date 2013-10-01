@@ -22,13 +22,13 @@ namespace yiqi
         {
             namespace tools
             {
-                class Tool :
-                    public yiqi::instrumentation::tools::Tool
+                class Program :
+                    public yiqi::instrumentation::tools::Program
                 {
                     public:
 
-                        Tool ();
-                        ~Tool ();
+                        Program ();
+                        ~Program ();
 
                         void IgnoreCalls ();
 

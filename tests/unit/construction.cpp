@@ -159,8 +159,8 @@ TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
     CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
 
     auto pointer (yc::ParseOptionsToToolUniquePtr (ArgumentCount (args),
-                                                Arguments (args),
-                                                desc));
+                                                   Arguments (args),
+                                                   desc));
 
     EXPECT_THAT (pointer.get (), NotNull ());
 }
@@ -169,9 +169,9 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsSpecifiedTool)
 {
     CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
 
-    std::string tool (yc::ParseOptionsForTool (ArgumentCount (args),
-                                               Arguments (args),
-                                               desc));
+    std::string tool (yc::ParseOptionsForToolName (ArgumentCount (args),
+                                                   Arguments (args),
+                                                   desc));
     EXPECT_EQ (MockTool, tool);
 }
 
@@ -182,9 +182,9 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
     auto const toolId (yconst::InstrumentationTool::None);
     std::string ExpectedTool (yconst::StringFromTool (toolId));
 
-    std::string tool (yc::ParseOptionsForTool (ArgumentCount (args),
-                                               Arguments (args),
-                                               desc));
+    std::string tool (yc::ParseOptionsForToolName (ArgumentCount (args),
+                                                   Arguments (args),
+                                                   desc));
 
     EXPECT_EQ (ExpectedTool, tool);
 }
@@ -198,7 +198,7 @@ class ConstructionParametersTable :
 TEST_P (ConstructionParametersTable, MakeSpecifiedToolReturnsExpectedTool)
 {
     yconst::InstrumentationTool const ExpectedIdentifier (GetParam ().tool);
-    yit::Tool::Unique tool (yc::MakeSpecifiedTool (ExpectedIdentifier));
+    yit::Program::Unique tool (yc::MakeProgramInfo (ExpectedIdentifier));
 
     EXPECT_EQ (ExpectedIdentifier, tool->ToolIdentifier ());
 }

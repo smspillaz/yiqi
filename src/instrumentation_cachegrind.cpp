@@ -21,11 +21,11 @@ namespace yitv = yiqi::instrumentation::tools::valgrind;
 namespace
 {
     class CachegrindTool :
-        public yitv::ToolBase
+        public yitv::ProgramBase
     {
         private:
 
-            Tool::ToolID ToolIdentifier () const;
+            Program::ToolID ToolIdentifier () const;
             std::string const & ToolAdditionalOptions () const;
     };
 }

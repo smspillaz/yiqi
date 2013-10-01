@@ -70,7 +70,7 @@ class ReExecutionIntegration :
 
     protected:
 
-        ymockit::Tool               tool;
+        ymockit::Program            tool;
         ymocksysapi::SystemCalls    syscalls;
         ytest::CommandLineArguments args;
 };

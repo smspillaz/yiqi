@@ -24,7 +24,7 @@ namespace yiqi
     {
         namespace tools
         {
-            class Tool;
+            class Program;
         }
     }
 
@@ -38,7 +38,7 @@ namespace yiqi
 
     namespace execution
     {
-        typedef instrumentation::tools::Tool Tool;
+        typedef instrumentation::tools::Program Tool;
         typedef commandline::NullTermArray NullTermArray;
         typedef system::api::SystemCalls SystemCalls;
 

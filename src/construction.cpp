@@ -37,9 +37,9 @@ yc::FetchOptionsDescription ()
 }
 
 std::string
-yc::ParseOptionsForTool(int                argc,
-                        const char * const *argv,
-                        const yc::Options  &description)
+yc::ParseOptionsForToolName (int                argc,
+                             const char * const *argv,
+                             const yc::Options  &description)
 {
     po::variables_map       variableMap;
     po::command_line_parser parser (argc, argv);
@@ -54,10 +54,10 @@ yc::ParseOptionsForTool(int                argc,
     return GetNoneString ();
 }
 
-yit::Tool::Unique
-yc::MakeSpecifiedTool (yconst::InstrumentationTool toolID)
+yit::Program::Unique
+yc::MakeProgramInfo (yconst::InstrumentationTool toolID)
 {
-    typedef ToolUniquePtr (*ToolFactory) ();
+    typedef ProgramUniquePtr (*ToolFactory) ();
     typedef std::map <yconst::InstrumentationTool, ToolFactory> FactoryMap;
 
     static FactoryMap const toolConstructors
@@ -75,14 +75,14 @@ yc::MakeSpecifiedTool (yconst::InstrumentationTool toolID)
 }
 
 
-yit::Tool::Unique
+yit::Program::Unique
 yc::ParseOptionsToToolUniquePtr (int                argc,
                                  const char * const *argv,
                                  const yc::Options  &description)
 {
-    auto const toolString (ParseOptionsForTool (argc,
-                                                argv,
-                                                description));
+    auto const toolString (ParseOptionsForToolName (argc,
+                                                    argv,
+                                                    description));
     auto const toolID (yconst::ToolFromString (toolString));
-    return MakeSpecifiedTool (toolID);
+    return MakeProgramInfo (toolID);
 }

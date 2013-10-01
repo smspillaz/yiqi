@@ -19,7 +19,7 @@ namespace
     std::string const DefaultInstrumentationName ("");
 }
 
-ymock::instrumentation::tools::Tool::Tool ()
+ymock::instrumentation::tools::Program::Program ()
 {
     ON_CALL (*this, InstrumentationWrapper ())
         .WillByDefault (ReturnRef (DefaultWrapperName));
@@ -30,12 +30,12 @@ ymock::instrumentation::tools::Tool::Tool ()
 
 }
 
-ymock::instrumentation::tools::Tool::~Tool ()
+ymock::instrumentation::tools::Program::~Program ()
 {
 }
 
 void
-ymock::instrumentation::tools::Tool::IgnoreCalls ()
+ymock::instrumentation::tools::Program::IgnoreCalls ()
 {
     EXPECT_CALL (*this, InstrumentationWrapper ()).Times (AtLeast (0));
     EXPECT_CALL (*this, InstrumentationName ()).Times (AtLeast (0));
