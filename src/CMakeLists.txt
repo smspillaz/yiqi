@@ -26,6 +26,7 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/construction.h
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/environment.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool.h
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool_valgrind_base.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
