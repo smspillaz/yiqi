@@ -186,6 +186,7 @@ set (YIQI_TESTS_UTIL_LIBRARY yiqi_tests_util)
 set (YIQI_MAIN_LIBRARY yiqi_main)
 set (YIQI_LIBRARY yiqi)
 
+add_subdirectory (${YIQI_INTERNAL_INCLUDE_DIRECTORY})
 add_subdirectory (${YIQI_INTERNAL_SOURCE_DIRECTORY})
 add_subdirectory (${YIQI_SAMPLES_DIRECTORY})
 add_subdirectory (${YIQI_TESTS_DIRECTORY})
