@@ -20,7 +20,7 @@ namespace yiqi
             namespace valgrind
             {
                 class ProgramBase :
-                    public yiqi::instrumentation::tools::Program
+                    public Program
                 {
                     protected:
 

@@ -12,10 +12,11 @@
 
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
+namespace yitp = yiqi::instrumentation::tools::programs;
 
 namespace
 {
-    class NoneTool :
+    class NoneProgram :
         public yit::Program
     {
         private:
@@ -28,7 +29,7 @@ namespace
 }
 
 std::string const &
-NoneTool::InstrumentationName () const
+NoneProgram::InstrumentationName () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));
@@ -36,27 +37,27 @@ NoneTool::InstrumentationName () const
 }
 
 yconst::InstrumentationTool
-NoneTool::ToolIdentifier () const
+NoneProgram::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::None;
 }
 
 std::string const &
-NoneTool::InstrumentationWrapper () const
+NoneProgram::InstrumentationWrapper () const
 {
     static std::string const wrapper ("");
     return wrapper;
 }
 
 std::string const &
-NoneTool::WrapperOptions () const
+NoneProgram::WrapperOptions () const
 {
     static std::string const options ("");
     return options;
 }
 
-yit::ToolUniquePtr
-yit::MakeNoneTool ()
+yitp::Unique
+yitp::MakeNone ()
 {
-    return yit::ToolUniquePtr (new NoneTool ());
+    return yitp::Unique (new NoneProgram ());
 }

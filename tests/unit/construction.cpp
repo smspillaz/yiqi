@@ -154,17 +154,6 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasFirstArgAsMockProgramName
                                    matchers.size ()));
 }
 
-TEST_F (ConstructionParameters, ParseOptionsToParametersReturnsNonNullPointer)
-{
-    CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
-
-    auto pointer (yc::ParseOptionsToToolUniquePtr (ArgumentCount (args),
-                                                   Arguments (args),
-                                                   desc));
-
-    EXPECT_THAT (pointer.get (), NotNull ());
-}
-
 TEST_F (ConstructionParameters, ParseOptionsForToolReturnsSpecifiedTool)
 {
     CommandLineArguments args (GenerateCommandLine (RealCommandArguments));
@@ -195,7 +184,7 @@ class ConstructionParametersTable :
 {
 };
 
-TEST_P (ConstructionParametersTable, MakeSpecifiedToolReturnsExpectedTool)
+TEST_P (ConstructionParametersTable, MakeProgramInfoReturnsExpectedTool)
 {
     yconst::InstrumentationTool const ExpectedIdentifier (GetParam ().tool);
     yit::Program::Unique tool (yc::MakeProgramInfo (ExpectedIdentifier));
@@ -214,10 +203,11 @@ TEST_P (ConstructionParametersTable, ParseOptionsForToolReturnsExpectedTool)
 
     CommandLineArguments args (GenerateCommandLine (ArgumentsVector));
 
-    auto tool (yc::ParseOptionsToToolUniquePtr (ArgumentCount (args),
-                                                Arguments (args),
-                                                desc));
-    EXPECT_EQ (ExpectedIdentifier, tool->ToolIdentifier ());
+    auto name (yc::ParseOptionsForToolName (ArgumentCount (args),
+                                            Arguments (args),
+                                            desc));
+    yconst::InstrumentationTool const toolID (yconst::ToolFromString (name));
+    EXPECT_EQ (ExpectedIdentifier, toolID);
 }
 
 INSTANTIATE_TEST_CASE_P (AvailableTools, ConstructionParametersTable,

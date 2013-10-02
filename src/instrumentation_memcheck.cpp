@@ -17,10 +17,11 @@
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitv = yiqi::instrumentation::tools::valgrind;
+namespace yitp = yiqi::instrumentation::tools::programs;
 
 namespace
 {
-    class MemcheckTool :
+    class MemcheckProgram :
         public yitv::ProgramBase
     {
         private:
@@ -31,20 +32,20 @@ namespace
 }
 
 yconst::InstrumentationTool
-MemcheckTool::ToolIdentifier () const
+MemcheckProgram::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::Memcheck;
 }
 
 std::string const &
-MemcheckTool::ToolAdditionalOptions () const
+MemcheckProgram::ToolAdditionalOptions () const
 {
     static std::string const options ("");
     return options;
 }
 
-yit::ToolUniquePtr
-yit::MakeMemcheckTool ()
+yitp::Unique
+yitp::MakeMemcheck ()
 {
-    return yit::ToolUniquePtr (new MemcheckTool ());
+    return yitp::Unique (new MemcheckProgram ());
 }

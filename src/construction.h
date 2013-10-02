@@ -64,21 +64,6 @@ namespace yiqi
 
         ProgramUniquePtr
         MakeProgramInfo (yiqi::constants::InstrumentationTool);
-
-        /**
-         * @brief ParseOptionsToParameters
-         * @param argc Number of arguments from main()
-         * @param argv Arguments from main()
-         * @param description A boost::program_options::options_description
-         * object which describes which options should be available
-         * @throws A boost::program_options::error on encountering a malformed
-         * or unknown option
-         * @return A yiqi::construction::ToolUniquePtr object
-         */
-        ProgramUniquePtr
-        ParseOptionsToToolUniquePtr (int                argc,
-                                     const char * const *argv,
-                                     Options const      &description);
     }
 }
 
