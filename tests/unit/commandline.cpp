@@ -58,7 +58,7 @@ class BuildCommandLine :
             /* We don't care about whether or not these functions are
              * called, we care about how the system under test handles
              * them */
-            EXPECT_CALL (*instrumentation, InstrumentationWrapper ())
+            EXPECT_CALL (*instrumentation, WrapperBinary ())
                 .Times (AtLeast (0));
             EXPECT_CALL (*instrumentation, WrapperOptions ())
                 .Times (AtLeast (0));
@@ -84,7 +84,7 @@ TEST_F (BuildCommandLine, NoWrapperOrOptionsJustArgvReturnsArgvAt0)
 {
     CommandLineArguments originalArgs (GenerateCommandLine (NoOptions));
 
-    ON_CALL (*instrumentation, InstrumentationWrapper ())
+    ON_CALL (*instrumentation, WrapperBinary ())
         .WillByDefault (ReturnRef (NilString));
     ON_CALL (*instrumentation, WrapperOptions ())
         .WillByDefault (ReturnRef (NilString));
@@ -103,7 +103,7 @@ TEST_F (BuildCommandLine, ReturnWrapperAndOptions)
 {
     CommandLineArguments originalArgs (GenerateCommandLine (NoOptions));
 
-    ON_CALL (*instrumentation, InstrumentationWrapper ())
+    ON_CALL (*instrumentation, WrapperBinary ())
         .WillByDefault (ReturnRef (MockWrapper));
     ON_CALL (*instrumentation, WrapperOptions ())
         .WillByDefault (ReturnRef (MockOptions));

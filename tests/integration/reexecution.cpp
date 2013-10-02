@@ -64,7 +64,7 @@ class ReExecutionIntegration :
             ON_CALL (syscalls, GetSystemEnvironment ())
                 .WillByDefault (Return (ytestrexec::ProvidedEnvironment));
 
-            ON_CALL (tool, InstrumentationName ())
+            ON_CALL (tool, Name ())
                 .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
         }
 
@@ -76,13 +76,13 @@ class ReExecutionIntegration :
 };
 
 
-TEST_F (ReExecutionIntegration, SkipAndThrowIfNoInstrumentationWrapper)
+TEST_F (ReExecutionIntegration, SkipAndThrowIfNoWrapperBinary)
 {
     /* Never call the system calls */
     EXPECT_CALL (syscalls, ExeExists (_)).Times (0);
     EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
 
     EXPECT_THROW ({
@@ -102,7 +102,7 @@ TEST_F (ReExecutionIntegration, SkipAndThrowIfExecutableDoesNotExistInOnePath)
     /* Never call ExecInPlace */
     EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
             .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
@@ -132,7 +132,7 @@ TEST_F (ReExecutionIntegration, SkipAndThrowIfExecutableDoesNotExistInTwoPaths)
     /* We should expect that ExeExists is called twice */
     EXPECT_CALL (syscalls, ExeExists (_)).Times (2);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
         .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
@@ -155,7 +155,7 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightExe)
                                       "/" +
                                       ytestrexec::MockInstrumentation);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
@@ -181,7 +181,7 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightArgv)
                                       "/" +
                                       ytestrexec::MockInstrumentation);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
@@ -215,7 +215,7 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightEnvp)
                                       "/" +
                                       ytestrexec::MockInstrumentation);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
@@ -265,7 +265,7 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSecondaryPath)
     /* We should expect that ExeExists is called twice */
     EXPECT_CALL (syscalls, ExeExists (_)).Times (2);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));

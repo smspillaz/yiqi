@@ -28,9 +28,9 @@ namespace yiqi
 
                     private:
 
-                        std::string const & InstrumentationWrapper () const;
+                        std::string const & WrapperBinary () const;
                         std::string const & WrapperOptions () const;
-                        std::string const & InstrumentationName () const;
+                        std::string const & Name () const;
 
                         virtual std::string const & ToolAdditionalOptions () const = 0;
                 };

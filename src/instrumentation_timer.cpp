@@ -21,9 +21,9 @@ namespace
     {
         private:
 
-            std::string const & InstrumentationWrapper () const;
+            std::string const & WrapperBinary () const;
             std::string const & WrapperOptions () const;
-            std::string const & InstrumentationName () const;
+            std::string const & Name () const;
             yconst::InstrumentationTool ToolIdentifier () const;
     };
 }
@@ -35,7 +35,7 @@ TimerProgram::ToolIdentifier () const
 }
 
 std::string const &
-TimerProgram::InstrumentationName () const
+TimerProgram::Name () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));
@@ -43,7 +43,7 @@ TimerProgram::InstrumentationName () const
 }
 
 std::string const &
-TimerProgram::InstrumentationWrapper () const
+TimerProgram::WrapperBinary () const
 {
     static std::string const wrapper ("");
     return wrapper;

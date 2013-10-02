@@ -21,9 +21,9 @@ namespace
     {
         private:
 
-            std::string const & InstrumentationWrapper () const;
+            std::string const & WrapperBinary () const;
             std::string const & WrapperOptions () const;
-            std::string const & InstrumentationName () const;
+            std::string const & Name () const;
             yconst::InstrumentationTool ToolIdentifier () const;
     };
 }
@@ -35,14 +35,14 @@ PassthroughProgram::ToolIdentifier () const
 }
 
 std::string const &
-PassthroughProgram::InstrumentationWrapper () const
+PassthroughProgram::WrapperBinary () const
 {
     static std::string const wrapper ("passthrough");
     return wrapper;
 }
 
 std::string const &
-PassthroughProgram::InstrumentationName () const
+PassthroughProgram::Name () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));

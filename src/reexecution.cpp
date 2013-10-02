@@ -65,11 +65,11 @@ std::string
 yexec::FindExecutable (Tool const        &tool,
                        SystemCalls const &system)
 {
-    std::string const &wrapper (tool.InstrumentationWrapper ());
+    std::string const &wrapper (tool.WrapperBinary ());
 
     if (wrapper.empty ())
         throw std::logic_error ("provided a Tool "
-                                "with no InstrumentationWrapper");
+                                "with no WrapperBinary");
 
     std::string execPath (system.GetExecutablePath ());
 
@@ -118,7 +118,7 @@ ycom::NullTermArray
 yexec::GetToolEnv (Tool const        &tool,
                    SystemCalls const &system)
 {
-    std::string const &name (tool.InstrumentationName ());
+    std::string const &name (tool.Name ());
     ycom::NullTermArray environment (system.GetSystemEnvironment ());
 
     if (!name.empty ())
@@ -126,7 +126,7 @@ yexec::GetToolEnv (Tool const        &tool,
                                      yconst::YiqiToolEnvKey,
                                      name.c_str ());
     else
-        throw std::logic_error ("provided tool with no InstrumentationName");
+        throw std::logic_error ("provided tool with no Name");
 
     return environment;
 }
