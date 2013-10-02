@@ -19,14 +19,18 @@ namespace yiqi
         namespace tools
         {
             class Program;
-            typedef std::unique_ptr <Program> ToolUniquePtr;
 
-            ToolUniquePtr MakeNoneTool ();
-            ToolUniquePtr MakeTimerTool ();
-            ToolUniquePtr MakeMemcheckTool ();
-            ToolUniquePtr MakeCallgrindTool ();
-            ToolUniquePtr MakeCachegrindTool ();
-            ToolUniquePtr MakePassthroughTool ();
+            namespace programs
+            {
+                typedef std::unique_ptr <tools::Program> Unique;
+
+                Unique MakeNone ();
+                Unique MakeTimer ();
+                Unique MakeMemcheck ();
+                Unique MakeCallgrind ();
+                Unique MakeCachegrind ();
+                Unique MakePassthrough ();
+            }
         }
     }
 }

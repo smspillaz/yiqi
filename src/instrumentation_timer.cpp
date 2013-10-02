@@ -12,10 +12,11 @@
 
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
+namespace yitp = yiqi::instrumentation::tools::programs;
 
 namespace
 {
-    class TimerTool :
+    class TimerProgram :
         public yit::Program
     {
         private:
@@ -28,13 +29,13 @@ namespace
 }
 
 yconst::InstrumentationTool
-TimerTool::ToolIdentifier () const
+TimerProgram::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::Timer;
 }
 
 std::string const &
-TimerTool::InstrumentationName () const
+TimerProgram::InstrumentationName () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));
@@ -42,21 +43,21 @@ TimerTool::InstrumentationName () const
 }
 
 std::string const &
-TimerTool::InstrumentationWrapper () const
+TimerProgram::InstrumentationWrapper () const
 {
     static std::string const wrapper ("");
     return wrapper;
 }
 
 std::string const &
-TimerTool::WrapperOptions () const
+TimerProgram::WrapperOptions () const
 {
     static std::string const options ("");
     return options;
 }
 
-yit::ToolUniquePtr
-yit::MakeTimerTool ()
+yitp::Unique
+yitp::MakeTimer()
 {
-    return yit::ToolUniquePtr (new TimerTool ());
+    return yitp::Unique (new TimerProgram ());
 }

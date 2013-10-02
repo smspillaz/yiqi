@@ -12,10 +12,11 @@
 
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
+namespace yitp = yiqi::instrumentation::tools::programs;
 
 namespace
 {
-    class PassthroughTool :
+    class PassthroughProgram :
         public yit::Program
     {
         private:
@@ -28,20 +29,20 @@ namespace
 }
 
 yconst::InstrumentationTool
-PassthroughTool::ToolIdentifier () const
+PassthroughProgram::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::Passthrough;
 }
 
 std::string const &
-PassthroughTool::InstrumentationWrapper () const
+PassthroughProgram::InstrumentationWrapper () const
 {
     static std::string const wrapper ("passthrough");
     return wrapper;
 }
 
 std::string const &
-PassthroughTool::InstrumentationName () const
+PassthroughProgram::InstrumentationName () const
 {
     static std::string const name (
         yconst::StringFromTool (ToolIdentifier ()));
@@ -49,14 +50,14 @@ PassthroughTool::InstrumentationName () const
 }
 
 std::string const &
-PassthroughTool::WrapperOptions () const
+PassthroughProgram::WrapperOptions () const
 {
     static std::string const options ("--passthrough");
     return options;
 }
 
-yit::ToolUniquePtr
-yit::MakePassthroughTool ()
+yitp::Unique
+yitp::MakePassthrough ()
 {
-    return yit::ToolUniquePtr (new PassthroughTool ());
+    return yitp::Unique (new PassthroughProgram ());
 }

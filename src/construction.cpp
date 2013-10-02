@@ -12,6 +12,7 @@
 namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
 namespace yit = yiqi::instrumentation::tools;
+namespace yitp = yiqi::instrumentation::tools::programs;
 namespace po = boost::program_options;
 
 namespace
@@ -54,35 +55,22 @@ yc::ParseOptionsForToolName (int                argc,
     return GetNoneString ();
 }
 
-yit::Program::Unique
+yitp::Unique
 yc::MakeProgramInfo (yconst::InstrumentationTool toolID)
 {
-    typedef ProgramUniquePtr (*ToolFactory) ();
+    typedef yitp::Unique (*ToolFactory) ();
     typedef std::map <yconst::InstrumentationTool, ToolFactory> FactoryMap;
 
     static FactoryMap const toolConstructors
     {
-        { yconst::InstrumentationTool::None, yit::MakeNoneTool },
-        { yconst::InstrumentationTool::Timer, yit::MakeTimerTool },
-        { yconst::InstrumentationTool::Memcheck, yit::MakeMemcheckTool },
-        { yconst::InstrumentationTool::Callgrind, yit::MakeCallgrindTool },
-        { yconst::InstrumentationTool::Cachegrind, yit::MakeCachegrindTool },
-        { yconst::InstrumentationTool::Passthrough, yit::MakePassthroughTool },
+        { yconst::InstrumentationTool::None, yitp::MakeNone },
+        { yconst::InstrumentationTool::Timer, yitp::MakeTimer },
+        { yconst::InstrumentationTool::Memcheck, yitp::MakeMemcheck },
+        { yconst::InstrumentationTool::Callgrind, yitp::MakeCallgrind },
+        { yconst::InstrumentationTool::Cachegrind, yitp::MakeCachegrind },
+        { yconst::InstrumentationTool::Passthrough, yitp::MakePassthrough },
     };
 
     ToolFactory const factory = toolConstructors.at (toolID);
     return factory ();
-}
-
-
-yit::Program::Unique
-yc::ParseOptionsToToolUniquePtr (int                argc,
-                                 const char * const *argv,
-                                 const yc::Options  &description)
-{
-    auto const toolString (ParseOptionsForToolName (argc,
-                                                    argv,
-                                                    description));
-    auto const toolID (yconst::ToolFromString (toolString));
-    return MakeProgramInfo (toolID);
 }

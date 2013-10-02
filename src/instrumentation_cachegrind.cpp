@@ -17,10 +17,11 @@
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitv = yiqi::instrumentation::tools::valgrind;
+namespace yitp = yiqi::instrumentation::tools::programs;
 
 namespace
 {
-    class CachegrindTool :
+    class CachegrindProgram :
         public yitv::ProgramBase
     {
         private:
@@ -31,20 +32,20 @@ namespace
 }
 
 yconst::InstrumentationTool
-CachegrindTool::ToolIdentifier () const
+CachegrindProgram::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::Cachegrind;
 }
 
 std::string const &
-CachegrindTool::ToolAdditionalOptions () const
+CachegrindProgram::ToolAdditionalOptions () const
 {
     static std::string const options ("");
     return options;
 }
 
-yit::ToolUniquePtr
-yit::MakeCachegrindTool ()
+yitp::Unique
+yitp::MakeCachegrind ()
 {
-    return yit::ToolUniquePtr (new CachegrindTool ());
+    return yitp::Unique (new CachegrindProgram ());
 }

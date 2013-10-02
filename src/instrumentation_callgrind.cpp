@@ -17,10 +17,11 @@
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitv = yiqi::instrumentation::tools::valgrind;
+namespace yitp = yiqi::instrumentation::tools::programs;
 
 namespace
 {
-    class CallgrindTool :
+    class CallgrindProgram :
         public yitv::ProgramBase
     {
         private:
@@ -31,20 +32,20 @@ namespace
 }
 
 yconst::InstrumentationTool
-CallgrindTool::ToolIdentifier () const
+CallgrindProgram::ToolIdentifier () const
 {
     return yconst::InstrumentationTool::Callgrind;
 }
 
 std::string const &
-CallgrindTool::ToolAdditionalOptions () const
+CallgrindProgram::ToolAdditionalOptions () const
 {
     static std::string const options ("");
     return options;
 }
 
-yit::ToolUniquePtr
-yit::MakeCallgrindTool ()
+yitp::Unique
+yitp::MakeCallgrind ()
 {
-    return yit::ToolUniquePtr (new CallgrindTool ());
+    return yitp::Unique (new CallgrindProgram ());
 }

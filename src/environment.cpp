@@ -94,17 +94,19 @@ YiqiEnvironment::SetUp ()
     {
         po::options_description desc (yc::FetchOptionsDescription ());
 
+        std::string const &toolStr (yc::ParseOptionsForToolName (priv->argc,
+                                                                 priv->argv,
+                                                                 desc));
+        yconst::InstrumentationTool toolID (yconst::ToolFromString (toolStr));
         /* Figure out if we need to re-exec here under valgrind */
-        yit::Program::Unique tool (yc::ParseOptionsToToolUniquePtr (priv->argc,
-                                                                    priv->argv,
-                                                                    desc));
+        yit::Program::Unique instrumentingProgram (yc::MakeProgramInfo (toolID));
 
         /* We can skip a bit if there is no instrumentation wrapper */
-        if (!tool->InstrumentationWrapper ().empty ())
+        if (!instrumentingProgram->InstrumentationWrapper ().empty ())
         {
             ysysapi::SystemCalls::Unique calls (ysysapi::MakeUNIXSystemCalls ());
 
-            yexec::RelaunchCurrentProgram (*tool,
+            yexec::RelaunchCurrentProgram (*instrumentingProgram,
                                            priv->argc,
                                            priv->argv,
                                            *calls);
