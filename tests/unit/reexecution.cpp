@@ -76,7 +76,7 @@ class FindExecutable :
 TEST_F (FindExecutable, ThrowLogicErrorOnEmptyWrapper)
 {
     std::string const NoValue ("");
-    ON_CALL (tool, InstrumentationWrapper ()).WillByDefault (ReturnRef (NoValue));
+    ON_CALL (tool, WrapperBinary ()).WillByDefault (ReturnRef (NoValue));
 
     EXPECT_THROW ({
       yexec::FindExecutable (tool, syscalls);
@@ -85,7 +85,7 @@ TEST_F (FindExecutable, ThrowLogicErrorOnEmptyWrapper)
 
 TEST_F (FindExecutable, ThrowRuntimeErrorOnEmptyPath)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
         .WillByDefault (Return (ytestrexec::NoExecutablePath));
@@ -97,7 +97,7 @@ TEST_F (FindExecutable, ThrowRuntimeErrorOnEmptyPath)
 
 TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInOnePath)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
             .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
@@ -111,7 +111,7 @@ TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInOnePath)
 
 TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInMultiplePaths)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
             .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
@@ -129,7 +129,7 @@ TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundInOnePath)
                                     "/" +
                                     ytestrexec::MockInstrumentation);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
             .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
@@ -148,7 +148,7 @@ TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundOtherPath)
                                     "/" +
                                     ytestrexec::MockInstrumentation);
 
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (syscalls, GetExecutablePath ())
         .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
@@ -182,7 +182,7 @@ class GetArgvForTool :
 
 TEST_F (GetArgvForTool, AtLeastOneArgumentInReturnedArgvWithNoWrapper)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
@@ -194,7 +194,7 @@ TEST_F (GetArgvForTool, AtLeastOneArgumentInReturnedArgvWithNoWrapper)
 
 TEST_F (GetArgvForTool, AtLeastTwoArgumentsInReturnedArgvWithWrapper)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
@@ -206,7 +206,7 @@ TEST_F (GetArgvForTool, AtLeastTwoArgumentsInReturnedArgvWithWrapper)
 
 TEST_F (GetArgvForTool, AtLeastThreeArgumentsInReturnedArgvWithWrapperAndOpts)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
@@ -220,7 +220,7 @@ TEST_F (GetArgvForTool, AtLeastThreeArgumentsInReturnedArgvWithWrapperAndOpts)
 
 TEST_F (GetArgvForTool, FirstArgvIsInstrumentation)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
@@ -234,7 +234,7 @@ TEST_F (GetArgvForTool, FirstArgvIsInstrumentation)
 
 TEST_F (GetArgvForTool, SecondArgvIsProgramName)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
 
     ycom::NullTermArray argv (yexec::GetToolArgv (tool,
@@ -247,7 +247,7 @@ TEST_F (GetArgvForTool, SecondArgvIsProgramName)
 
 TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
 {
-    ON_CALL (tool, InstrumentationWrapper ())
+    ON_CALL (tool, WrapperBinary ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
@@ -292,7 +292,7 @@ class GetEnvForTool :
             /* Don't need the tool id, wrapper or args */
             EXPECT_CALL (tool, ToolIdentifier ()).Times (0);
             EXPECT_CALL (tool, WrapperOptions ()).Times (0);
-            EXPECT_CALL (tool, InstrumentationWrapper ()).Times (0);
+            EXPECT_CALL (tool, WrapperBinary ()).Times (0);
 
             /* Don't need to check if executables exist, the exec path
              * or exec things */
@@ -313,7 +313,7 @@ class GetEnvForTool :
 
 TEST_F (GetEnvForTool, ToolWithNoInstrumentationThrows)
 {
-    ON_CALL (tool, InstrumentationName ())
+    ON_CALL (tool, Name ())
         .WillByDefault (ReturnRef (ytestrexec::NoInstrumentation));
     EXPECT_THROW ({
         ycom::NullTermArray environment (yexec::GetToolEnv (tool,
@@ -323,7 +323,7 @@ TEST_F (GetEnvForTool, ToolWithNoInstrumentationThrows)
 
 TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
 {
-    ON_CALL (tool, InstrumentationName ())
+    ON_CALL (tool, Name ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
@@ -348,7 +348,7 @@ TEST_F (GetEnvForTool, MatchAtLeastTheFirstMembersInSysEnvironment)
 
 TEST_F (GetEnvForTool, FirstMembersInSysEnvironmentThenInstrumentationEnv)
 {
-    ON_CALL (tool, InstrumentationName ())
+    ON_CALL (tool, Name ())
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ycom::NullTermArray environment (yexec::GetToolEnv (tool,
                                                         syscalls));
@@ -411,7 +411,7 @@ class Relaunch :
             EXPECT_CALL (syscalls, GetSystemEnvironment ()).Times (0);
 
             /* No calls to tool */
-            EXPECT_CALL (tool, InstrumentationWrapper ()).Times (0);
+            EXPECT_CALL (tool, WrapperBinary ()).Times (0);
             EXPECT_CALL (tool, WrapperOptions ()).Times (0);
             EXPECT_CALL (tool, ToolIdentifier ()).Times (0);
         }

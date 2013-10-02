@@ -16,17 +16,17 @@ namespace
 {
     std::string const DefaultWrapperName ("");
     std::string const DefaultWrapperOptions ("");
-    std::string const DefaultInstrumentationName ("");
+    std::string const DefaultName ("");
 }
 
 ymock::instrumentation::tools::Program::Program ()
 {
-    ON_CALL (*this, InstrumentationWrapper ())
+    ON_CALL (*this, WrapperBinary ())
         .WillByDefault (ReturnRef (DefaultWrapperName));
     ON_CALL (*this, WrapperOptions ())
         .WillByDefault (ReturnRef (DefaultWrapperOptions));
-    ON_CALL (*this, InstrumentationName ())
-        .WillByDefault (ReturnRef (DefaultInstrumentationName));
+    ON_CALL (*this, Name ())
+        .WillByDefault (ReturnRef (DefaultName));
 
 }
 
@@ -37,8 +37,8 @@ ymock::instrumentation::tools::Program::~Program ()
 void
 ymock::instrumentation::tools::Program::IgnoreCalls ()
 {
-    EXPECT_CALL (*this, InstrumentationWrapper ()).Times (AtLeast (0));
-    EXPECT_CALL (*this, InstrumentationName ()).Times (AtLeast (0));
+    EXPECT_CALL (*this, WrapperBinary ()).Times (AtLeast (0));
+    EXPECT_CALL (*this, Name ()).Times (AtLeast (0));
     EXPECT_CALL (*this, WrapperOptions ()).Times (AtLeast (0));
     EXPECT_CALL (*this, ToolIdentifier ()).Times (AtLeast (0));
 }

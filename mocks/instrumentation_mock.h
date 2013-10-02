@@ -32,11 +32,11 @@ namespace yiqi
 
                         void IgnoreCalls ();
 
-                        MOCK_CONST_METHOD0 (InstrumentationWrapper,
+                        MOCK_CONST_METHOD0 (WrapperBinary,
                                             std::string const & ());
                         MOCK_CONST_METHOD0 (WrapperOptions,
                                             std::string const & ());
-                        MOCK_CONST_METHOD0 (InstrumentationName,
+                        MOCK_CONST_METHOD0 (Name,
                                             std::string const & ());
                         MOCK_CONST_METHOD0 (ToolIdentifier,
                                             ToolID ());

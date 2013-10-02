@@ -37,7 +37,7 @@ ycom::BuildCommandLine (int                 argc,
     arguments.reserve (3);
 
     /* Instrumentation tool */
-    std::string const &wrapper (tool.InstrumentationWrapper ());
+    std::string const &wrapper (tool.WrapperBinary ());
 
     if (!wrapper.empty ())
         arguments.push_back (wrapper);

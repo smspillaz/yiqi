@@ -40,18 +40,18 @@ namespace yiqi
                     virtual ~Program () {};
 
                     /**
-                     * @brief InstrumentationWrapper
+                     * @brief WrapperBinary
                      * @return The wrapper program used for instrumentation
                      */
-                    virtual std::string const & InstrumentationWrapper () const = 0;
+                    virtual std::string const & WrapperBinary () const = 0;
 
                     /**
-                     * @brief InstrumentationName
+                     * @brief Name
                      * @return The name of the instrumentation that we are
                      * running under, which may be a specific tool of the
                      * instrumentation wrapper
                      */
-                    virtual std::string const & InstrumentationName () const = 0;
+                    virtual std::string const & Name () const = 0;
 
                     /**
                      * @brief WrapperOptions

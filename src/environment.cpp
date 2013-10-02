@@ -102,7 +102,7 @@ YiqiEnvironment::SetUp ()
         yit::Program::Unique instrumentingProgram (yc::MakeProgramInfo (toolID));
 
         /* We can skip a bit if there is no instrumentation wrapper */
-        if (!instrumentingProgram->InstrumentationWrapper ().empty ())
+        if (!instrumentingProgram->WrapperBinary ().empty ())
         {
             ysysapi::SystemCalls::Unique calls (ysysapi::MakeUNIXSystemCalls ());
 
