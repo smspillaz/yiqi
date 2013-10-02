@@ -19,10 +19,23 @@ namespace yiqi
         namespace tools
         {
             class Program;
+            class Controller;
 
             namespace programs
             {
                 typedef std::unique_ptr <tools::Program> Unique;
+
+                Unique MakeNone ();
+                Unique MakeTimer ();
+                Unique MakeMemcheck ();
+                Unique MakeCallgrind ();
+                Unique MakeCachegrind ();
+                Unique MakePassthrough ();
+            }
+
+            namespace controllers
+            {
+                typedef std::unique_ptr <tools::Controller> Unique;
 
                 Unique MakeNone ();
                 Unique MakeTimer ();

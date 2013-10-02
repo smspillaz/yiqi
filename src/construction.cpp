@@ -5,6 +5,10 @@
  * See LICENCE.md for Copyright information
  */
 
+#include <array>
+#include <sstream>
+#include <string>
+
 #include "construction.h"
 #include "constants.h"
 #include "instrumentation_tool.h"
@@ -13,6 +17,7 @@ namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitp = yiqi::instrumentation::tools::programs;
+namespace yitc = yiqi::instrumentation::tools::controllers;
 namespace po = boost::program_options;
 
 namespace
@@ -55,22 +60,61 @@ yc::ParseOptionsForToolName (int                argc,
     return GetNoneString ();
 }
 
-yitp::Unique
-yc::MakeProgramInfo (yconst::InstrumentationTool toolID)
+namespace
 {
-    typedef yitp::Unique (*ToolFactory) ();
-    typedef std::map <yconst::InstrumentationTool, ToolFactory> FactoryMap;
-
-    static FactoryMap const toolConstructors
+    class ToolNotAvailableError :
+        public std::exception
     {
-        { yconst::InstrumentationTool::None, yitp::MakeNone },
-        { yconst::InstrumentationTool::Timer, yitp::MakeTimer },
-        { yconst::InstrumentationTool::Memcheck, yitp::MakeMemcheck },
-        { yconst::InstrumentationTool::Callgrind, yitp::MakeCallgrind },
-        { yconst::InstrumentationTool::Cachegrind, yitp::MakeCachegrind },
-        { yconst::InstrumentationTool::Passthrough, yitp::MakePassthrough },
+        public:
+
+            ToolNotAvailableError (yconst::InstrumentationTool id);
+            virtual ~ToolNotAvailableError () throw () {};
+            char const * what () const throw();
+
+        private:
+
+            std::string msg;
     };
 
-    ToolFactory const factory = toolConstructors.at (toolID);
-    return factory ();
+    /* These are sorted in the order of the enumerations in
+     * yconst::InstrumentationTool */
+    std::array <yit::FactoryPackage, 6> const toolConstructors =
+    {
+        {
+            { yitp::MakeNone, yitc::MakeNone },
+            { yitp::MakeTimer, yitc::MakeTimer },
+            { yitp::MakeMemcheck, yitc::MakeMemcheck },
+            { yitp::MakeCallgrind, yitc::MakeCallgrind },
+            { yitp::MakeCachegrind, yitc::MakeCachegrind },
+            { yitp::MakePassthrough, yitc::MakePassthrough }
+        }
+    };
+}
+
+ToolNotAvailableError::ToolNotAvailableError (yconst::InstrumentationTool id)
+{
+    std::stringstream ss;
+    ss << "Requested unimplemented tool " << static_cast <unsigned int> (id);
+    msg = ss.str();
+}
+
+char const *
+ToolNotAvailableError::what () const throw()
+{
+    return msg.c_str ();
+}
+
+yit::FactoryPackage const &
+yc::FactoryPackageForTool (yconst::InstrumentationTool toolID)
+{
+    try
+    {
+        yit::FactoryPackage const &factory =
+            toolConstructors.at (static_cast <unsigned int> (toolID));
+        return factory;
+    }
+    catch (std::range_error const &err)
+    {
+        throw ToolNotAvailableError (toolID);
+    }
 }

@@ -13,6 +13,7 @@
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitp = yiqi::instrumentation::tools::programs;
+namespace yitc = yiqi::instrumentation::tools::controllers;
 
 namespace
 {
@@ -25,6 +26,16 @@ namespace
             std::string const & WrapperOptions () const;
             std::string const & Name () const;
             yconst::InstrumentationTool ToolIdentifier () const;
+    };
+
+    class NoneController :
+        public yit::Controller
+    {
+        private:
+
+            ToolID ToolIdentifier () const;
+            void Start ();
+            void Stop (FinishMode mode);
     };
 }
 
@@ -56,8 +67,30 @@ NoneProgram::WrapperOptions () const
     return options;
 }
 
+yconst::InstrumentationTool
+NoneController::ToolIdentifier () const
+{
+    return yconst::InstrumentationTool::None;
+}
+
+void
+NoneController::Start ()
+{
+}
+
+void
+NoneController::Stop (FinishMode mode)
+{
+}
+
 yitp::Unique
 yitp::MakeNone ()
 {
     return yitp::Unique (new NoneProgram ());
+}
+
+yitc::Unique
+yitc::MakeNone ()
+{
+    return yitc::Unique (new NoneController ());
 }

@@ -14,6 +14,8 @@
 #include <memory>
 
 #include <constants.h>
+#include <valgrind/memcheck.h>
+#include <valgrind.h>
 
 namespace yiqi
 {
@@ -24,8 +26,7 @@ namespace yiqi
             /**
              * @brief An interface which describes some of the construction
              * parameters for the environment, including how the program should
-             * be instrumented and also some details on callbacks into that
-             * instrumentation.
+             * be instrumented.
              *
              * An instance of this interface is usually constructed by
              * ParseOptionsToParameters()
@@ -35,7 +36,7 @@ namespace yiqi
                 public:
 
                     typedef std::unique_ptr <Program> Unique;
-                    typedef yiqi::constants::InstrumentationTool ToolID;
+                    typedef constants::InstrumentationTool ToolID;
 
                     virtual ~Program () {};
 
@@ -75,6 +76,71 @@ namespace yiqi
                     Program & operator=(Program const &) = delete;
             };
 
+            /**
+             * @brief An interface for interacting with the currently
+             * instrumenting tool, namely as a means to start and stop
+             * instrumentation
+             */
+            class Controller
+            {
+                public:
+
+                    typedef std::unique_ptr <Controller> Unique;
+                    typedef constants::InstrumentationTool ToolID;
+
+                    enum class FinishMode
+                    {
+                        Report = 0,
+                        Throw
+                    };
+
+                    virtual ~Controller () {};
+
+                    /**
+                     * @brief Start collecting instrumentation data from
+                     * the currently active tool
+                     */
+                    virtual void Start () = 0;
+
+                    /**
+                     * @brief Stop collecting instrumentation data from
+                     * the currently active tool.
+                     * @param mode What to do when instrumentation data has
+                     * been collected. If mode is Throw, then any data
+                     * which would almost always be considered a negative will
+                     * result in an exception being thrown, failing the test.
+                     */
+                    virtual void Stop (FinishMode mode) = 0;
+
+                    /**
+                     * @brief ToolIdentifier
+                     * @return Fetches an identifier for the current tool
+                     */
+                    virtual ToolID ToolIdentifier () const = 0;
+
+                protected:
+
+                    Controller () = default;
+
+                private:
+
+                    Controller (Controller const &) = delete;
+                    Controller & operator=(Controller const &) = delete;
+            };
+
+            /**
+             * @brief A bundle of factory functions for a particular tool each
+             * describing a different interface for working with that tool but
+             * returning the abstract interface for it
+             */
+            struct FactoryPackage
+            {
+                typedef Program::Unique (*MakeProgram) ();
+                typedef Controller::Unique (*MakeController) ();
+
+                MakeProgram program;
+                MakeController controller;
+            };
         }
     }
 }

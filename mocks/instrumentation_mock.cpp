@@ -7,6 +7,7 @@
 
 #include "instrumentation_mock.h"
 
+using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::ReturnRef;
 
@@ -41,4 +42,20 @@ ymock::instrumentation::tools::Program::IgnoreCalls ()
     EXPECT_CALL (*this, Name ()).Times (AtLeast (0));
     EXPECT_CALL (*this, WrapperOptions ()).Times (AtLeast (0));
     EXPECT_CALL (*this, ToolIdentifier ()).Times (AtLeast (0));
+}
+
+ymock::instrumentation::tools::Controller::Controller ()
+{
+}
+
+ymock::instrumentation::tools::Controller::~Controller ()
+{
+}
+
+void
+ymock::instrumentation::tools::Controller::IgnoreCalls ()
+{
+    EXPECT_CALL (*this, ToolIdentifier ()).Times (AtLeast (0));
+    EXPECT_CALL (*this, Start ()).Times (AtLeast (0));
+    EXPECT_CALL (*this, Stop (_)).Times (AtLeast (0));
 }

@@ -41,6 +41,23 @@ namespace yiqi
                         MOCK_CONST_METHOD0 (ToolIdentifier,
                                             ToolID ());
                 };
+
+                class Controller :
+                    public yiqi::instrumentation::tools::Controller
+                {
+                    public:
+
+                        Controller ();
+                        ~Controller ();
+
+                        void IgnoreCalls ();
+
+                        MOCK_CONST_METHOD0 (ToolIdentifier,
+                                            ToolID ());
+
+                        MOCK_METHOD0 (Start, void ());
+                        MOCK_METHOD1 (Stop, void (FinishMode mode));
+                };
             }
         }
 
