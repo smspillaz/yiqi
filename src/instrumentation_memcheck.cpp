@@ -18,6 +18,7 @@ namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitv = yiqi::instrumentation::tools::valgrind;
 namespace yitp = yiqi::instrumentation::tools::programs;
+namespace yitc = yiqi::instrumentation::tools::controllers;
 
 namespace
 {
@@ -28,6 +29,16 @@ namespace
 
             Program::ToolID ToolIdentifier () const;
             std::string const & ToolAdditionalOptions () const;
+    };
+
+    class MemcheckController :
+        public yit::Controller
+    {
+        private:
+
+            Controller::ToolID ToolIdentifier () const;
+            void Start ();
+            void Stop (FinishMode mode);
     };
 }
 
@@ -44,8 +55,30 @@ MemcheckProgram::ToolAdditionalOptions () const
     return options;
 }
 
+void
+MemcheckController::Start ()
+{
+}
+
+void
+MemcheckController::Stop (FinishMode mode)
+{
+}
+
+yconst::InstrumentationTool
+MemcheckController::ToolIdentifier () const
+{
+    return yconst::InstrumentationTool::Memcheck;
+}
+
 yitp::Unique
 yitp::MakeMemcheck ()
 {
     return yitp::Unique (new MemcheckProgram ());
+}
+
+yitc::Unique
+yitc::MakeMemcheck ()
+{
+    return yitc::Unique (new MemcheckController ());
 }

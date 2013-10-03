@@ -17,7 +17,9 @@
 #include "test_util.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::ElementsAreArray;
+using ::testing::Field;
 using ::testing::Matcher;
 using ::testing::NotNull;
 using ::testing::StrEq;
@@ -178,18 +180,52 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
     EXPECT_EQ (ExpectedTool, tool);
 }
 
+TEST_F (ConstructionParameters, FatalExceptionOnInvalidToolLookup)
+{
+    unsigned int BadIDUint =
+        static_cast <unsigned int> (yconst::InstrumentationTool::Passthrough) + 1;
+    yconst::InstrumentationTool BadID =
+        static_cast <yconst::InstrumentationTool> (BadIDUint);
+
+    EXPECT_THROW ({
+        yc::FactoryPackageForTool (BadID);
+    }, std::exception);
+}
+
 class ConstructionParametersTable :
     public ConstructionParameters,
     public ::testing::WithParamInterface <yconst::InstrumentationToolName>
 {
 };
 
-TEST_P (ConstructionParametersTable, MakeProgramInfoReturnsExpectedTool)
+TEST_P (ConstructionParametersTable, FactoryInfoParamsNonNULL)
+{
+    yconst::InstrumentationTool const ExpectedID (GetParam ().tool);
+    yit::FactoryPackage const &package (yc::FactoryPackageForTool (ExpectedID));
+
+    EXPECT_THAT (package,
+                 AllOf (Field (&yit::FactoryPackage::program,
+                               NotNull ()),
+                        Field (&yit::FactoryPackage::controller,
+                               NotNull ())));
+}
+
+TEST_P (ConstructionParametersTable, FactoryInfoReturnsExpectedProgramID)
 {
     yconst::InstrumentationTool const ExpectedIdentifier (GetParam ().tool);
-    yit::Program::Unique tool (yc::MakeProgramInfo (ExpectedIdentifier));
+    auto const &package (yc::FactoryPackageForTool (ExpectedIdentifier));
+    auto const &program (package.program ());
 
-    EXPECT_EQ (ExpectedIdentifier, tool->ToolIdentifier ());
+    EXPECT_EQ (ExpectedIdentifier, program->ToolIdentifier ());
+}
+
+TEST_P (ConstructionParametersTable, FactoryInfoReturnsExpectedControllerID)
+{
+    yconst::InstrumentationTool const ExpectedIdentifier (GetParam ().tool);
+    auto const &package (yc::FactoryPackageForTool (ExpectedIdentifier));
+    auto const &controller (package.controller ());
+
+    EXPECT_EQ (ExpectedIdentifier, controller->ToolIdentifier ());
 }
 
 TEST_P (ConstructionParametersTable, ParseOptionsForToolReturnsExpectedTool)

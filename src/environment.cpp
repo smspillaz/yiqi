@@ -94,12 +94,14 @@ YiqiEnvironment::SetUp ()
     {
         po::options_description desc (yc::FetchOptionsDescription ());
 
+        /* Figure out if we need to re-exec here under valgrind */
         std::string const &toolStr (yc::ParseOptionsForToolName (priv->argc,
                                                                  priv->argv,
                                                                  desc));
         yconst::InstrumentationTool toolID (yconst::ToolFromString (toolStr));
-        /* Figure out if we need to re-exec here under valgrind */
-        yit::Program::Unique instrumentingProgram (yc::MakeProgramInfo (toolID));
+        yit::FactoryPackage factories (yc::FactoryPackageForTool (toolID));
+
+        yit::Program::Unique instrumentingProgram (factories.program ());
 
         /* We can skip a bit if there is no instrumentation wrapper */
         if (!instrumentingProgram->WrapperBinary ().empty ())

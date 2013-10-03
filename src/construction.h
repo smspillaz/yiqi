@@ -26,14 +26,13 @@ namespace yiqi
     {
         namespace tools
         {
-            class Program;
+            struct FactoryPackage;
         }
     }
 
     namespace construction
     {
         typedef yiqi::instrumentation::tools::Program ToolProgram;
-        typedef std::unique_ptr <ToolProgram> ProgramUniquePtr;
 
         /**
          * @brief FetchOptionsDescription returns the
@@ -47,8 +46,7 @@ namespace yiqi
         typedef boost::program_options::options_description Options;
 
         /**
-         * @brief ParseOptionsForTool
-         * @brief ParseOptionsToParameters
+         * @brief ParseOptionsForToolName
          * @param argc Number of arguments from main()
          * @param argv Arguments from main()
          * @param description A boost::program_options::options_description
@@ -62,8 +60,16 @@ namespace yiqi
                                  const char * const *argv,
                                  Options const      &description);
 
-        ProgramUniquePtr
-        MakeProgramInfo (yiqi::constants::InstrumentationTool);
+        /**
+         * @brief FactoryPackageForTool returns a set of factory functions
+         * for a named yiqi::constants::InstrumentationTool
+         * @param id A yiqi::constants::InstrumentationTool
+         * @throws An std::exception if the specified tool does not exist or
+         * is out of range. This should be considered a fatal error.
+         * @return An instrumentation::tools::FactoryPackage
+         */
+        instrumentation::tools::FactoryPackage const &
+        FactoryPackageForTool (yiqi::constants::InstrumentationTool id);
     }
 }
 

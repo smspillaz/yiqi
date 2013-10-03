@@ -13,6 +13,7 @@
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitp = yiqi::instrumentation::tools::programs;
+namespace yitc = yiqi::instrumentation::tools::controllers;
 
 namespace
 {
@@ -25,6 +26,16 @@ namespace
             std::string const & WrapperOptions () const;
             std::string const & Name () const;
             yconst::InstrumentationTool ToolIdentifier () const;
+    };
+
+    class TimerController :
+        public yit::Controller
+    {
+        private:
+
+            ToolID ToolIdentifier () const;
+            void Start ();
+            void Stop (FinishMode mode);
     };
 }
 
@@ -56,8 +67,30 @@ TimerProgram::WrapperOptions () const
     return options;
 }
 
+void
+TimerController::Start ()
+{
+}
+
+void
+TimerController::Stop (FinishMode mode)
+{
+}
+
+yconst::InstrumentationTool
+TimerController::ToolIdentifier () const
+{
+    return yconst::InstrumentationTool::Timer;
+}
+
 yitp::Unique
-yitp::MakeTimer()
+yitp::MakeTimer ()
 {
     return yitp::Unique (new TimerProgram ());
+}
+
+yitc::Unique
+yitc::MakeTimer ()
+{
+    return yitc::Unique (new TimerController ());
 }

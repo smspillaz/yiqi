@@ -13,6 +13,7 @@
 namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitp = yiqi::instrumentation::tools::programs;
+namespace yitc = yiqi::instrumentation::tools::controllers;
 
 namespace
 {
@@ -25,6 +26,16 @@ namespace
             std::string const & WrapperOptions () const;
             std::string const & Name () const;
             yconst::InstrumentationTool ToolIdentifier () const;
+    };
+
+    class PassthroughController :
+        public yit::Controller
+    {
+        private:
+
+            ToolID ToolIdentifier () const;
+            void Start ();
+            void Stop (FinishMode mode);
     };
 }
 
@@ -56,8 +67,30 @@ PassthroughProgram::WrapperOptions () const
     return options;
 }
 
+void
+PassthroughController::Start ()
+{
+}
+
+void
+PassthroughController::Stop (FinishMode mode)
+{
+}
+
+yconst::InstrumentationTool
+PassthroughController::ToolIdentifier () const
+{
+    return yconst::InstrumentationTool::Passthrough;
+}
+
 yitp::Unique
 yitp::MakePassthrough ()
 {
     return yitp::Unique (new PassthroughProgram ());
+}
+
+yitc::Unique
+yitc::MakePassthrough ()
+{
+    return yitc::Unique (new PassthroughController ());
 }

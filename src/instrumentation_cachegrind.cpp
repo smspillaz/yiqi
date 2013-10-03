@@ -18,6 +18,7 @@ namespace yconst = yiqi::constants;
 namespace yit = yiqi::instrumentation::tools;
 namespace yitv = yiqi::instrumentation::tools::valgrind;
 namespace yitp = yiqi::instrumentation::tools::programs;
+namespace yitc = yiqi::instrumentation::tools::controllers;
 
 namespace
 {
@@ -28,6 +29,16 @@ namespace
 
             Program::ToolID ToolIdentifier () const;
             std::string const & ToolAdditionalOptions () const;
+    };
+
+    class CachegrindController :
+        public yit::Controller
+    {
+        private:
+
+            void Start ();
+            void Stop (FinishMode mode);
+            Controller::ToolID ToolIdentifier () const;
     };
 }
 
@@ -44,8 +55,30 @@ CachegrindProgram::ToolAdditionalOptions () const
     return options;
 }
 
+void
+CachegrindController::Start ()
+{
+}
+
+void
+CachegrindController::Stop (FinishMode mode)
+{
+}
+
+yconst::InstrumentationTool
+CachegrindController::ToolIdentifier () const
+{
+    return yconst::InstrumentationTool::Cachegrind;
+}
+
 yitp::Unique
 yitp::MakeCachegrind ()
 {
     return yitp::Unique (new CachegrindProgram ());
+}
+
+yitc::Unique
+yitc::MakeCachegrind ()
+{
+    return yitc::Unique (new CachegrindController ());
 }
