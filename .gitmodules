@@ -1,3 +1,4 @@
 [submodule "cmake/Vera++"]
 	path = cmake/Vera++
 	url = git://github.com/polysquare/veracpp-cmake.git
+	branch = master
