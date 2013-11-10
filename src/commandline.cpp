@@ -253,8 +253,6 @@ namespace
     {
         auto last = first;
 
-        bool foundLast = false;
-
         /* Keep going until either the end, or until the block
          * where we've inserted stops. We already have the first
          * iterator, so move directly to the second */
@@ -271,17 +269,12 @@ namespace
 
             /* Found the first iterator that does not match */
             if (!pred (last, it))
-            {
-                foundLast = true;
                 break;
-            }
         }
 
         /* We need to put the last iterator at
-         * one past the position we intend to erase
-         * inclusive if it didn't happen already */
-        if (!foundLast)
-            ++last;
+         * one past the position we intend to erase */
+        ++last;
 
         return last;
     }
@@ -371,29 +364,42 @@ ycom::NullTermArray::append (std::vector <std::string> const &vec)
                                   vec));
 
     /* Reserve some more space */
-    size_t oldLength = priv->storedNewStrings.size ();
+    const size_t oldLength = priv->storedNewStrings.size ();
+    const size_t oldAllocation = priv->storedNewStrings.capacity ();
 
     priv->storedNewStrings.insert (priv->storedNewStrings.end (),
                                    vec.begin (),
                                    vec.end ());
 
-    /* Go to first newly stored string */
     auto firstNewlyStoredString (priv->storedNewStrings.begin ());
-    std::advance (firstNewlyStoredString, oldLength);
+
+    /* If the new minimum size would require a reallocation, then
+     * we need to take the pointer of every member of storedNewStrings.
+     * If a reallocation doesn't happen then we can skip that step */
+    if (oldAllocation > oldLength + vec.size ())
+        std::advance (firstNewlyStoredString, oldLength);
+
+    const size_t requiredSize = priv->vector.size () + vec.size ();
+
+    priv->vector.resize (requiredSize);
+
+    const size_t startIndexForVector =
+        (requiredSize - 1) -
+        priv->storedNewStrings.size () +
+        std::distance (priv->storedNewStrings.begin (),
+                       firstNewlyStoredString);
+
+    size_t vectorIndex = startIndexForVector;
 
     for (auto it = firstNewlyStoredString;
          it != priv->storedNewStrings.end ();
-         ++it)
+         ++it, ++vectorIndex)
     {
-        /* Should be null-terminator */
-        auto nullTerminatorPosition (priv->vector.end () - 1);
-
-        assert (*nullTerminatorPosition == NULL);
-
-        /* Insert the next pointer before the null terminator */
-        priv->vector.insert (nullTerminatorPosition,
-                             it->c_str ());
+        priv->vector[vectorIndex] = it->c_str ();
     }
+
+    /* The last should always be a null terminator */
+    assert (*(priv->vector.end () - 1) == NULL);
 
     cleanup.dismiss ();
 }
