@@ -1,6 +1,9 @@
 # /tests/acceptance/passthrough/CMakeLists.txt
 # Build a simple passthrough binary which takes its first argument, forks
 # and passes it to execvpe ()
+#
+# See LICENCE.md for Copyright information.
+include_directories (${YIQI_INTERNAL_SOURCE_DIRECTORY})
 
 set (YIQI_PASSTHROUGH_CONSTANTS_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/passthrough_constants.h
