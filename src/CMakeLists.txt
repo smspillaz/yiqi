@@ -28,13 +28,9 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
      ${CMAKE_CURRENT_SOURCE_DIR}/environment.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool_valgrind_base.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_timer.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_memcheck.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_callgrind.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_cachegrind.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_passthrough.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.h
@@ -43,6 +39,18 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/system_api.h
      ${CMAKE_CURRENT_SOURCE_DIR}/system_implementation.h
      ${CMAKE_CURRENT_SOURCE_DIR}/system_unix.cpp)
+
+# Sources that depend on valgrind
+if (YIQI_VALGRIND_FOUND)
+
+    set (YIQI_LIBRARY_SRCS
+         ${YIQI_LIBRARY_SRCS}
+         ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool_valgrind_base.cpp
+         ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_memcheck.cpp
+         ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_callgrind.cpp
+         ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_cachegrind.cpp)
+
+endif (YIQI_VALGRIND_FOUND)
 
 add_library (${YIQI_LIBRARY} STATIC
              ${YIQI_LIBRARY_SRCS})

@@ -22,7 +22,7 @@ find_package (GTest QUIET)
 find_package (VeraPP 1.2 REQUIRED)
 
 include (FindPkgConfig)
-pkg_check_modules (YIQI_VALGRIND REQUIRED valgrind)
+pkg_check_modules (YIQI_VALGRIND valgrind)
 
 # We must try to find google-mock first, if that is unavailable then
 # building it will build both it and google-test
