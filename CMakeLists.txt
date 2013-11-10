@@ -104,6 +104,72 @@ if (NOT GTEST_FOUND)
 
 endif (NOT GTEST_FOUND)
 
+find_library (GMOCK_LIBRARY gmock)
+find_library (GMOCK_MAIN_LIBRARY gmock_main)
+# If we still couldn't find it, then set up an external project
+# and build it there
+
+macro (yiqi_import_library_from_extproject library_target location extproj)
+
+    add_library (${library_target} STATIC IMPORTED GLOBAL)
+    set_target_properties (${library_target}
+                           PROPERTIES IMPORTED_LOCATION ${location})
+    add_dependencies (${library_target} ${extproj})
+
+endmacro (yiqi_import_library_from_extproject)
+
+if (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
+
+    include (ExternalProject)
+
+    set (BIN_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+    set (GMOCK_EXT_PROJECT_NAME GoogleMock)
+    set (GMOCK_PREFIX ${BIN_DIR}/__gmock)
+    set (GMOCK_SOURCE_DIR ${GMOCK_PREFIX}/src/${GMOCK_EXT_PROJECT_NAME})
+    set (GMOCK_DEFAULT_BINARY_DIR ${GMOCK_SOURCE_DIR}-build)
+    set (GTEST_DEFAULT_BINARY_DIR ${GMOCK_DEFAULT_BINARY_DIR}/gtest)
+    set (GTEST_SOURCE_DIR ${GMOCK_SOURCE_DIR}/gtest)
+    set (GMOCK_URL "https://googlemock.googlecode.com/files/gmock-1.7.0.zip")
+
+    set (EXTPROJECT_TARGET GoogleMock)
+
+    ExternalProject_Add (${EXTPROJECT_TARGET}
+                         URL ${GMOCK_URL}
+                         PREFIX ${GMOCK_PREFIX}
+                         INSTALL_COMMAND "")
+
+    set (GMOCK_LIBRARY_PATH ${GMOCK_DEFAULT_BINARY_DIR}/libgmock.a)
+    set (GMOCK_MAIN_LIBRARY_PATH ${GMOCK_DEFAULT_BINARY_DIR}/libgmock_main.a)
+    set (GTEST_LIBRARY_PATH ${GTEST_DEFAULT_BINARY_DIR}/libgtest.a)
+    set (GTEST_MAIN_LIBRARY_PATH ${GTEST_DEFAULT_BINARY_DIR}/libgtest_main.a)
+
+    set (GMOCK_LIBRARY gmock)
+    set (GMOCK_MAIN_LIBRARY gmock_main)
+    set (GTEST_LIBRARY gtest)
+    set (GTEST_MAIN_LIBRARY gtest_main)
+
+    set (GTEST_INCLUDE_DIR ${GTEST_SOURCE_DIR}/include)
+    set (GMOCK_INCLUDE_DIR ${GMOCK_SOURCE_DIR}/include)
+
+    # Tell CMake that we've imported some libraries
+    yiqi_import_library_from_extproject (${GMOCK_LIBRARY}
+                                         ${GMOCK_LIBRARY_PATH}
+                                         ${EXTPROJECT_TARGET})
+    yiqi_import_library_from_extproject (${GMOCK_MAIN_LIBRARY}
+                                         ${GMOCK_MAIN_LIBRARY_PATH}
+                                         ${EXTPROJECT_TARGET})
+    yiqi_import_library_from_extproject (${GTEST_LIBRARY}
+                                         ${GTEST_LIBRARY_PATH}
+                                         ${EXTPROJECT_TARGET})
+    yiqi_import_library_from_extproject (${GTEST_MAIN_LIBRARY}
+                                         ${GTEST_MAIN_LIBRARY_PATH}
+                                         ${EXTPROJECT_TARGET})
+
+    set (GTEST_FOUND 1)
+
+endif (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
+
 if (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
     message (SEND_ERROR "Google Test is required to build Yiqi")
 endif (NOT GTEST_FOUND OR NOT GMOCK_LIBRARY OR NOT GMOCK_MAIN_LIBRARY)
