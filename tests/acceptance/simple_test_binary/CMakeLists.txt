@@ -5,6 +5,8 @@
 set (YIQI_SIMPLE_TEST_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/simple_test.cpp)
 
+include_directories (${YIQI_EXTERNAL_INCLUDE_DIRS})
+
 add_executable (${YIQI_SIMPLE_TEST_EXEC}
                 ${YIQI_SIMPLE_TEST_SRCS})
 
@@ -17,4 +19,5 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
 target_link_libraries (${YIQI_SIMPLE_TEST_EXEC}
                        ${YIQI_MAIN_LIBRARY}
                        ${YIQI_LIBRARY}
-                       ${GTEST_LIBRARY})
+                       ${GTEST_LIBRARY}
+                       ${CMAKE_THREAD_LIBS_INIT})

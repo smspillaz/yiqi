@@ -11,6 +11,10 @@ set (YIQI_SAMPLES_SRCS
 set (YIQI_SAMPLES_BINARY
      yiqi_samples)
 
+include_directories (${YIQI_EXTERNAL_INCLUDE_DIRS}
+                     ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
+                     ${YIQI_INTERNAL_SOURCE_DIRECTORY})
+
 add_executable (${YIQI_SAMPLES_BINARY}
                 ${YIQI_SAMPLES_SRCS})
 
@@ -23,4 +27,5 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
 target_link_libraries (${YIQI_SAMPLES_BINARY}
                        ${YIQI_MAIN_LIBRARY}
                        ${YIQI_LIBRARY}
-                       ${GTEST_LIBRARY})
+                       ${GTEST_LIBRARY}
+                       ${CMAKE_THREAD_LIBS_INIT})

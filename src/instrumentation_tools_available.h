@@ -10,42 +10,6 @@
 #ifndef YIQI_INSTRUMENTATION_TOOLS_AVAILABLE_H
 #define YIQI_INSTRUMENTATION_TOOLS_AVAILABLE_H
 
-#include <memory>
-
-namespace yiqi
-{
-    namespace instrumentation
-    {
-        namespace tools
-        {
-            class Program;
-            class Controller;
-
-            namespace programs
-            {
-                typedef std::unique_ptr <tools::Program> Unique;
-
-                Unique MakeNone ();
-                Unique MakeTimer ();
-                Unique MakeMemcheck ();
-                Unique MakeCallgrind ();
-                Unique MakeCachegrind ();
-                Unique MakePassthrough ();
-            }
-
-            namespace controllers
-            {
-                typedef std::unique_ptr <tools::Controller> Unique;
-
-                Unique MakeNone ();
-                Unique MakeTimer ();
-                Unique MakeMemcheck ();
-                Unique MakeCallgrind ();
-                Unique MakeCachegrind ();
-                Unique MakePassthrough ();
-            }
-        }
-    }
-}
+#include <tools_declarations.h>
 
 #endif // YIQI_INSTRUMENTATION_TOOLS_AVAILABLE_H

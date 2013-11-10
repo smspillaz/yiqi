@@ -25,8 +25,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <operating_system_implementation.h>
+#include <operating_system_wrapper.h>
+
 #include "passthrough_constants.h"
 
+namespace ysysunix = yiqi::system::unix;
 namespace ytp = yiqi::testing::passthrough;
 
 namespace
@@ -53,9 +57,11 @@ int main (int argc, char *argv[])
             /* Child process */
             if (child == 0)
             {
-                if (execvpe (argv[i],
-                             &argv[i],
-                             environ) == -1)
+                auto os = ysysunix::MakeOSWrapper ();
+
+                if (os->execve (argv[i],
+                                &argv[i],
+                                os->environment ()) == -1)
                 {
                     std::error_code code (errno,
                                           std::system_category ());

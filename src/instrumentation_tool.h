@@ -14,8 +14,8 @@
 #include <memory>
 
 #include <constants.h>
-#include <valgrind/memcheck.h>
-#include <valgrind.h>
+//#include <valgrind/memcheck.h>
+//#include <valgrind.h>
 
 namespace yiqi
 {

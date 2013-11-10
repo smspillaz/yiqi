@@ -19,13 +19,14 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 #include <boost/iostreams/stream.hpp>
 
-#include "nonportable_gnu.h"
-
 #include <unistd.h>
 #include <fcntl.h>
 
 #include <commandline.h>
 #include <constants.h>
+#include <instrumentation_tools_available.h>
+#include <operating_system_wrapper.h>
+#include <operating_system_implementation.h>
 
 #include <passthrough_constants.h>
 
@@ -43,6 +44,9 @@ namespace ycom = yiqi::commandline;
 namespace yconst = yiqi::constants;
 namespace yta = yiqi::testing::acceptance;
 namespace ytp = yiqi::testing::passthrough;
+namespace ysysunix = yiqi::system::unix;
+
+typedef ysysunix::OperatingSystemWrapper OSWrapper;
 
 namespace
 {
@@ -50,9 +54,9 @@ namespace
     {
         public:
 
-            Pipe ()
+            Pipe (OSWrapper &userspace)
             {
-                if (pipe2 (mPipe, O_CLOEXEC) == -1)
+                if (userspace.pipe (mPipe) == -1)
                     throw std::runtime_error (strerror (errno));
             }
 
@@ -157,7 +161,8 @@ namespace
             operator= (RedirectedDescriptor const &) = delete;
     };
 
-    pid_t launchBinary (std::string const  &executable,
+    pid_t launchBinary (OSWrapper          &userspace,
+                        std::string const  &executable,
                         char const * const *argv,
                         char const * const *env,
                         int                &stdoutWriteEnd)
@@ -190,9 +195,9 @@ namespace
         /* Child process */
         if (child == 0)
         {
-            if (execvpe (executable.c_str (),
-                const_cast <char * const *> (argv),
-                const_cast <char * const *> (env)) == -1)
+            if (userspace.execve (executable.c_str (),
+                                  argv,
+                                  env) == -1)
             {
                 std::cerr << "execvpe failed with error "
                           << errno
@@ -214,13 +219,15 @@ namespace
         return child;
     }
 
-    int launchBinaryAndWaitForReturn (std::string const         &executable,
+    int launchBinaryAndWaitForReturn (OSWrapper                 &userspace,
+                                      std::string const         &executable,
                                       ycom::NullTermArray const &argv,
                                       ycom::NullTermArray const &env,
                                       int                       &stdoutWrite)
     {
         int status = 0;
-        pid_t child = launchBinary (executable,
+        pid_t child = launchBinary (userspace,
+                                    executable,
                                     argv.underlyingArray (),
                                     env.underlyingArray (),
                                     stdoutWrite);
@@ -260,7 +267,9 @@ class ChildOutputTest :
     public:
 
         ChildOutputTest () :
-            env (environ)
+            userspace (ysysunix::MakeOSWrapper ()),
+            env (userspace->environment()),
+            childStdoutPipe (*userspace)
         {
         }
 
@@ -274,6 +283,9 @@ class ChildOutputTest :
     protected:
 
         std::vector <std::string> GetChildOutput ();
+        int LaunchBinaryWithInternalArgv (std::string const &);
+
+        std::unique_ptr<ysysunix::OperatingSystemWrapper> userspace;
 
         ycom::NullTermArray argv;
         ycom::NullTermArray env;
@@ -315,23 +327,27 @@ ChildOutputTest::GetChildOutput ()
     return lines;
 }
 
+int
+ChildOutputTest::LaunchBinaryWithInternalArgv (std::string const &executable)
+{
+  return launchBinaryAndWaitForReturn (*userspace,
+                                       executable,
+                                       argv,
+                                       env,
+                                       childStdoutPipe.WriteEnd ());
+}
+
 TEST_F (DirectlyExecutePassthrough, ExecuteNoThrow)
 {
     EXPECT_NO_THROW ({
-        launchBinaryAndWaitForReturn (yta::passthrough,
-                                      argv,
-                                      env,
-                                      childStdoutPipe.WriteEnd ());
+        LaunchBinaryWithInternalArgv (yta::passthrough);
     });
 }
 
 TEST_F (DirectlyExecutePassthrough, ExecuteNoArgsReturns1)
 {
     EXPECT_EQ (1,
-               launchBinaryAndWaitForReturn (yta::passthrough,
-                                             argv,
-                                             env,
-                                             childStdoutPipe.WriteEnd ()));
+               LaunchBinaryWithInternalArgv (yta::passthrough));
 }
 
 TEST_F (DirectlyExecutePassthrough, ExecuteWithNoExecArgsReturns1)
@@ -340,18 +356,12 @@ TEST_F (DirectlyExecutePassthrough, ExecuteWithNoExecArgsReturns1)
     argv.append (MockArgument);
 
     EXPECT_EQ (1,
-               launchBinaryAndWaitForReturn (yta::passthrough,
-                                             argv,
-                                             env,
-                                             childStdoutPipe.WriteEnd ()));
+               LaunchBinaryWithInternalArgv (yta::passthrough));
 }
 
 TEST_F (DirectlyExecutePassthrough, ExecuteNoArgsOutputHeader)
 {
-    launchBinaryAndWaitForReturn (yta::passthrough,
-                                  argv,
-                                  env,
-                                  childStdoutPipe.WriteEnd ());
+    LaunchBinaryWithInternalArgv (yta::passthrough);
 
     std::vector <std::string> output (GetChildOutput ());
 
@@ -368,10 +378,7 @@ TEST_F (DirectlyExecutePassthrough, ExecuteWithArgsOutputArg)
     std::string const MockArgument ("--ARGUMENT");
     argv.append (MockArgument);
 
-    launchBinaryAndWaitForReturn (yta::passthrough,
-                                  argv,
-                                  env,
-                                  childStdoutPipe.WriteEnd ());
+    LaunchBinaryWithInternalArgv (yta::passthrough);
 
     std::vector <std::string> output (GetChildOutput ());
 
@@ -419,10 +426,7 @@ class DirectlyExecuteSimpleTest :
 TEST_F (DirectlyExecuteSimpleTest, ExecuteNoThrow)
 {
     EXPECT_NO_THROW ({
-        launchBinaryAndWaitForReturn (yta::simpleTest,
-                                      argv,
-                                      env,
-                                      childStdoutPipe.WriteEnd ());
+        LaunchBinaryWithInternalArgv (yta::simpleTest);
     });
 }
 
@@ -430,10 +434,7 @@ TEST_F (DirectlyExecuteSimpleTest, ExecuteWithToolArgsRunningUnderMsg)
 {
     argv.append (dashdashYiqiToolOption);
     argv.append (passthroughTool);
-    launchBinaryAndWaitForReturn (yta::simpleTest,
-                                  argv,
-                                  env,
-                                  childStdoutPipe.WriteEnd ());
+    LaunchBinaryWithInternalArgv (yta::simpleTest);
 
     std::vector <std::string> output (GetChildOutput ());
 
@@ -449,10 +450,7 @@ TEST_F (DirectlyExecuteSimpleTest, ExecuteWithToolArgsOptionPassthroughMsg)
 {
     argv.append (dashdashYiqiToolOption);
     argv.append (passthroughTool);
-    launchBinaryAndWaitForReturn (yta::simpleTest,
-                                  argv,
-                                  env,
-                                  childStdoutPipe.WriteEnd ());
+    LaunchBinaryWithInternalArgv (yta::simpleTest);
 
     std::vector <std::string> output (GetChildOutput ());
 

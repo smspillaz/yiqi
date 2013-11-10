@@ -12,6 +12,8 @@ set (YIQI_PASSTHROUGH_CONSTANTS_LIBRARY_SRCS
 add_library (${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY} SHARED
              ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY_SRCS})
 
+include_directories (${YIQI_INTERNAL_SOURCE_DIRECTORY})
+
 set (YIQI_PASSTHROUGH_EXEC_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/passthrough.cpp)
 
@@ -25,4 +27,5 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ERROR)
 
 target_link_libraries (${YIQI_PASSTHROUGH_EXEC}
-                       ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY})
+                       ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY}
+                       ${YIQI_LIBRARY})

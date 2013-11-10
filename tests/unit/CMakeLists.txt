@@ -6,6 +6,7 @@
 
 include_directories (${YIQI_INTERNAL_INCLUDE_DIRECTORY}
                      ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                     ${YIQI_INTERNAL_SOURCE_BINARY_DIRECTORY}
                      ${YIQI_MOCKS_DIRECTORY}
                      ${YIQI_MATCHERS_DIRECTORY}
                      ${YIQI_TESTS_UTIL_DIRECTORY}
@@ -36,7 +37,6 @@ target_link_libraries (${YIQI_UNIT_TESTS_BINARY}
                        ${YIQI_MOCKS_LIBRARY}
                        ${YIQI_MATCHERS_LIBRARY}
                        ${YIQI_TESTS_UTIL_LIBRARY}
-                       ${GTEST_LIBRARY}
-                       ${GTEST_MAIN_LIBRARY}
+                       ${GTEST_BOTH_LIBRARIES}
                        ${GMOCK_LIBRARY}
                        ${GMOCK_MAIN_LIBRARY})

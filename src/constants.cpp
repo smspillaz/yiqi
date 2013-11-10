@@ -1,15 +1,20 @@
 /*
- * constants.h:
+ * constants.cpp:
  * Provide some definitions for constants which
  * will be used throughout the framework
  *
  * See LICENCE.md for Copyright information
  */
 
+#include <algorithm>
+#include <cstring>
 #include <map>
 #include <mutex>
+#include <sstream>
+#include <stdexcept>
 
 #include "constants.h"
+#include "instrumentation_tools_available.h"
 
 namespace yconst = yiqi::constants;
 
@@ -17,56 +22,35 @@ char const * yconst::ValgrindWrapper = "valgrind";
 char const * yconst::ValgrindToolOptionPrefix = "--tool=";
 char const * yconst::YiqiToolOption = "yiqi_tool";
 char const * yconst::YiqiToolEnvKey = "__YIQI_INSTRUMENTATION_TOOL_ACTIVE";
-char const * yconst::YiqiRunningUnderHeader = "[YIQI] RUNNING UNDER INSTRUMENTATION: ";
-
-yconst::ToolsArray const & yconst::InstrumentationToolNames()
-{
-    static ToolsArray const names =
-    {
-        {
-            { InstrumentationTool::None, "none" },
-            { InstrumentationTool::Timer, "timer" },
-            { InstrumentationTool::Memcheck, "memcheck" },
-            { InstrumentationTool::Callgrind, "callgrind" },
-            { InstrumentationTool::Cachegrind, "cachegrind" },
-            { InstrumentationTool::Passthrough, "passthrough" }
-        }
-    };
-
-    return names;
-}
+char const * yconst::YiqiRunningUnderHeader =
+    "[YIQI] RUNNING UNDER INSTRUMENTATION: ";
 
 char const *
 yconst::StringFromTool (InstrumentationTool toolValue)
 {
-    typedef std::map <InstrumentationTool, char const *> ToolToStringMap;
-
-    static ToolToStringMap toolToStringMap;
-    static std::once_flag  populateOnceFlag;
-
-    std::call_once (populateOnceFlag, [&]() {
-                        for (auto const &tool :
-                             yconst::InstrumentationToolNames ())
-                            toolToStringMap[tool.tool] = tool.name;
-                    });
-
-    return toolToStringMap[toolValue];
+    unsigned int index = static_cast <unsigned int> (toolValue);
+    return yconst::InstrumentationToolNames ()[index].name;
 
 }
 
 yconst::InstrumentationTool
 yconst::ToolFromString (const std::string &str)
 {
-    typedef std::map <std::string, InstrumentationTool> StringToToolMap;
+    yconst::ToolsArray const &array (yconst::InstrumentationToolNames ());
+    auto match =
+        [](InstrumentationToolName const &tool, std::string const &s) -> bool {
+            return std::strcmp (tool.name, s.c_str ()) < 0;
+        };
+    auto it (std::lower_bound (array.begin (),
+                               array.end (),
+                               str,
+                               match));
+    if (it != array.end () &&
+        std::strcmp (it->name, str.c_str ()) == 0)
+        return it->tool;
 
-    static StringToToolMap stringToToolMap;
-    static std::once_flag  populateOnceFlag;
+    std::stringstream ss;
+    ss << "No such tool with name " << str;
 
-    std::call_once (populateOnceFlag, [&]() {
-                        for (auto const &tool :
-                             yconst::InstrumentationToolNames ())
-                            stringToToolMap[tool.name] = tool.tool;
-                    });
-
-    return stringToToolMap[str];
+    throw std::logic_error (ss.str ());
 }
