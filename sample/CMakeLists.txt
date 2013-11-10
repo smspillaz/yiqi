@@ -3,6 +3,8 @@
 #
 # See LICENCE.md for Copyright information
 
+include_directories (${YIQI_EXTERNAL_INCLUDE_DIRS})
+
 set (YIQI_SAMPLES_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/yiqi_sample_basic.cpp)
 
