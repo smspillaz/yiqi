@@ -11,14 +11,13 @@
 #include <stdexcept>
 #include <vector>
 
-#include <folly/ScopeGuard.h>
-
 #include <cstring>
 
 #include <assert.h>
 
 #include "commandline.h"
 #include "instrumentation_tool.h"
+#include "scopeguard.h"
 
 namespace ycom = yiqi::commandline;
 namespace yit = yiqi::instrumentation::tools;
@@ -365,10 +364,10 @@ ycom::NullTermArray::eraseAppended (StringVector const &values)
 void
 ycom::NullTermArray::append (std::vector <std::string> const &vec)
 {
-    auto cleanup = folly::makeGuard (
-                       std::bind (&ycom::NullTermArray::eraseAppended,
-                                  this,
-                                  vec));
+    auto cleanup (yiqi::ScopeGuard (
+                      std::bind (&ycom::NullTermArray::eraseAppended,
+                                 this,
+                                 vec)));
 
     /* Reserve some more space */
     size_t oldLength = priv->storedNewStrings.size ();

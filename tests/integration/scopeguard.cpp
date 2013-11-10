@@ -7,7 +7,7 @@
 
 #include <gmock/gmock.h>
 
-#include <folly/ScopeGuard.h>
+#include "scopeguard.h"
 
 namespace
 {
@@ -44,7 +44,7 @@ class ScopeGuard :
 
 TEST_F (ScopeGuard, NoThrowNoCleanup)
 {
-    auto cleanup = folly::makeGuard (verifier.CleanupFuncBinding ());
+    auto cleanup = yiqi::ScopeGuard (verifier.CleanupFuncBinding ());
     cleanup.dismiss ();
 
     EXPECT_CALL (verifier, Cleanup ()).Times (0);
@@ -56,7 +56,7 @@ TEST_F (ScopeGuard, CleanupOnThrowIfNotDismiss)
 
     try
     {
-        auto cleanup = folly::makeGuard (verifier.CleanupFuncBinding ());
+        auto cleanup = yiqi::ScopeGuard (verifier.CleanupFuncBinding ());
         throw std::exception ();
     }
     catch (...)
@@ -70,7 +70,7 @@ TEST_F (ScopeGuard, NoCleanupOnThrowIfDismiss)
 
     try
     {
-        auto cleanup = folly::makeGuard (verifier.CleanupFuncBinding ());
+        auto cleanup = yiqi::ScopeGuard (verifier.CleanupFuncBinding ());
         cleanup.dismiss ();
         throw std::exception ();
     }
