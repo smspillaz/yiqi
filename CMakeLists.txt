@@ -198,28 +198,6 @@ set (YIQI_VERAPP_IMPORT_RULES yiqi_verapp_import_rules)
 
 include (${YIQI_CMAKE_DIRECTORY}/VeraPPTargets.cmake)
 
-# Set up Folly
-find_path (FOLLY_INCLUDE_DIR
-           folly/folly-config.h)
-
-find_library (FOLLY_LIBRARY folly)
-find_library (FOLLY_BENCHMARK_LIBRARY follybenchmark)
-find_library (FOLLY_FINGERPRINT_LIBRARY follyfingerprint)
-find_library (FOLLY_TIMEOUT_QUEUE_LIBRARY follytimeout_queue)
-
-if (NOT FOLLY_INCLUDE_DIR OR
-    NOT FOLLY_LIBRARY OR
-    NOT FOLLY_BENCHMARK_LIBRARY OR
-    NOT FOLLY_FINGERPRINT_LIBRARY OR
-    NOT FOLLY_TIMEOUT_QUEUE_LIBRARY)
-    message (SEND_ERROR "Folly (http://github.com/facebook/folly) is"
-                        " required to build yiqi")
-endif (NOT FOLLY_INCLUDE_DIR OR
-       NOT FOLLY_LIBRARY OR
-       NOT FOLLY_BENCHMARK_LIBRARY OR
-       NOT FOLLY_FINGERPRINT_LIBRARY OR
-       NOT FOLLY_TIMEOUT_QUEUE_LIBRARY)
-
 # -fPIC, -Wall and -Werror are mandatory
 set (COMPILER_FLAGS "-fPIC -Wall -Werror")
 set (CXX_CXX11_FLAGS "-std=c++0x")
@@ -229,7 +207,6 @@ set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMPILER_FLAGS}")
 set (YIQI_EXTERNAL_INCLUDE_DIRS
      ${YIQI_VALGRIND_INCLUDE_DIRS}
      ${Boost_INCLUDE_DIRS}
-     ${FOLLY_INCLUDE_DIR}
      ${GTEST_INCLUDE_DIR}
      ${GMOCK_INCLUDE_DIR})
 set (YIQI_EXTERNAL_LIBRARY_DIRS
