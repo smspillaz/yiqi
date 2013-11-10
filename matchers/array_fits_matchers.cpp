@@ -11,3 +11,28 @@
  *
  * See LICENCE.md for Copyright information
  */
+
+#include "array_fits_matchers.h"
+
+namespace ymatchutil = yiqi::matchers::util;
+
+std::ostream &
+ymatchutil::InsertIntoStreamIfNotEmpty (std::string const &str,
+                                        std::ostream      &os)
+{
+    if (!str.empty ())
+        os << ", " << str;
+
+    return os;
+}
+
+ymatchutil::StringMatchResultListener::StringMatchResultListener () :
+    MatchResultListener (&mStringStream)
+{
+}
+
+std::string
+ymatchutil::StringMatchResultListener::str () const
+{
+    return mStringStream.str ();
+}

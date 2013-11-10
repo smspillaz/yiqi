@@ -23,6 +23,27 @@ namespace yiqi
 {
     namespace matchers
     {
+        namespace util
+        {
+            std::ostream & InsertIntoStreamIfNotEmpty(std::string const &str,
+                                                      std::ostream      &os);
+
+            class StringMatchResultListener :
+                public ::testing::MatchResultListener
+            {
+                public:
+
+                    StringMatchResultListener ();
+
+                    std::string str () const;
+
+                private:
+
+                    std::stringstream mStringStream;
+            };
+
+        }
+
         template <typename ArrayType>
         class ArrayMatcher :
             public ::testing::MatcherInterface <ArrayType const *>
@@ -109,18 +130,21 @@ namespace yiqi
                         {
                             for (size_t i = 0; i < n; ++i)
                             {
-                                namespace ti = ::testing::internal;
-                                ti::StringMatchResultListener s;
+                                util::StringMatchResultListener s;
                                 bool success =
                                     mMatchers[i].MatchAndExplain (arr[i], &s);
 
                                 if (!success)
                                 {
                                     std::ostream *stream (listener->stream ());
+
+                                    if (!stream)
+                                        return false;
+
                                     *listener << "whose element #" << i
                                               << "doesn't match";
-                                    ti::PrintIfNotEmpty (s.str (),
-                                                         stream);
+                                    util::InsertIntoStreamIfNotEmpty (s.str (),
+                                                                      *stream);
                                     return false;
                                 }
                             }
