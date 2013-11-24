@@ -1,10 +1,19 @@
 language: cpp
-compiler:
-  - gcc
-  - clang
+env:
+ - CC_OVERLOAD=gcc CXX_OVERLOAD=g++
+ - CC_OVERLOAD=clang CXX_OVERLOAD=clang++
+ - CC_OVERLOAD=${CC} CXX_OVERLOAD=${CXX} WRAPPER=scan-build
 before_install:
   - git submodule update --init --recursive
   - sudo apt-add-repository -y ppa:smspillaz/verapp-latest
   - sudo apt-get update -qq
   - sudo apt-get install -qq `cat DEPENDENCIES`
-script: mkdir build && cd build && cmake .. && make && cd tests && ./unit/yiqi_unit_tests && ./integration/yiqi_integration_tests && ./acceptance/yiqi_acceptance_tests
+script:
+  - mkdir build
+  - cd build
+  - CC=${CC_OVERLOAD} CXX=${CXX_OVERLOAD} ${WRAPPER} cmake ..
+  - ${WRAPPER} make
+  - cd tests 
+  - ./unit/yiqi_unit_tests 
+  - ./integration/yiqi_integration_tests
+  - ./acceptance/yiqi_acceptance_tests
