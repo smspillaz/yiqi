@@ -32,7 +32,6 @@ target_link_libraries (${YIQI_INTEGRATION_TESTS_BINARY}
                        ${YIQI_MOCKS_LIBRARY}
                        ${YIQI_MATCHERS_LIBRARY}
                        ${YIQI_TESTS_UTIL_LIBRARY}
-                       ${GTEST_LIBRARY}
-                       ${GTEST_MAIN_LIBRARY}
+                       ${GTEST_BOTH_LIBRARIES}
                        ${GMOCK_LIBRARY}
                        ${GMOCK_MAIN_LIBRARY})

@@ -9,6 +9,8 @@
 #include <sstream>
 #include <mutex>
 
+#include <valgrind.h>
+
 #include "constants.h"
 #include "instrumentation_tool.h"
 #include "instrumentation_tool_valgrind_base.h"

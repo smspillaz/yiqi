@@ -13,8 +13,6 @@
 #include <memory>
 #include <boost/program_options.hpp>
 
-#include "instrumentation_tools_available.h"
-
 namespace yiqi
 {
     namespace constants
@@ -32,8 +30,6 @@ namespace yiqi
 
     namespace construction
     {
-        typedef yiqi::instrumentation::tools::Program ToolProgram;
-
         /**
          * @brief FetchOptionsDescription returns the
          * available command line options to be used with this program

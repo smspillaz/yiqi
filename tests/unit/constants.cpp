@@ -11,7 +11,8 @@
 
 #include <gtest/gtest.h>
 
-#include "constants.h"
+#include <constants.h>
+#include <instrumentation_tools_available.h>
 
 using ::testing::WithParamInterface;
 using ::testing::ValuesIn;

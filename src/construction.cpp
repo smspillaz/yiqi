@@ -12,6 +12,7 @@
 #include "construction.h"
 #include "constants.h"
 #include "instrumentation_tool.h"
+#include "instrumentation_tools_available.h"
 
 namespace yconst = yiqi::constants;
 namespace yc = yiqi::construction;
@@ -75,27 +76,13 @@ namespace
 
             std::string msg;
     };
-
-    /* These are sorted in the order of the enumerations in
-     * yconst::InstrumentationTool */
-    std::array <yit::FactoryPackage, 6> const toolConstructors =
-    {
-        {
-            { yitp::MakeNone, yitc::MakeNone },
-            { yitp::MakeTimer, yitc::MakeTimer },
-            { yitp::MakeMemcheck, yitc::MakeMemcheck },
-            { yitp::MakeCallgrind, yitc::MakeCallgrind },
-            { yitp::MakeCachegrind, yitc::MakeCachegrind },
-            { yitp::MakePassthrough, yitc::MakePassthrough }
-        }
-    };
 }
 
 ToolNotAvailableError::ToolNotAvailableError (yconst::InstrumentationTool id)
 {
     std::stringstream ss;
     ss << "Requested unimplemented tool " << static_cast <unsigned int> (id);
-    msg = ss.str();
+    msg = ss.str ();
 }
 
 char const *
@@ -109,8 +96,10 @@ yc::FactoryPackageForTool (yconst::InstrumentationTool toolID)
 {
     try
     {
+        auto const &fp (yit::FactoryPackagesArray ());
+
         yit::FactoryPackage const &factory =
-            toolConstructors.at (static_cast <unsigned int> (toolID));
+            fp.at (static_cast <unsigned int> (toolID));
         return factory;
     }
     catch (std::range_error const &err)

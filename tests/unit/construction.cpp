@@ -13,6 +13,7 @@
 #include <construction.h>
 #include <constants.h>
 #include <instrumentation_tool.h>
+#include <instrumentation_tools_available.h>
 
 #include "test_util.h"
 
@@ -183,7 +184,7 @@ TEST_F (ConstructionParameters, ParseOptionsForToolReturnsNoneIfNoOption)
 TEST_F (ConstructionParameters, FatalExceptionOnInvalidToolLookup)
 {
     unsigned int BadIDUint =
-        static_cast <unsigned int> (yconst::InstrumentationTool::Passthrough) + 1;
+        static_cast <unsigned int> (yconst::NumberOfAvailableTools ()) + 1;
     yconst::InstrumentationTool BadID =
         static_cast <yconst::InstrumentationTool> (BadIDUint);
 

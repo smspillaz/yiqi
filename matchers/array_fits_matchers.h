@@ -41,7 +41,6 @@ namespace yiqi
 
                     std::stringstream mStringStream;
             };
-
         }
 
         template <typename ArrayType>
@@ -143,6 +142,7 @@ namespace yiqi
 
                                     *listener << "whose element #" << i
                                               << "doesn't match";
+
                                     util::InsertIntoStreamIfNotEmpty (s.str (),
                                                                       *stream);
                                     return false;

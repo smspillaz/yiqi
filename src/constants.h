@@ -53,29 +53,13 @@ namespace yiqi
          * relating to these tools in other stored vectors
          * etc
          */
-        enum class InstrumentationTool
-        {
-            None = 0,
-            Timer = 1,
-            Memcheck = 2,
-            Callgrind = 3,
-            Cachegrind = 4,
-            Passthrough = 5
-        };
+        enum class InstrumentationTool;
 
         struct InstrumentationToolName
         {
             InstrumentationTool tool;
             char const          *name;
         };
-
-        typedef std::array <InstrumentationToolName, 6> ToolsArray;
-        /**
-         * @brief InstrumentationToolNames
-         * @return an array of all instrumentation tool names
-         * arranged by the order specified in InstrumentationTools
-         */
-        ToolsArray const & InstrumentationToolNames ();
 
         InstrumentationTool ToolFromString (std::string const &);
         char const *        StringFromTool (InstrumentationTool);
