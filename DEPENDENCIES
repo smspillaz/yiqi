@@ -1,4 +1,5 @@
 clang
+cppcheck
 libboost-iostreams-dev
 libboost-program-options-dev
 libboost-dev

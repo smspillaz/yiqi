@@ -26,6 +26,11 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${YIQI_PASSTHROUGH_EXEC}
                                                ERROR)
 
+cppcheck_target_sources (${YIQI_PASSTHROUGH_EXEC}
+                         INCLUDES
+                         ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                         ${YIQI_INTERNAL_INCLUDE_DIRECTORY})
+
 target_link_libraries (${YIQI_PASSTHROUGH_EXEC}
                        ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY}
                        ${YIQI_LIBRARY})

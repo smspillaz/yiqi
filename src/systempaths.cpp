@@ -17,7 +17,6 @@ ysys::SplitPathString (char const *systemPath)
 {
     if (systemPath)
     {
-        std::string sysPathString (systemPath);
         std::vector <std::string> availablePaths;
 
         boost::split (availablePaths, systemPath, boost::is_any_of (":"));

@@ -2,3 +2,6 @@
 	path = cmake/Vera++
 	url = git://github.com/polysquare/veracpp-cmake.git
 	branch = master
+[submodule "cmake/CMakeCPPCheck"]
+	path = cmake/CMakeCPPCheck
+	url = git://github.com/polysquare/cppcheck-target-cmake

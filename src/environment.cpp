@@ -47,7 +47,6 @@ namespace
             YiqiEnvironment (int argc, char **argv);
             virtual ~YiqiEnvironment () {};
             virtual void SetUp ();
-            virtual void TearDown ();
 
         private:
 
@@ -114,11 +113,6 @@ YiqiEnvironment::SetUp ()
                                            *calls);
         }
     }
-}
-
-void
-YiqiEnvironment::TearDown()
-{
 }
 
 ::testing::Environment *

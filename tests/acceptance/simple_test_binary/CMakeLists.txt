@@ -16,6 +16,11 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${YIQI_SIMPLE_TEST_EXEC}
                                                ERROR)
 
+cppcheck_target_sources (${YIQI_SIMPLE_TEST_EXEC}
+                         INCLUDES
+                         ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                         ${YIQI_INTERNAL_INCLUDE_DIRECTORY})
+
 target_link_libraries (${YIQI_SIMPLE_TEST_EXEC}
                        ${YIQI_MAIN_LIBRARY}
                        ${YIQI_LIBRARY}
