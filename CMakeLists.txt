@@ -12,8 +12,11 @@ cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 # the global cmake directories for new modules
 set (YIQI_CMAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set (YIQI_VERAPP_CMAKE_DIRECTORY ${YIQI_CMAKE_DIRECTORY}/Vera++)
+set (YIQI_CPPCHECK_CMAKE_DIRECTORY ${YIQI_CMAKE_DIRECTORY}/CMakeCPPCheck)
 set (CMAKE_MODULE_PATH
-     ${YIQI_VERAPP_CMAKE_DIRECTORY} ${CMAKE_MODULE_PATH})
+     ${YIQI_VERAPP_CMAKE_DIRECTORY}
+     ${YIQI_CPPCHECK_CMAKE_DIRECTORY}
+     ${CMAKE_MODULE_PATH})
 
 set (Boost_USE_STATIC_LIBS ON)
 
@@ -21,6 +24,16 @@ find_package (Boost 1.46 REQUIRED COMPONENTS program_options iostreams)
 find_package (GTest QUIET)
 find_package (Threads REQUIRED)
 find_package (VeraPP 1.2 REQUIRED)
+
+find_program (CPPCHECK_EXECUTABLE cppcheck)
+
+if (NOT CPPCHECK_EXECUTABLE)
+
+    message (SEND_ERROR "cppcheck was not found")
+
+endif (NOT CPPCHECK_EXECUTABLE)
+
+mark_as_advanced (CPPCHECK_EXECUTABLE)
 
 include (FindPkgConfig)
 pkg_check_modules (YIQI_VALGRIND valgrind)
@@ -234,13 +247,16 @@ set (YIQI_VERAPP_IMPORT_RULES yiqi_verapp_import_rules)
 
 include (${YIQI_CMAKE_DIRECTORY}/VeraPPTargets.cmake)
 
+# Set up cppcheck
+include (CPPCheck)
+
 # -fPIC, -Wall and -Werror are mandatory
 set (COMPILER_FLAGS "-fPIC -Wall -Werror")
 set (CXX_CXX11_FLAGS "-std=c++0x")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COMPILER_FLAGS} ${CXX_CXX11_FLAGS}")
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COMPILER_FLAGS}")
 
-
+# Set up the tool tracker
 include (${YIQI_CMAKE_DIRECTORY}/ToolTracker.cmake)
 
 yiqi_add_available_tool ("passthrough")
@@ -301,6 +317,19 @@ add_subdirectory (${YIQI_TESTS_DIRECTORY})
 add_subdirectory (${YIQI_MOCKS_DIRECTORY})
 add_subdirectory (${YIQI_MATCHERS_DIRECTORY})
 add_subdirectory (${YIQI_TESTS_UTIL_DIRECTORY})
+
+# Append all sources to unused function check
+add_custom_target (yiqi_check_unused ALL
+                   COMMENT "Checking for unused functions")
+
+# The boost and gtest libraries are quite complicated 
+set (YIQI_UNUSED_INCLUDES
+     ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
+     ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+     ${YIQI_INTERNAL_SOURCE_BINARY_DIRECTORY})
+cppcheck_add_global_unused_function_check_to_target (yiqi_check_unused
+                                                     INCLUDES
+                                                     ${YIQI_UNUSED_INCLUDES})
 
 # Get available tools and print report
 set (AVAILABLE_TOOLS)

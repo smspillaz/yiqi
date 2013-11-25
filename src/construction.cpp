@@ -78,11 +78,14 @@ namespace
     };
 }
 
-ToolNotAvailableError::ToolNotAvailableError (yconst::InstrumentationTool id)
+ToolNotAvailableError::ToolNotAvailableError (yconst::InstrumentationTool id) :
+  msg ([](yconst::InstrumentationTool id) {
+           std::stringstream ss;
+           ss << "Requested unimplemented tool "
+               << static_cast <unsigned int> (id);
+           return ss.str ();
+       } (id))
 {
-    std::stringstream ss;
-    ss << "Requested unimplemented tool " << static_cast <unsigned int> (id);
-    msg = ss.str ();
 }
 
 char const *

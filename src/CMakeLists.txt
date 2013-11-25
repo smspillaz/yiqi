@@ -20,6 +20,8 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${YIQI_MAIN_LIBRARY}
                                                ERROR)
 
+cppcheck_target_sources (${YIQI_MAIN_LIBRARY})
+
 # Get available tools and generate tools_declarations.h and
 # tools_factory.cpp
 set (AVAILABLE_TOOLS)
@@ -125,3 +127,9 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${YIQI_LIBRARY}
                                                ERROR)
+
+cppcheck_target_sources (${YIQI_LIBRARY}
+                        INCLUDES
+                        ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                        ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
+                        ${CMAKE_CURRENT_BINARY_DIR})
