@@ -1,19 +1,38 @@
 language: cpp
 env:
- - CC_OVERLOAD=gcc CXX_OVERLOAD=g++
- - CC_OVERLOAD=clang CXX_OVERLOAD=clang++
- - CC_OVERLOAD=${CC} CXX_OVERLOAD=${CXX} WRAPPER=scan-build
+ # GNU C/C++ Build
+ - CC_OVERLOAD=gcc
+   CXX_OVERLOAD=g++
+ # Clang Build+
+ - CC_OVERLOAD=clang
+   CXX_OVERLOAD=clang++
+ # Clang Static Analysis
+ - CC_OVERLOAD=${CC}
+   CXX_OVERLOAD=${CXX}
+   WRAPPER=scan-build
+ # GCov Coverage Build
+ - CC_OVERLOAD=gcc
+   CXX_OVERLOAD=g++
+   CMAKE_OPTIONS="-DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON"
+   COVERAGE=1
 before_install:
   - git submodule update --init --recursive
   - sudo apt-add-repository -y ppa:smspillaz/verapp-latest
   - sudo apt-get update -qq
   - sudo apt-get install -qq `cat DEPENDENCIES`
+  - if [[ $COVERAGE == 1 ]] ; then sudo pip install cpp-coveralls; fi
 script:
   - mkdir build
   - cd build
-  - CC=${CC_OVERLOAD} CXX=${CXX_OVERLOAD} ${WRAPPER} cmake ..
+  - CC=${CC_OVERLOAD} CXX=${CXX_OVERLOAD} ${WRAPPER} cmake .. `echo ${CMAKE_OPTIONS}`
   - ${WRAPPER} make
   - cd tests 
   - ./unit/yiqi_unit_tests 
   - ./integration/yiqi_integration_tests
   - ./acceptance/yiqi_acceptance_tests
+  - cd ../../
+after_success:
+ - if [[ $COVERAGE == 1 ]] ; then
+     coveralls -E "(^.*\/yiqi\/build\/.*$)" -E "(^.*\/yiqi/\sample\/.*$)" -E "(^.*\/yiqi/\imported\/.*$)" -E "(^.*\/yiqi/\include\/.*$)" -E "(^.*\/yiqi\/generators\/.*$)";
+   fi
+

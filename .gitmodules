@@ -14,3 +14,6 @@
 [submodule "cmake/CMakeCPPSubprocess"]
 	path = cmake/CMakeCPPSubprocess
 	url = git://github.com/polysquare/cpp-subprocess-cmake
+[submodule "cmake/GCov"]
+	path = cmake/GCov
+	url = git://github.com/polysquare/gcov-cmake
