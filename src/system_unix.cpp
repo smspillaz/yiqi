@@ -5,16 +5,24 @@
  * See LICENCE.md for Copyright information
  */
 
+#include <iostream>
 #include <string>
+#include <sstream>
 #include <system_error>
 
 #include <unistd.h>
+
+#include <boost/tokenizer.hpp>
+
+#include <cpp-subprocess/locatebinary.h>
+#include <cpp-subprocess/operating_system.h>
 
 #include "system_api.h"
 #include "system_implementation.h"
 #include "operating_system_wrapper.h"
 #include "operating_system_implementation.h"
 
+namespace ps = polysquare::subprocess;
 namespace ysysapi = yiqi::system::api;
 namespace ysysunix = yiqi::system::unix;
 
@@ -26,34 +34,44 @@ namespace
         public:
 
             typedef std::unique_ptr<ysysunix::OperatingSystemWrapper> OSWrapper;
+            typedef ps::OperatingSystem::Unique SubprocessOSWrapper;
 
-            UNIXCalls (OSWrapper userspace);
+            UNIXCalls (OSWrapper           userspace,
+                       SubprocessOSWrapper subprocessOS);
 
         private:
 
-            bool ExeExists (std::string const &f) const;
+            std::string LocateBinary (std::string const &binary) const;
             void ExecInPlace (char const         *binary,
                               char const * const *argv,
                               char const * const *environ) const;
             std::string GetExecutablePath () const;
             char const * const * GetSystemEnvironment () const;
 
-            OSWrapper userspace;
+            OSWrapper           userspace;
+            SubprocessOSWrapper subprocessOS;
     };
 }
 
-UNIXCalls::UNIXCalls (UNIXCalls::OSWrapper userspace) :
-    userspace (std::move (userspace))
+UNIXCalls::UNIXCalls (OSWrapper           userspace,
+                      SubprocessOSWrapper subprocessOS) :
+    userspace (std::move (userspace)),
+    subprocessOS (std::move (subprocessOS))
 {
 }
 
-bool
-UNIXCalls::ExeExists (std::string const &file) const
+std::string
+UNIXCalls::LocateBinary (std::string const &binary) const
 {
-    if (userspace->access (file.c_str (), X_OK) == 0)
-        return true;
+    std::string pathString (getenv ("PATH"));
+    boost::char_separator <char> sep (":");
+    boost::tokenizer <boost::char_separator <char> > paths (pathString, sep);
 
-    return false;
+    std::string executable (ps::locateBinary (binary,
+                                              paths,
+                                              *subprocessOS));
+
+    return executable;
 }
 
 void
@@ -91,6 +109,9 @@ UNIXCalls::GetSystemEnvironment () const
 ysysapi::SystemCalls::Unique
 ysysapi::MakeUNIXSystemCalls ()
 {
-    auto os (ysysunix::MakeOSWrapper ());
-    return ysysapi::SystemCalls::Unique (new UNIXCalls (std::move (os)));
+    auto yiqiOS (ysysunix::MakeOSWrapper ());
+    auto subprocessOS (ps::MakeOperatingSystem ());
+    auto unixCalls (new UNIXCalls (std::move (yiqiOS),
+                                   std::move (subprocessOS)));
+    return ysysapi::SystemCalls::Unique (unixCalls);
 }

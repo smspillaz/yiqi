@@ -8,3 +8,9 @@
 [submodule "cmake/CMakeGoogleMock"]
 	path = cmake/CMakeGoogleMock
 	url = git://github.com/polysquare/gmock-cmake
+[submodule "imported/cpp-subprocess"]
+	path = imported/cpp-subprocess
+	url = git://github.com/polysquare/cpp-subprocess
+[submodule "cmake/CMakeCPPSubprocess"]
+	path = cmake/CMakeCPPSubprocess
+	url = git://github.com/polysquare/cpp-subprocess-cmake
