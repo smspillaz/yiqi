@@ -18,4 +18,5 @@ verapp_profile_check_source_files_conformance_for_target (${YIQI_VERAPP_OUTPUT_D
                                                           YIQI_HEADERS
                                                           ${YIQI_VERAPP_PROFILE}
                                                           ${YIQI_CHECK_HEADERS_COMPLIANCE_TARGET}
+                                                          ${YIQI_VERAPP_IMPORT_RULES}
                                                           ERROR)
