@@ -40,9 +40,27 @@ set (YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_INPUT
 set (YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT
      ${CMAKE_CURRENT_BINARY_DIR}/acceptance_tests_config.h)
 
-configure_file (${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_INPUT}
-                ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT}
-                @ONLY)
+# We can't use configure_file here since we need to know the
+# location of the binaries at build time and not configure time
+# because of the way some build systems work (Xcode, VS, etc)
+set (REPLACEMENT_GENERATOR
+     ${YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR})
+
+add_custom_command (OUTPUT ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT}
+                    COMMAND $<TARGET_FILE:${REPLACEMENT_GENERATOR}>
+                    ARGS
+                    -i ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_INPUT}
+                    -o ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT}
+                    YIQI_SIMPLE_TEST_EXEC_BINARY_LOCATION
+                    $<TARGET_FILE:${YIQI_SIMPLE_TEST_EXEC}>
+                    YIQI_PASSTHROUGH_EXEC_BINARY_LOCATION
+                    $<TARGET_FILE:${YIQI_PASSTHROUGH_EXEC}>
+                    YIQI_PASSTHROUGH_EXEC_BINARY_DIRECTORY
+                    $<TARGET_FILE_DIR:${YIQI_PASSTHROUGH_EXEC}>
+                    DEPENDS
+                    ${REPLACEMENT_GENERATOR}
+                    ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_INPUT}
+                    COMMENT "Generating acceptance tests configuration")
 
 include_directories (${YIQI_PASSTHROUGH_EXEC_SOURCE_DIRECTORY}
                      ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
@@ -58,8 +76,20 @@ set (YIQI_ACCEPTANCE_TESTS_BINARY yiqi_acceptance_tests)
 set (YIQI_ACCEPTANCE_TESTS_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecute_through_passthrough.cpp)
 
+# Slight workaround for the fact that we can't include the config file output
+# in style checks as it may contain lines which are quite long
+set (YIQI_ACCEPTANCE_TESTS_BINARY_CONFIG_BRIDGE
+     ${YIQI_ACCEPTANCE_TESTS_BINARY}_config)
+
+add_custom_target (${YIQI_ACCEPTANCE_TESTS_BINARY_CONFIG_BRIDGE}
+                   DEPENDS ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT}
+                   COMMENT "Bridging acceptance tests configuration")
+
 add_executable (${YIQI_ACCEPTANCE_TESTS_BINARY}
                 ${YIQI_ACCEPTANCE_TESTS_SRCS})
+
+add_dependencies (${YIQI_ACCEPTANCE_TESTS_BINARY}
+                  ${YIQI_ACCEPTANCE_TESTS_BINARY_CONFIG_BRIDGE})
 
 verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}

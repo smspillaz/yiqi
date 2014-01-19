@@ -44,28 +44,27 @@ yg::GetOptions (int                       argc,
         ("output,o",
          po::value<std::string> (&output)->required (),
          "File to write result to")
-        ("tool,t",
-         po::value<std::vector<std::string>> (&tools)->multitoken(),
-         "Tools");
+        ("extra,e",
+         po::value<std::vector<std::string>> (&tools)->multitoken (),
+         "Extra options");
 
     po::positional_options_description positionalDescription;
-    positionalDescription.add ("tool", -1);
+    positionalDescription.add ("extra", -1);
 
     po::variables_map vm;
     po::command_line_parser parser (argc, argv);
-    
-    po::store (parser.options (description)
-                   .positional (positionalDescription)
-                   .run (),
+
+    po::parsed_options parsed (parser.options (description)
+                                   .positional (positionalDescription)
+                                   .allow_unregistered ()
+                                   .run ());
+
+    po::store (parsed,
                vm);
 
     try
     {
         po::notify (vm);
-
-        /* The tools need to be in sorted order when inserting
-         * them into lists for various efficiency reasons */
-        std::sort (tools.begin (), tools.end ());
     }
     catch (std::exception const &e)
     {

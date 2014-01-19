@@ -9,6 +9,8 @@ set (YIQI_GENERATORS_COMMON_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/generators_common.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/generators_common.h)
 
+include_directories(${YIQI_EXTERNAL_INCLUDE_DIRS})
+
 add_library (${YIQI_GENERATORS_COMMON_LIBRARY} STATIC
              ${YIQI_GENERATORS_COMMON_LIBRARY_SRCS})
 
@@ -53,7 +55,7 @@ add_executable (${YIQI_TOOLS_FACTORY_GENERATOR}
 target_link_libraries (${YIQI_TOOLS_FACTORY_GENERATOR}
                        ${YIQI_GENERATORS_COMMON_LIBRARY})
 
-set (FACTORY_GENERATOR ${YIQI_TOOLS_DECLARATIONS_GENERATOR})
+set (FACTORY_GENERATOR ${YIQI_TOOLS_FACTORY_GENERATOR})
 
 verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
@@ -63,3 +65,23 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ERROR)
 
 cppcheck_target_sources (${FACTORY_GENERATOR})
+
+set (YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/yiqi_simple_string_replacement_generator.cpp)
+
+add_executable (${YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR}
+                ${YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR_SRCS})
+
+target_link_libraries (${YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR}
+                       ${YIQI_GENERATORS_COMMON_LIBRARY})
+
+set (REPLACEMENT_GENERATOR ${YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR})
+
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${REPLACEMENT_GENERATOR}
+                                               ${YIQI_VERAPP_IMPORT_RULES}
+                                               ERROR)
+
+cppcheck_target_sources (${REPLACEMENT_GENERATOR})
