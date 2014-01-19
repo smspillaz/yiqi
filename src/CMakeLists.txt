@@ -34,7 +34,7 @@ set (YIQI_TOOLS_DECLARATIONS_H_INPUT
      ${CMAKE_CURRENT_SOURCE_DIR}/tools_declarations.h.in)
 
 add_custom_command (OUTPUT ${YIQI_TOOLS_DECLARATIONS_H_OUTPUT}
-                    COMMAND ${YIQI_TOOLS_DECLARATIONS_GENERATOR_PATH}
+                    COMMAND $<TARGET_FILE:${YIQI_TOOLS_DECLARATIONS_GENERATOR}>
                     ARGS
                     -i ${YIQI_TOOLS_DECLARATIONS_H_INPUT}
                     -o ${YIQI_TOOLS_DECLARATIONS_H_OUTPUT}
@@ -50,7 +50,7 @@ set (YIQI_TOOLS_FACTORY_H_INPUT
      ${CMAKE_CURRENT_SOURCE_DIR}/tools_factory.cpp.in)
 
 add_custom_command (OUTPUT ${YIQI_TOOLS_FACTORY_H_OUTPUT}
-                    COMMAND ${YIQI_TOOLS_FACTORY_GENERATOR_PATH}
+                    COMMAND $<TARGET_FILE:${YIQI_TOOLS_FACTORY_GENERATOR}>
                     ARGS
                     -i ${YIQI_TOOLS_FACTORY_H_INPUT}
                     -o ${YIQI_TOOLS_FACTORY_H_OUTPUT}

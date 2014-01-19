@@ -3,6 +3,8 @@
  *
  * Tool used to parse an input tools_factory.cpp.in and
  * generate output tools_factory.cpp
+ *
+ * See LICENCE.md for Copyright information.
  */
 
 #include <cstring>
@@ -115,6 +117,10 @@ int main (int argc, char **argv)
                         inputFileName,
                         outputFileName,
                         tools);
+
+        /* The tools need to be in sorted order when inserting
+         * them into lists for various efficiency reasons */
+        std::sort (tools.begin (), tools.end ());
 
         std::string inputFileData (yg::ReadInputFile (inputFileName));
         yg::ApplyTransformations (inputFileData,

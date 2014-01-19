@@ -121,6 +121,10 @@ int main (int argc, char **argv)
                         outputFileName,
                         tools);
 
+        /* The tools need to be in sorted order when inserting
+         * them into lists for various efficiency reasons */
+        std::sort (tools.begin (), tools.end ());
+
         std::string inputFileData (yg::ReadInputFile (inputFileName));
         yg::ApplyTransformations (inputFileData,
                                   ygt::DeleteComments,
