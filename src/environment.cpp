@@ -79,6 +79,7 @@ YiqiEnvironment::YiqiEnvironment (int argc,
 }
 
 void
+// cppcheck-suppress unusedFunction
 YiqiEnvironment::SetUp ()
 {
     char const *activeTool = getenv (yconst::YiqiToolEnvKey);

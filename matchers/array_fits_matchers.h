@@ -85,6 +85,7 @@ namespace yiqi
                     }
                 }
 
+                // cppcheck-suppress unusedFunction
                 void DescribeNegationTo (std::ostream *os) const
                 {
                     size_t n (count ());
