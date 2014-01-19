@@ -26,12 +26,13 @@ namespace yiqi
                     virtual ~SystemCalls () {};
 
                      /**
-                      * @brief ExeExists checks whether not an executable file
-                      * exists at a named path
-                      * @param file the path to check
-                      * @return true if the file exists, false if not
-                      */
-                    virtual bool ExeExists (std::string const &file) const = 0;
+                      * @brief LocateBinary
+                      * @param binary the name of the binary to search for
+                      * @return a fully qualified path to the binary
+                      * @throws std::runtime_error if the binary couldn't
+                      * be found on the system */
+                    virtual std::string
+                    LocateBinary (std::string const &binary) const = 0;
 
                     /**
                      * @brief ExecInPlace replaces the current process image
