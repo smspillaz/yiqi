@@ -79,7 +79,6 @@ class ReExecutionIntegration :
 TEST_F (ReExecutionIntegration, SkipAndThrowIfNoWrapperBinary)
 {
     /* Never call the system calls */
-    EXPECT_CALL (syscalls, ExeExists (_)).Times (0);
     EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
 
     ON_CALL (tool, WrapperBinary ())
@@ -93,62 +92,6 @@ TEST_F (ReExecutionIntegration, SkipAndThrowIfNoWrapperBinary)
     }, std::logic_error);
 }
 
-TEST_F (ReExecutionIntegration, SkipAndThrowIfExecutableDoesNotExistInOnePath)
-{
-    std::string const ExpectedBinary (ytestrexec::MockExecutablePaths[0] +
-                                      "/" +
-                                      ytestrexec::MockInstrumentation);
-
-    /* Never call ExecInPlace */
-    EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
-    ON_CALL (syscalls, ExeExists (ExpectedBinary))
-        .WillByDefault (Return (false));
-
-    EXPECT_THROW ({
-        yexec::RelaunchCurrentProgram (tool,
-                                       ytest::ArgumentCount (args),
-                                       ytest::Arguments (args),
-                                       syscalls);
-    }, std::runtime_error);
-}
-
-TEST_F (ReExecutionIntegration, SkipAndThrowIfExecutableDoesNotExistInTwoPaths)
-{
-    std::string const FirstCheckedBinary (ytestrexec::MockExecutablePaths[0] +
-                                          "/" +
-                                          ytestrexec::MockInstrumentation);
-    std::string const SecondCheckedBinary (ytestrexec::MockExecutablePaths[0] +
-                                           "/" +
-                                           ytestrexec::MockInstrumentation);
-
-    /* Never call ExecInPlace */
-    EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    /* We should expect that ExeExists is called twice */
-    EXPECT_CALL (syscalls, ExeExists (_)).Times (2);
-
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-        .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
-    ON_CALL (syscalls, ExeExists (FirstCheckedBinary))
-        .WillByDefault (Return (false));
-    ON_CALL (syscalls, ExeExists (SecondCheckedBinary))
-        .WillByDefault (Return (false));
-
-    EXPECT_THROW ({
-        yexec::RelaunchCurrentProgram (tool,
-                                       ytest::ArgumentCount (args),
-                                       ytest::Arguments (args),
-                                       syscalls);
-    }, std::runtime_error);
-}
-
 TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightExe)
 {
     std::string const ExpectedBinary (ytestrexec::MockExecutablePaths[0] +
@@ -159,10 +102,8 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightExe)
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
-    ON_CALL (syscalls, ExeExists (ExpectedBinary))
-        .WillByDefault (Return (true));
+    ON_CALL (syscalls, LocateBinary (ytestrexec::MockInstrumentation))
+        .WillByDefault (Return (ExpectedBinary));
 
     EXPECT_CALL (syscalls, ExecInPlace (StrEq (ExpectedBinary),
                                          _,
@@ -185,10 +126,8 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightArgv)
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
-    ON_CALL (syscalls, ExeExists (ExpectedBinary))
-        .WillByDefault (Return (true));
+    ON_CALL (syscalls, LocateBinary (ytestrexec::MockInstrumentation))
+        .WillByDefault (Return (ExpectedBinary));
 
     std::vector <Matcher <char const *> > matchers =
     {
@@ -219,10 +158,8 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightEnvp)
         .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
     ON_CALL (tool, WrapperOptions ())
         .WillByDefault (ReturnRef (ytestrexec::MockArgument));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
-    ON_CALL (syscalls, ExeExists (ExpectedBinary))
-        .WillByDefault (Return (true));
+    ON_CALL (syscalls, LocateBinary (ytestrexec::MockInstrumentation))
+        .WillByDefault (Return (ExpectedBinary));
 
     ycom::NullTermArray ExpectedExecEnv (ytestrexec::ProvidedEnvironment);
     ycom::InsertEnvironmentPair (ExpectedExecEnv,
@@ -242,48 +179,6 @@ TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSinglePathRightEnvp)
     EXPECT_CALL (syscalls, ExecInPlace (_,
                                         _,
                                         ymatch::ArrayFitsMatchers (matchers)))
-        .Times (1);
-
-    yexec::RelaunchCurrentProgram (tool,
-                                   ytest::ArgumentCount (args),
-                                   ytest::Arguments (args),
-                                   syscalls);
-}
-
-TEST_F (ReExecutionIntegration, ExecIfExecutableExistsInSecondaryPath)
-{
-    std::string const FirstCheckedBinary (ytestrexec::MockExecutablePaths[0] +
-                                           "/" +
-                                          ytestrexec::MockInstrumentation);
-    std::string const SecondCheckedBinary (ytestrexec::MockExecutablePaths[1] +
-                                           "/" +
-                                           ytestrexec::MockInstrumentation);
-
-    /* Never call ExecInPlace */
-    EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
-
-    /* We should expect that ExeExists is called twice */
-    EXPECT_CALL (syscalls, ExeExists (_)).Times (2);
-
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (tool, WrapperOptions ())
-        .WillByDefault (ReturnRef (ytestrexec::MockArgument));
-    ON_CALL (syscalls, GetExecutablePath ())
-        .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
-    ON_CALL (syscalls, ExeExists (FirstCheckedBinary))
-        .WillByDefault (Return (false));
-    ON_CALL (syscalls, ExeExists (SecondCheckedBinary))
-        .WillByDefault (Return (true));
-
-    char const * const                    *argv (ytest::Arguments (args));
-    std::vector <Matcher <char const *> > matchers;
-    for (int i = 0; i < ytest::ArgumentCount (args); ++i)
-        matchers.push_back (StrEq (argv[i]));
-
-    EXPECT_CALL (syscalls, ExecInPlace (StrEq (SecondCheckedBinary),
-                                        _,
-                                        _))
         .Times (1);
 
     yexec::RelaunchCurrentProgram (tool,

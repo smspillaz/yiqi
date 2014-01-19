@@ -23,7 +23,7 @@ ymock::system::api::SystemCalls::~SystemCalls ()
 void
 ymock::system::api::SystemCalls::IgnoreCalls ()
 {
-    EXPECT_CALL (*this, ExeExists (_)).Times (AtLeast (0));
+    EXPECT_CALL (*this, LocateBinary (_)).Times (AtLeast (0));
     EXPECT_CALL (*this, ExecInPlace (_, _, _)).Times (AtLeast (0));
     EXPECT_CALL (*this, GetExecutablePath ()).Times (AtLeast (0));
     EXPECT_CALL (*this, GetSystemEnvironment ()).Times (AtLeast (0));

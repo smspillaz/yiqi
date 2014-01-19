@@ -71,30 +71,7 @@ yexec::FindExecutable (Tool const        &tool,
         throw std::logic_error ("provided a Tool "
                                 "with no WrapperBinary");
 
-    std::string execPath (system.GetExecutablePath ());
-
-    if (execPath.empty ())
-        throw std::runtime_error ("system executable path is empty");
-
-    auto execPaths (ysys::SplitPathString (execPath.c_str ()));
-
-    for (std::string const &path : execPaths)
-    {
-        std::string const executable (path + "/" + wrapper);
-
-        if (system.ExeExists (executable))
-            return executable;
-    }
-
-    std::stringstream ss;
-    ss << "Could not find the executable " << wrapper
-       << " anywhere in your executable path" << std::endl
-       << "Searched the following paths: " << std::endl;
-
-    for (std::string const &path : execPaths)
-        ss << " - " << path << std::endl;
-
-    throw std::runtime_error (ss.str ());
+    return system.LocateBinary (wrapper);
 }
 
 ycom::NullTermArray

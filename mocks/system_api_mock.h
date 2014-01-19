@@ -32,8 +32,8 @@ namespace yiqi
 
                         void IgnoreCalls ();
 
-                        MOCK_CONST_METHOD1 (ExeExists,
-                                            bool (std::string const &));
+                        MOCK_CONST_METHOD1 (LocateBinary,
+                                            std::string (std::string const &));
                         MOCK_CONST_METHOD3 (ExecInPlace,
                                             void (char const         *,
                                                   char const * const *,

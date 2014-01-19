@@ -83,86 +83,6 @@ TEST_F (FindExecutable, ThrowLogicErrorOnEmptyWrapper)
     }, std::logic_error);
 }
 
-TEST_F (FindExecutable, ThrowRuntimeErrorOnEmptyPath)
-{
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-        .WillByDefault (Return (ytestrexec::NoExecutablePath));
-
-    EXPECT_THROW ({
-      yexec::FindExecutable (tool, syscalls);
-    }, std::runtime_error);
-}
-
-TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInOnePath)
-{
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
-    ON_CALL (syscalls, ExeExists (_))
-        .WillByDefault (Return (false));
-
-    EXPECT_THROW ({
-      yexec::FindExecutable (tool, syscalls);
-    }, std::runtime_error);
-}
-
-TEST_F (FindExecutable, ThrowRuntimeErrorOnNotFoundInMultiplePaths)
-{
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
-    ON_CALL (syscalls, ExeExists (_))
-        .WillByDefault (Return (false));
-
-    EXPECT_THROW ({
-      yexec::FindExecutable (tool, syscalls);
-    }, std::runtime_error);
-}
-
-TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundInOnePath)
-{
-    std::string const ExpectedPath (ytestrexec::MockExecutablePaths[0] +
-                                    "/" +
-                                    ytestrexec::MockInstrumentation);
-
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-            .WillByDefault (Return (ytestrexec::MockExecutablePaths[0]));
-    ON_CALL (syscalls, ExeExists (ExpectedPath))
-        .WillByDefault (Return (true));
-
-    EXPECT_EQ (ExpectedPath, yexec::FindExecutable (tool, syscalls));
-}
-
-TEST_F (FindExecutable, ReturnFullyQualifiedPathIfFoundOtherPath)
-{
-    std::string const NoFindPath (ytestrexec::MockExecutablePaths[0] +
-                                  "/" +
-                                  ytestrexec::MockInstrumentation);
-    std::string const ExpectedPath (ytestrexec::MockExecutablePaths[1] +
-                                    "/" +
-                                    ytestrexec::MockInstrumentation);
-
-    ON_CALL (tool, WrapperBinary ())
-        .WillByDefault (ReturnRef (ytestrexec::MockInstrumentation));
-    ON_CALL (syscalls, GetExecutablePath ())
-        .WillByDefault (Return (ytestrexec::MultiMockExecutablePath));
-    ON_CALL (syscalls, ExeExists (NoFindPath))
-        .WillByDefault (Return (false));
-    ON_CALL (syscalls, ExeExists (ExpectedPath))
-        .WillByDefault (Return (true));
-
-    /* We really should be checking twice */
-    EXPECT_CALL (syscalls, ExeExists (_)).Times (2);
-
-    EXPECT_EQ (ExpectedPath, yexec::FindExecutable (tool, syscalls));
-}
-
 class GetArgvForTool :
     public ::testing::Test
 {
@@ -294,9 +214,8 @@ class GetEnvForTool :
             EXPECT_CALL (tool, WrapperOptions ()).Times (0);
             EXPECT_CALL (tool, WrapperBinary ()).Times (0);
 
-            /* Don't need to check if executables exist, the exec path
+            /* Don't need to set the exec path
              * or exec things */
-            EXPECT_CALL (syscalls, ExeExists (_)).Times (0);
             EXPECT_CALL (syscalls, ExecInPlace (_, _, _)).Times (0);
             EXPECT_CALL (syscalls, GetExecutablePath ()).Times (0);
 
@@ -406,7 +325,6 @@ class Relaunch :
             syscalls.IgnoreCalls ();
 
             /* We only care about ExecInPlace */
-            EXPECT_CALL (syscalls, ExeExists (_)).Times (0);
             EXPECT_CALL (syscalls, GetExecutablePath ()).Times (0);
             EXPECT_CALL (syscalls, GetSystemEnvironment ()).Times (0);
 
