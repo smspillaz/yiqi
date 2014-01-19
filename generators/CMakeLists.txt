@@ -19,6 +19,7 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${YIQI_GENERATORS_COMMON_LIBRARY}
+                                               ${YIQI_VERAPP_IMPORT_RULES}
                                                ERROR)
 
 cppcheck_target_sources (${YIQI_GENERATORS_COMMON_LIBRARY})
@@ -38,6 +39,7 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${DECLARATIONS_GENERATOR}
+                                               ${YIQI_VERAPP_IMPORT_RULES}
                                                ERROR)
 
 cppcheck_target_sources (${DECLARATIONS_GENERATOR})
@@ -57,6 +59,7 @@ verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
                                                ${FACTORY_GENERATOR}
+                                               ${YIQI_VERAPP_IMPORT_RULES}
                                                ERROR)
 
 cppcheck_target_sources (${FACTORY_GENERATOR})
