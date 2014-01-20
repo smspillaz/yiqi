@@ -128,6 +128,7 @@ set (YIQI_GENERATORS_BINARY_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/generators)
 set (YIQI_MOCKS_LIBRARY yiqi_mocks)
 set (YIQI_MATCHERS_LIBRARY yiqi_matchers)
 set (YIQI_TESTS_UTIL_LIBRARY yiqi_tests_util)
+set (YIQI_TESTS_MAIN_LIBRARY yiqi_tests_main)
 
 set (YIQI_MAIN_LIBRARY yiqi_main)
 set (YIQI_LIBRARY yiqi)
@@ -136,6 +137,12 @@ set (YIQI_LIBRARY yiqi)
 set (YIQI_TOOLS_DECLARATIONS_GENERATOR yiqi_tools_declarations_generator)
 set (YIQI_TOOLS_FACTORY_GENERATOR yiqi_tools_factory_generator)
 set (YIQI_SIMPLE_STRING_REPLACEMENT_GENERATOR yiqi_simple_string_replacement_generator)
+
+# Set up TAP reporter
+set (YIQI_IMPORTED_GTEST_TAP_LISTENER_DIRECTORY
+     ${YIQI_IMPORTED_DIRECTORY}/gtest-tap-listener)
+set (YIQI_IMPORTED_GTEST_TAP_LISTENER_INCLUDE_DIRECTORY
+     ${YIQI_IMPORTED_GTEST_TAP_LISTENER_DIRECTORY}/src)
 
 add_subdirectory (${YIQI_INTERNAL_INCLUDE_DIRECTORY})
 add_subdirectory (${YIQI_INTERNAL_SOURCE_DIRECTORY})

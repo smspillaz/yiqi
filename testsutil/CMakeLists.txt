@@ -16,7 +16,7 @@ target_link_libraries (${YIQI_TESTS_UTIL_LIBRARY}
                        ${YIQI_LIBRARY}
                        ${GTEST_LIBRARY}
                        ${GMOCK_LIBRARY}
-                       ${GMOCK_MAIN_LIBRARY})
+                       ${YIQI_TESTS_MAIN_LIBRARY})
 
 verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
@@ -29,3 +29,23 @@ cppcheck_target_sources (${YIQI_TESTS_UTIL_LIBRARY}
                          INCLUDES
                          ${YIQI_INTERNAL_SOURCE_DIRECTORY}
                          ${YIQI_INTERNAL_INCLUDE_DIRECTORY})
+
+set (YIQI_TESTS_MAIN_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/yiqi_tests_main.cpp)
+
+# Set up TAP listener
+add_definitions (-DGTEST_TAP_PRINT_TO_STDOUT)
+include_directories (${YIQI_IMPORTED_GTEST_TAP_LISTENER_INCLUDE_DIRECTORY})
+
+add_library (${YIQI_TESTS_MAIN_LIBRARY}
+             ${YIQI_TESTS_MAIN_SRCS})
+
+target_link_libraries (${YIQI_TESTS_MAIN_LIBRARY}
+                       ${GTEST_LIBRARY})
+
+verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
+                                               ${CMAKE_CURRENT_SOURCE_DIR}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ${YIQI_TESTS_MAIN_LIBRARY}
+                                               ${YIQI_VERAPP_PROFILE}
+                                               ERROR)
