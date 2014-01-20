@@ -78,18 +78,12 @@ set (YIQI_ACCEPTANCE_TESTS_SRCS
 
 # Slight workaround for the fact that we can't include the config file output
 # in style checks as it may contain lines which are quite long
-set (YIQI_ACCEPTANCE_TESTS_BINARY_CONFIG_BRIDGE
-     ${YIQI_ACCEPTANCE_TESTS_BINARY}_config)
-
-add_custom_target (${YIQI_ACCEPTANCE_TESTS_BINARY_CONFIG_BRIDGE}
-                   DEPENDS ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT}
-                   COMMENT "Bridging acceptance tests configuration")
+set_property (SOURCE ${YIQI_ACCEPTANCE_TESTS_SRCS}
+              PROPERTY OBJECT_DEPENDS
+              ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT})
 
 add_executable (${YIQI_ACCEPTANCE_TESTS_BINARY}
                 ${YIQI_ACCEPTANCE_TESTS_SRCS})
-
-add_dependencies (${YIQI_ACCEPTANCE_TESTS_BINARY}
-                  ${YIQI_ACCEPTANCE_TESTS_BINARY_CONFIG_BRIDGE})
 
 verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
