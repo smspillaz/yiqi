@@ -14,6 +14,9 @@ set (YIQI_MAIN_SRCS
 add_library (${YIQI_MAIN_LIBRARY} STATIC
              ${YIQI_MAIN_SRCS})
 
+target_link_libraries (${YIQI_MAIN_LIBRARY}
+                       ${GTEST_LIBRARY})
+
 verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
                                                ${CMAKE_CURRENT_SOURCE_DIR}
                                                ${YIQI_VERAPP_PROFILE}
