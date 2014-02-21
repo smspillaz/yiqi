@@ -3,35 +3,20 @@
 #
 # See LICENCE.md for Copyright information
 
-include_directories (${YIQI_EXTERNAL_INCLUDE_DIRS})
+set (YIQI_SAMPLES_BINARY yiqi_samples)
 
 set (YIQI_SAMPLES_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/yiqi_sample_basic.cpp)
 
-set (YIQI_SAMPLES_BINARY
-     yiqi_samples)
-
-include_directories (${YIQI_EXTERNAL_INCLUDE_DIRS}
-                     ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
-                     ${YIQI_INTERNAL_SOURCE_DIRECTORY})
-
-add_executable (${YIQI_SAMPLES_BINARY}
-                ${YIQI_SAMPLES_SRCS})
-
-verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
-                                               ${CMAKE_CURRENT_SOURCE_DIR}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ${YIQI_SAMPLES_BINARY}
-                                               ${YIQI_VERAPP_IMPORT_RULES}
-                                               ERROR)
-
-cppcheck_target_sources (${YIQI_SAMPLES_BINARY}
-                        INCLUDES
-                        ${YIQI_INTERNAL_SOURCE_DIRECTORY}
-                        ${YIQI_INTERNAL_INCLUDE_DIRECTORY})
-
-target_link_libraries (${YIQI_SAMPLES_BINARY}
-                       ${YIQI_MAIN_LIBRARY}
-                       ${YIQI_LIBRARY}
-                       ${GTEST_LIBRARY}
-                       ${CMAKE_THREAD_LIBS_INIT})
+polysquare_add_executable (${YIQI_SAMPLES_BINARY}
+                           SOURCES ${YIQI_SAMPLES_SRCS}
+                           INTERNAL_INCLUDE_DIRS
+                           ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
+                           ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                           EXTERNAL_INCLUDE_DIRS
+                           ${YIQI_EXTERNAL_INCLUDE_DIRS}
+                           LIBRARIES
+                           ${GTEST_LIBRARY}
+                           ${YIQI_MAIN_LIBRARY}
+                           ${YIQI_LIBRARY}
+                           ${CMAKE_THREAD_LIBS_INIT})
