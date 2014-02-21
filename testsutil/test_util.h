@@ -34,9 +34,10 @@ namespace yiqi
         /**
          * @brief A tuple type with a managed array of arguments
          */
-        typedef std::tuple <int, std::vector <char const *> > CommandLineArguments;
+        typedef std::tuple <size_t,
+                            std::vector <char const *> > CommandLineArguments;
 
-        int ArgumentCount (CommandLineArguments const &args);
+        size_t ArgumentCount (CommandLineArguments const &args);
         char const * const * Arguments (CommandLineArguments const &args);
 
         /**

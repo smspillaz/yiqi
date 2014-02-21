@@ -106,7 +106,7 @@ YiqiEnvironment::SetUp ()
         /* We can skip a bit if there is no instrumentation wrapper */
         if (!instrumentingProgram->WrapperBinary ().empty ())
         {
-            ysysapi::SystemCalls::Unique calls (ysysapi::MakeUNIXSystemCalls ());
+            auto calls (ysysapi::MakeUNIXSystemCalls ());
 
             yexec::RelaunchCurrentProgram (*instrumentingProgram,
                                            priv->argc,

@@ -268,7 +268,7 @@ class ChildOutputTest :
 
         ChildOutputTest () :
             userspace (ysysunix::MakeOSWrapper ()),
-            env (userspace->environment()),
+            env (userspace->environment ()),
             childStdoutPipe (*userspace)
         {
         }
@@ -285,7 +285,7 @@ class ChildOutputTest :
         std::vector <std::string> GetChildOutput ();
         int LaunchBinaryWithInternalArgv (std::string const &);
 
-        std::unique_ptr<ysysunix::OperatingSystemWrapper> userspace;
+        std::unique_ptr <ysysunix::OperatingSystemWrapper> userspace;
 
         ycom::NullTermArray argv;
         ycom::NullTermArray env;

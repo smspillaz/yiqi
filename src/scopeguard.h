@@ -19,7 +19,7 @@ namespace yiqi
 
             typedef std::function <void ()> Function;
 
-            ScopeGuard (const Function &func) :
+            ScopeGuard (Function const &func) :
                 function (func),
                 dismissed (false)
             {
@@ -28,7 +28,7 @@ namespace yiqi
             ~ScopeGuard ()
             {
                 if (!dismissed)
-                    function();
+                    function ();
             }
 
             void dismiss ()

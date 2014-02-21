@@ -45,8 +45,8 @@ yc::FetchOptionsDescription ()
 
 std::string
 yc::ParseOptionsForToolName (int                argc,
-                             const char * const *argv,
-                             const yc::Options  &description)
+                             char const * const *argv,
+                             yc::Options const  &description)
 {
     po::variables_map       variableMap;
     po::command_line_parser parser (argc, argv);
@@ -70,7 +70,7 @@ namespace
 
             ToolNotAvailableError (yconst::InstrumentationTool id);
             virtual ~ToolNotAvailableError () throw () {};
-            char const * what () const throw();
+            char const * what () const throw ();
 
         private:
 
@@ -89,7 +89,7 @@ ToolNotAvailableError::ToolNotAvailableError (yconst::InstrumentationTool id) :
 }
 
 char const *
-ToolNotAvailableError::what () const throw()
+ToolNotAvailableError::what () const throw ()
 {
     return msg.c_str ();
 }

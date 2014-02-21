@@ -84,7 +84,8 @@ namespace yiqi
                 /**
                  * @brief append appends a new std::string const &value to the
                  * end of the NullTermArray, just before the null-terminator. It
-                 * will also provide storage for value, so value can be a temporary.
+                 * will also provide storage for value, so value can be a
+                 * temporary.
                  * @throws std::out_of_memory if the underlying vector
                  * cannot allocate space for the new value
                  * @param value the value to append
@@ -94,8 +95,10 @@ namespace yiqi
                 typedef std::vector <std::string> StringVector;
 
                 /**
-                 * @brief append appends a whole vector of std::string const &value
-                 * to the end of the NullTermArray, just before the null-terminator.
+                 * @brief append appends a whole vector of std::string const
+                 * &value to the end of the NullTermArray, just before the
+                 * null-terminator.
+                 *
                  * It provides storage for each of the specified strings
                  * @throws std::out_of_memory if the underlying vector
                  * cannot allocate space for the new value
@@ -116,10 +119,11 @@ namespace yiqi
 
                 /**
                  * @brief eraseAppended finds a block of appended values in
-                 * the vector specified and erases them. This function isn't perfect -
-                 * in the exception handling case as it doesn't know how many values
-                 * have been appended that it needs to erase. It applies a heuristic
-                 * to check.
+                 * the vector specified and erases them. This function isn't
+                 * perfect - in the exception handling case as it doesn't know
+                 * how many values have been appended that it needs to erase.
+                 * It applies a heuristic to check.
+                 *
                  * @param values the block of values to erase
                  */
                 void eraseAppended (StringVector const &values);

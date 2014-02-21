@@ -27,15 +27,16 @@ namespace yiqi
         extern char const * ValgrindToolOptionPrefix;
 
         /**
-         * @brief YiqiToolEnvKey the key value (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
-         * for the instrumented-process environment)
+         * @brief YiqiToolEnvKey the key value (e.g.
+         * __YIQI_INSTRUMENTATION_TOOL_ACTIVE for the instrumented-process
+         * environment)
          */
         extern char const * YiqiToolEnvKey;
 
         /**
-         * @brief YiqiRunningUnderHeader message header when detected to be running under an
-         * instrumentation tool (e.g. __YIQI_INSTRUMENTATION_TOOL_ACTIVE
-         * is set)
+         * @brief YiqiRunningUnderHeader message header when detected to be
+         * running under an instrumentation tool (e.g.
+         * __YIQI_INSTRUMENTATION_TOOL_ACTIVE is set)
          */
         extern char const * YiqiRunningUnderHeader;
 

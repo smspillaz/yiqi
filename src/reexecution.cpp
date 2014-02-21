@@ -29,12 +29,12 @@ void
 yexec::Relaunch (Tool const           &tool,
                  FetchExecFunc const  &fetchExecutable,
                  FetchArgvFunc const  &fetchArgv,
-                 FetchEnvFunc const   &fetchEnv,
+                 FetchEnFunc const    &fetchEnv,
                  SystemCalls const    &system)
 {
     std::string const   executable (fetchExecutable (tool, system));
     ycom::NullTermArray argv (fetchArgv (tool));
-    ycom::NullTermArray env  (fetchEnv (tool, system));
+    ycom::NullTermArray env (fetchEnv (tool, system));
 
     system.ExecInPlace (executable.c_str (),
                         argv.underlyingArray (),
@@ -52,7 +52,7 @@ yexec::RelaunchCurrentProgram (Tool const           &tool,
     FetchExecFunc fetchExecutable (std::bind (yexec::FindExecutable, _1, _2));
     FetchArgvFunc fetchArgv (std::bind (yexec::GetToolArgv, _1,
                                         currentArgc, currentArgv));
-    FetchEnvFunc fetchEnv (std::bind (yexec::GetToolEnv, _1, _2));
+    FetchEnFunc fetchEnv (std::bind (yexec::GetToolEnv, _1, _2));
 
     Relaunch (tool,
               fetchExecutable,

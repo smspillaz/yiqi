@@ -53,7 +53,7 @@ namespace yiqi
          */
         std::string
         ParseOptionsForToolName (int                argc,
-                                 const char * const *argv,
+                                 char const * const *argv,
                                  Options const      &description);
 
         /**

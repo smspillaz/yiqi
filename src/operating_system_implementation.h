@@ -21,7 +21,7 @@ namespace yiqi
             /* Constructs an operating-system specific abstraction
              * of OperatingSystemWrapper, which is implemented
              * in the operating system specific .cpp file */
-            std::unique_ptr<OperatingSystemWrapper> MakeOSWrapper ();
+            std::unique_ptr <OperatingSystemWrapper> MakeOSWrapper ();
         }
     }
 }

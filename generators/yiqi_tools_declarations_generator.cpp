@@ -75,7 +75,7 @@ namespace
 
                 ss << header << str << " ();";
                 std::string modified (ss.str ());
-                modified[headerSize] = std::toupper(modified[headerSize]);
+                modified[headerSize] = std::toupper (modified[headerSize]);
                 return modified;
             };
         ygu::GenerateFromTools (string,
@@ -89,14 +89,14 @@ namespace
     {
         static char const *header = "Unique Make";
         static size_t const headerSize = std::strlen (header);
-        const std::string searchToken ("INSTRUMENTATION_TOOLS_CONTROLLER_DECL");
+        std::string const searchToken ("INSTRUMENTATION_TOOLS_CONTROLLER_DECL");
         auto transform =
-            [](std::string const &str, size_t i, size_t n) ->std::string {
+            [](std::string const &str, size_t i, size_t n) -> std::string {
                 std::stringstream ss;
 
                 ss << header << str << " ();";
                 std::string modified (ss.str ());
-                modified[headerSize] = std::toupper(modified[headerSize]);
+                modified[headerSize] = std::toupper (modified[headerSize]);
                 return modified;
             };
         ygu::GenerateFromTools (string,

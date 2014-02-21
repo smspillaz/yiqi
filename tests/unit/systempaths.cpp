@@ -24,7 +24,7 @@ namespace
 TEST (SystemPath, NullReturnsEmptyVector)
 {
     std::vector <std::string> paths (ysys::SplitPathString (nullptr));
-    EXPECT_EQ (0, paths.size ());
+    EXPECT_EQ (0UL, paths.size ());
 }
 
 TEST (SystemPath, SingleStringNoDelimitedReturnsSingleString)

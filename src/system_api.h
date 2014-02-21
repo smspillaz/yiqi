@@ -58,7 +58,8 @@ namespace yiqi
                     /**
                      * @brief GetSystemEnvironment
                      * @return a null-terminated array of strings representing
-                     * the current process environment, with the format KEY=value
+                     * the current process environment, with the format
+                     * KEY=value
                      */
                     virtual char const * const *
                     GetSystemEnvironment () const = 0;
@@ -70,7 +71,7 @@ namespace yiqi
                 private:
 
                     SystemCalls (SystemCalls const &) = delete;
-                    SystemCalls & operator=(SystemCalls const &) = delete;
+                    SystemCalls & operator= (SystemCalls const &) = delete;
             };
         }
     }

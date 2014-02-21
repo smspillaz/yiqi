@@ -363,8 +363,8 @@ ycom::NullTermArray::append (std::vector <std::string> const &vec)
                                  vec)));
 
     /* Reserve some more space */
-    const size_t oldLength = priv->storedNewStrings.size ();
-    const size_t oldAllocation = priv->storedNewStrings.capacity ();
+    size_t const oldLength = priv->storedNewStrings.size ();
+    size_t const oldAllocation = priv->storedNewStrings.capacity ();
 
     priv->storedNewStrings.insert (priv->storedNewStrings.end (),
                                    vec.begin (),
@@ -378,11 +378,11 @@ ycom::NullTermArray::append (std::vector <std::string> const &vec)
     if (oldAllocation > oldLength + vec.size ())
         std::advance (firstNewlyStoredString, oldLength);
 
-    const size_t requiredSize = priv->vector.size () + vec.size ();
+    size_t const requiredSize = priv->vector.size () + vec.size ();
 
     priv->vector.resize (requiredSize);
 
-    const size_t startIndexForVector =
+    size_t const startIndexForVector =
         (requiredSize - 1) -
         priv->storedNewStrings.size () +
         std::distance (priv->storedNewStrings.begin (),
