@@ -19,4 +19,4 @@
 	url = git://github.com/polysquare/gcov-cmake
 [submodule "imported/gtest-tap-listener"]
 	path = imported/gtest-tap-listener
-	url = git://github.com/kinow/gtest-tap-listener
+	url = git://github.com/smspillaz/gtest-tap-listener
