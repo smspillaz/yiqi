@@ -192,7 +192,7 @@ TYPED_TEST_P (ValueTypeConformance, NonDefaultUnequalToDefault)
 
     TypeParam nonDefaultValue (yti::CreateNonDefault <TypeParam> ());
 
-    const bool immutable = (!yti::HasNonDefaultConstructor <TypeParam> ()) &&
+    bool const immutable = (!yti::HasNonDefaultConstructor <TypeParam> ()) &&
                            (!yti::Mutate (nonDefaultValue));
 
     if (immutable)

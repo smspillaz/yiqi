@@ -1,51 +1,26 @@
 # /testutil/CMakeLists.txt
 # Build some shared functionality for the tests
 
-include_directories (${YIQI_EXTERNAL_INCLUDE_DIRS})
-
 set (YIQI_TESTS_UTIL_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/test_util.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/test_util.h
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution_tests_shared.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution_tests_shared.h)
 
-add_library (${YIQI_TESTS_UTIL_LIBRARY}
-             ${YIQI_TESTS_UTIL_SRCS})
+polysquare_add_library (${YIQI_TESTS_UTIL_LIBRARY} STATIC
+                        SOURCES ${YIQI_TESTS_UTIL_SRCS}
+                        EXTERNAL_INCLUDE_DIRS
+                        ${YIQI_IMPORTED_GTEST_TAP_LISTENER_INCLUDE_DIRECTORY}
+                        ${YIQI_EXTERNAL_INCLUDE_DIRS}
+                        LIBRARIES
+                        ${GTEST_LIBRARY}
+                        ${GMOCK_LIBRARY})
 
-target_link_libraries (${YIQI_TESTS_UTIL_LIBRARY}
-                       ${YIQI_LIBRARY}
-                       ${GTEST_LIBRARY}
-                       ${GMOCK_LIBRARY}
-                       ${YIQI_TESTS_MAIN_LIBRARY})
-
-verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
-                                               ${CMAKE_CURRENT_SOURCE_DIR}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ${YIQI_TESTS_UTIL_LIBRARY}
-                                               ${YIQI_VERAPP_IMPORT_RULES}
-                                               ERROR)
-
-cppcheck_target_sources (${YIQI_TESTS_UTIL_LIBRARY}
-                         INCLUDES
-                         ${YIQI_INTERNAL_SOURCE_DIRECTORY}
-                         ${YIQI_INTERNAL_INCLUDE_DIRECTORY})
-
+# Set up TAP listener
 set (YIQI_TESTS_MAIN_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/yiqi_tests_main.cpp)
 
-# Set up TAP listener
 add_definitions (-DGTEST_TAP_PRINT_TO_STDOUT)
-include_directories (${YIQI_IMPORTED_GTEST_TAP_LISTENER_INCLUDE_DIRECTORY})
-
-add_library (${YIQI_TESTS_MAIN_LIBRARY}
-             ${YIQI_TESTS_MAIN_SRCS})
-
-target_link_libraries (${YIQI_TESTS_MAIN_LIBRARY}
-                       ${GTEST_LIBRARY})
-
-verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
-                                               ${CMAKE_CURRENT_SOURCE_DIR}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ${YIQI_TESTS_MAIN_LIBRARY}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ERROR)
+polysquare_add_test_main (${YIQI_TESTS_MAIN_LIBRARY}
+                          SOURCES ${YIQI_TESTS_MAIN_SRCS}
+                          EXTERNAL_INCLUDE_DIRS ${YIQI_EXTERNAL_INCLUDE_DIRS})

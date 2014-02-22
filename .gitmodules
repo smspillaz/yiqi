@@ -1,22 +1,12 @@
-[submodule "cmake/Vera++"]
-	path = cmake/Vera++
-	url = git://github.com/polysquare/veracpp-cmake.git
-	branch = master
-[submodule "cmake/CMakeCPPCheck"]
-	path = cmake/CMakeCPPCheck
-	url = git://github.com/polysquare/cppcheck-target-cmake
-[submodule "cmake/CMakeGoogleMock"]
-	path = cmake/CMakeGoogleMock
-	url = git://github.com/polysquare/gmock-cmake
 [submodule "imported/cpp-subprocess"]
 	path = imported/cpp-subprocess
 	url = git://github.com/polysquare/cpp-subprocess
-[submodule "cmake/CMakeCPPSubprocess"]
-	path = cmake/CMakeCPPSubprocess
-	url = git://github.com/polysquare/cpp-subprocess-cmake
-[submodule "cmake/GCov"]
-	path = cmake/GCov
-	url = git://github.com/polysquare/gcov-cmake
 [submodule "imported/gtest-tap-listener"]
 	path = imported/gtest-tap-listener
-	url = git://github.com/kinow/gtest-tap-listener
+	url = git://github.com/smspillaz/gtest-tap-listener
+[submodule "cmake/common"]
+	path = cmake/common
+	url = git://github.com/polysquare/common-universal-cmake
+[submodule "cmake/CMakeCPPSubprocess"]
+        path = cmake/CMakeCPPSubprocess
+        url = git://github.com/polysquare/cpp-subprocess-cmake

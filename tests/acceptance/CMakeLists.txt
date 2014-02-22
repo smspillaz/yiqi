@@ -4,7 +4,7 @@
 # as a test binary that is linked to yiqi_main so that we run our system
 # as a whole externally.
 #
-# Note that gtest_main is linked in here instead of yiqi_main, as we don't
+# Note that yiqi_tests_main is linked in here instead of yiqi_main, as we don't
 # want to depend on a running instance of an instrumentation program
 
 set (YIQI_PASSTHROUGH_SUBDIRECTORY passthrough)
@@ -62,47 +62,26 @@ add_custom_command (OUTPUT ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT}
                     ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_INPUT}
                     COMMENT "Generating acceptance tests configuration")
 
-include_directories (${YIQI_PASSTHROUGH_EXEC_SOURCE_DIRECTORY}
+set (YIQI_ACCEPTANCE_TESTS_BINARY yiqi_acceptance_tests)
+set (YIQI_ACCEPTANCE_TESTS_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecute_through_passthrough.cpp
+     ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT})
+
+polysquare_add_test (${YIQI_ACCEPTANCE_TESTS_BINARY}
+                     SOURCES ${YIQI_ACCEPTANCE_TESTS_SRCS}
+                     EXTERNAL_INCLUDE_DIRS ${YIQI_EXTERNAL_INCLUDE_DIRS}
+                     INTERNAL_INCLUDE_DIRS
+                     ${YIQI_PASSTHROUGH_EXEC_SOURCE_DIRECTORY}
                      ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
                      ${YIQI_INTERNAL_SOURCE_DIRECTORY}
                      ${YIQI_INTERNAL_SOURCE_BINARY_DIRECTORY}
                      ${YIQI_MOCKS_DIRECTORY}
-                     ${YIQI_MATCHERS_DIRECTORY}
                      ${YIQI_TESTS_UTIL_DIRECTORY}
-                     ${YIQI_EXTERNAL_INCLUDE_DIRS}
-                     ${CMAKE_CURRENT_BINARY_DIR})
-
-set (YIQI_ACCEPTANCE_TESTS_BINARY yiqi_acceptance_tests)
-set (YIQI_ACCEPTANCE_TESTS_SRCS
-     ${CMAKE_CURRENT_SOURCE_DIR}/reexecute_through_passthrough.cpp)
-
-# Slight workaround for the fact that we can't include the config file output
-# in style checks as it may contain lines which are quite long
-set_property (SOURCE ${YIQI_ACCEPTANCE_TESTS_SRCS}
-              PROPERTY OBJECT_DEPENDS
-              ${YIQI_ACCEPTANCE_TESTS_CONFIG_FILE_H_OUTPUT})
-
-add_executable (${YIQI_ACCEPTANCE_TESTS_BINARY}
-                ${YIQI_ACCEPTANCE_TESTS_SRCS})
-
-verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
-                                               ${CMAKE_CURRENT_SOURCE_DIR}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ${YIQI_ACCEPTANCE_TESTS_BINARY}
-                                               ${YIQI_VERAPP_IMPORT_RULES}
-                                               ERROR)
-
-cppcheck_target_sources (${YIQI_ACCEPTANCE_TESTS_BINARY}
-                         INCLUDES
-                         ${YIQI_INTERNAL_SOURCE_DIRECTORY}
-                         ${YIQI_INTERNAL_INCLUDE_DIRECTORY})
-
-target_link_libraries (${YIQI_ACCEPTANCE_TESTS_BINARY}
-                       ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY}
-                       ${YIQI_LIBRARY}
-                       ${YIQI_MOCKS_LIBRARY}
-                       ${YIQI_MATCHERS_LIBRARY}
-                       ${YIQI_TESTS_UTIL_LIBRARY}
-                       ${GTEST_LIBRARY}
-                       ${GMOCK_LIBRARY}
-                       ${YIQI_TESTS_MAIN_LIBRARY})
+                     ${CMAKE_CURRENT_BINARY_DIR}
+                     LIBRARIES
+                     ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY}
+                     ${YIQI_TESTS_UTIL_LIBRARY}
+                     ${YIQI_LIBRARY}
+                     MATCHERS ${YIQI_MATCHERS_LIBRARY}
+                     MOCKS ${YIQI_MOCKS_LIBRARY}
+                     MAIN_LIBRARY ${YIQI_TESTS_MAIN_LIBRARY})

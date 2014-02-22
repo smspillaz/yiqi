@@ -10,8 +10,8 @@
 int main (int argc, char **argv)
 {
     ::testing::InitGoogleTest (&argc, argv);
-    ::testing::AddGlobalTestEnvironment(yiqi::CreateTestEnvironment (argc,
-                                                                     argv));
+    ::testing::AddGlobalTestEnvironment (yiqi::CreateTestEnvironment (argc,
+                                                                      argv));
 
     return RUN_ALL_TESTS ();
 }

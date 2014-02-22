@@ -56,7 +56,7 @@ namespace yiqi
             unsigned int
             IndentationLevelOfToken (std::string &str, size_t pos);
 
-            typedef std::vector<std::string> StringVector;
+            typedef std::vector <std::string> StringVector;
 
             void
             InsertStringsAtIndentationLevel (StringVector const &collection,
@@ -65,9 +65,9 @@ namespace yiqi
                                              size_t             replacementPos,
                                              std::string        &string);
 
-            typedef std::function<std::string (std::string const &,
-                                               size_t,
-                                               size_t)> Transformation;
+            typedef std::function <std::string (std::string const &,
+                                                size_t,
+                                                size_t)> Transformation;
 
             void
             GenerateFromTools (std::string          &string,

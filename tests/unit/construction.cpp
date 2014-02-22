@@ -36,7 +36,8 @@ namespace po = boost::program_options;
 namespace
 {
     typedef ytest::CommandLineArguments CommandLineArguments;
-    int ArgumentCount (ytest::CommandLineArguments const &args)
+    typedef std::vector <std::string> StringVector;
+    size_t ArgumentCount (ytest::CommandLineArguments const &args)
     {
         return ytest::ArgumentCount (args);
     }
@@ -58,13 +59,13 @@ namespace
         "--yiqi_b"
     };
 
-    const std::vector <std::string> RealCommandArguments =
+    std::vector <std::string> const RealCommandArguments =
     {
         ArgYiqiToolOption,
         MockTool
     };
 
-    const std::vector <std::string> NoArguments;
+    std::vector <std::string> const NoArguments;
 }
 
 class ConstructionParameters :
@@ -86,12 +87,12 @@ class ConstructionParameters :
 };
 
 CommandLineArguments
-ConstructionParameters::GenerateCommandLine (std::vector<std::string> const &arguments)
+ConstructionParameters::GenerateCommandLine (StringVector const &arguments)
 {
     return ytest::GenerateCommandLine (arguments);
 }
 
-TEST_F (ConstructionParameters, GeneratedCommandLineHasNPlusOneProvidedArguments)
+TEST_F (ConstructionParameters, CommandLineHasNPlusOneProvidedArguments)
 {
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 
@@ -112,7 +113,8 @@ namespace
         matchers.push_back (StrEq (str));
     }
 
-    std::vector <char const *> ArgumentsToVector (CommandLineArguments const &args)
+    std::vector <char const *>
+    ArgumentsToVector (CommandLineArguments const &args)
     {
         return ytest::ToVector (Arguments (args),
                                 ArgumentCount (args));
@@ -142,7 +144,7 @@ TEST_F (ConstructionParameters, GeneratedCommandLineHasAllArguments)
                                    matchers.size ()));
 }
 
-TEST_F (ConstructionParameters, GeneratedCommandLineHasFirstArgAsMockProgramName)
+TEST_F (ConstructionParameters, CommandLineHasFirstArgAsMockProgramName)
 {
     CommandLineArguments args (GenerateCommandLine (SampleCommandArguments));
 

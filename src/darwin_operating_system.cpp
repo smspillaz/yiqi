@@ -67,9 +67,9 @@ DarwinOperatingSystem::pipe (int p[2]) noexcept
     return ::pipe (p);
 }
 
-std::unique_ptr<ysysunix::OperatingSystemWrapper>
+std::unique_ptr <ysysunix::OperatingSystemWrapper>
 ysysunix::MakeOSWrapper ()
 {
-    return std::unique_ptr<ysysunix::OperatingSystemWrapper> (
+    return std::unique_ptr <ysysunix::OperatingSystemWrapper> (
         new DarwinOperatingSystem ());;
 }

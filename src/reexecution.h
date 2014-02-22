@@ -81,7 +81,7 @@ namespace yiqi
                                             SystemCalls const &)> FetchExecFunc;
         typedef std::function <NullTermArray (Tool const &)> FetchArgvFunc;
         typedef std::function <NullTermArray (Tool const        &,
-                                              SystemCalls const &)> FetchEnvFunc;
+                                              SystemCalls const &)> FetchEnFunc;
 
         /**
          * @brief Relaunch
@@ -103,7 +103,7 @@ namespace yiqi
         void Relaunch (Tool const           &tool,
                        FetchExecFunc const  &fetchExecutable,
                        FetchArgvFunc const  &fetchArgv,
-                       FetchEnvFunc const   &fetchEnv,
+                       FetchEnFunc const    &fetchEnv,
                        SystemCalls const    &system);
 
         /**

@@ -39,9 +39,11 @@ namespace yiqi
 
                 private:
 
-                    OperatingSystemWrapper (const OperatingSystemWrapper &) = delete;
+                    typedef OperatingSystemWrapper OSW;
+
+                    OperatingSystemWrapper (OSW const &) = delete;
                     OperatingSystemWrapper &
-                    operator= (const OperatingSystemWrapper &) = delete;
+                    operator= (OperatingSystemWrapper const &) = delete;
             };
         }
     }

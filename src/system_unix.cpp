@@ -24,7 +24,7 @@
 
 namespace ps = polysquare::subprocess;
 namespace ysysapi = yiqi::system::api;
-namespace ysysunix = yiqi::system::unix;
+namespace yunix = yiqi::system::unix;
 
 namespace
 {
@@ -33,7 +33,7 @@ namespace
     {
         public:
 
-            typedef std::unique_ptr<ysysunix::OperatingSystemWrapper> OSWrapper;
+            typedef std::unique_ptr <yunix::OperatingSystemWrapper> OSWrapper;
             typedef ps::OperatingSystem::Unique SubprocessOSWrapper;
 
             UNIXCalls (OSWrapper           userspace,
@@ -109,7 +109,7 @@ UNIXCalls::GetSystemEnvironment () const
 ysysapi::SystemCalls::Unique
 ysysapi::MakeUNIXSystemCalls ()
 {
-    auto yiqiOS (ysysunix::MakeOSWrapper ());
+    auto yiqiOS (yunix::MakeOSWrapper ());
     auto subprocessOS (ps::MakeOperatingSystem ());
     auto unixCalls (new UNIXCalls (std::move (yiqiOS),
                                    std::move (subprocessOS)));

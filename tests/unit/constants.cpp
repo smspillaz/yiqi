@@ -26,7 +26,7 @@ namespace yiqi
         std::ostream &
         operator<< (std::ostream &os, InstrumentationToolName const &tool)
         {
-            const int toolInt = static_cast <int> (tool.tool);
+            int const toolInt = static_cast <int> (tool.tool);
 
             os << "Instrumentation Tool Name with " << std::endl
                << " tool (as int): " << toolInt << std::endl
@@ -37,7 +37,7 @@ namespace yiqi
         std::ostream &
         operator<< (std::ostream &os, InstrumentationTool tool)
         {
-            const int toolInt = static_cast <int> (tool);
+            int const toolInt = static_cast <int> (tool);
 
             os << "tool (as int): " << toolInt;
             return os;

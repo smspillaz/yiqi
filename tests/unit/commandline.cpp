@@ -151,7 +151,7 @@ TEST (CommandLine, VectorIsNullTerminated)
 {
     ycom::ArgvVector const argv (ycom::StringVectorToArgv (MockArgs));
 
-    ASSERT_EQ (3, argv.size ());
+    ASSERT_EQ (3UL, argv.size ());
     EXPECT_THAT (argv[2], IsNull ());
 }
 
@@ -205,32 +205,37 @@ ycom::operator<< (std::ostream &os, NullTermArray const &env)
     return os;
 }
 
+namespace
+{
+    typedef ycom::NullTermArray NullTermArray;
+}
+
 ycom::NullTermArray
-ytest::ValueTypeConstructor <ycom::NullTermArray>::ConstructWithNonDefaultData ()
+ytest::ValueTypeConstructor <NullTermArray>::ConstructWithNonDefaultData ()
 {
     return ycom::NullTermArray (NonDefaultValuesp);
 }
 
 bool
-ytest::ValueTypeConstructor <ycom::NullTermArray>::HasNonDefaultConstructor ()
+ytest::ValueTypeConstructor <NullTermArray>::HasNonDefaultConstructor ()
 {
     return true;
 }
 
 bool
-ytest::ValueTypeConstructor <ycom::NullTermArray>::Mutate (ycom::NullTermArray &e)
+ytest::ValueTypeConstructor <NullTermArray>::Mutate (ycom::NullTermArray &e)
 {
     e.append (MockItem2);
     return true;
 }
 
 bool
-ytest::ValueTypeConstructor <ycom::NullTermArray>::Overloaded ()
+ytest::ValueTypeConstructor <NullTermArray>::Overloaded ()
 {
     return true;
 }
 
-typedef ::testing::Types <ycom::NullTermArray> YComValueConformanceTypes;
+typedef ::testing::Types <NullTermArray> YComValueConformanceTypes;
 INSTANTIATE_TYPED_TEST_CASE_P (NullTermArray,
                                ValueTypeConformance,
                                YComValueConformanceTypes);
@@ -250,7 +255,7 @@ class NullTermArrayDefault :
 
 TEST_F (NullTermArrayDefault, OneElementOnConstruction)
 {
-    EXPECT_EQ (1, nullTermArray.underlyingArrayLen ());
+    EXPECT_EQ (1UL, nullTermArray.underlyingArrayLen ());
 }
 
 TEST_F (NullTermArrayDefault, FirstElementIsNullOnConstruction)
@@ -268,7 +273,7 @@ TEST_F (NullTermArrayDefault, InsertAndUndoInsert)
 
     nullTermArray.append (vector);
     nullTermArray.eraseAppended (vector);
-    ASSERT_EQ (1, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (1UL, nullTermArray.underlyingArrayLen ());
 
     EXPECT_THAT (nullTermArray.underlyingArray ()[0],
                  IsNull ());
@@ -297,13 +302,13 @@ TEST_F (NullTermArrayNonDefault, RemoveDefaultValue)
                                                         str) != NULL;
                                      });
 
-    ASSERT_EQ (1, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (1UL, nullTermArray.underlyingArrayLen ());
     EXPECT_THAT (nullTermArray.underlyingArray ()[0], IsNull ());
 }
 
 TEST_F (NullTermArrayNonDefault, TwoElementsOnConstruction)
 {
-    EXPECT_EQ (2, nullTermArray.underlyingArrayLen ());
+    EXPECT_EQ (2UL, nullTermArray.underlyingArrayLen ());
 }
 
 TEST_F (NullTermArrayNonDefault, FirstElementMatchesEnvp)
@@ -321,7 +326,7 @@ TEST_F (NullTermArrayNonDefault, SecondElementIsNullTerminator)
 TEST_F (NullTermArrayNonDefault, InsertNewBeforeNullTerminator)
 {
     nullTermArray.append (MockItem2);
-    ASSERT_EQ (3, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (3UL, nullTermArray.underlyingArrayLen ());
     EXPECT_THAT (nullTermArray.underlyingArray ()[1],
                  StrEq (MockItem2));
 }
@@ -335,7 +340,7 @@ TEST_F (NullTermArrayNonDefault, InsertNewVecBeforeNullTerminator)
     };
 
     nullTermArray.append (vector);
-    ASSERT_EQ (4, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (4UL, nullTermArray.underlyingArrayLen ());
     EXPECT_THAT (nullTermArray.underlyingArray ()[1],
                  StrEq (MockItem1));
     EXPECT_THAT (nullTermArray.underlyingArray ()[2],
@@ -354,7 +359,7 @@ TEST_F (NullTermArrayNonDefault, InsertAndUndoInsertPartial)
 
     nullTermArray.append (vector);
     nullTermArray.eraseAppended (vector);
-    ASSERT_EQ (3, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (3UL, nullTermArray.underlyingArrayLen ());
 
     EXPECT_THAT (nullTermArray.underlyingArray ()[0],
                  StrEq (NonDefaultValuesp[0]));
@@ -372,7 +377,7 @@ TEST_F (NullTermArrayNonDefault, InsertAndUndoInsert)
 
     nullTermArray.append (vector);
     nullTermArray.eraseAppended (vector);
-    ASSERT_EQ (2, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (2UL, nullTermArray.underlyingArrayLen ());
 
     EXPECT_THAT (nullTermArray.underlyingArray ()[0],
                  StrEq (NonDefaultValuesp[0]));
@@ -383,7 +388,7 @@ TEST_F (NullTermArrayNonDefault, InsertAndUndoInsert)
 TEST_F (NullTermArrayNonDefault, LastElementIsNullTerminator)
 {
     nullTermArray.append (MockItem2);
-    ASSERT_EQ (3, nullTermArray.underlyingArrayLen ());
+    ASSERT_EQ (3UL, nullTermArray.underlyingArrayLen ());
     EXPECT_THAT (nullTermArray.underlyingArray ()[2],
                  IsNull ());
 }
@@ -402,7 +407,7 @@ TEST (nullTermArrayOfEnvironment, InsertNewBeforeNullTerminator)
     ycom::InsertEnvironmentPair (environment,
                                  MockerEnvKey.c_str (),
                                  MockEnvValue.c_str ());
-    ASSERT_EQ (3, environment.underlyingArrayLen ());
+    ASSERT_EQ (3UL, environment.underlyingArrayLen ());
     EXPECT_THAT (environment.underlyingArray ()[1],
                  StrEq (ExpectedValue));
 }

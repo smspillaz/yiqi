@@ -73,7 +73,7 @@ namespace yiqi
                 private:
 
                     Program (Program const &) = delete;
-                    Program & operator=(Program const &) = delete;
+                    Program & operator= (Program const &) = delete;
             };
 
             /**
@@ -125,7 +125,7 @@ namespace yiqi
                 private:
 
                     Controller (Controller const &) = delete;
-                    Controller & operator=(Controller const &) = delete;
+                    Controller & operator= (Controller const &) = delete;
             };
 
             /**

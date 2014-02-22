@@ -109,7 +109,7 @@ TEST_F (GetArgvForTool, AtLeastOneArgumentInReturnedArgvWithNoWrapper)
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
-    EXPECT_GE (argv.underlyingArrayLen (), 2); // 1 + null-term
+    EXPECT_GE (argv.underlyingArrayLen (), 2UL); // 1 + null-term
 }
 
 TEST_F (GetArgvForTool, AtLeastTwoArgumentsInReturnedArgvWithWrapper)
@@ -121,7 +121,7 @@ TEST_F (GetArgvForTool, AtLeastTwoArgumentsInReturnedArgvWithWrapper)
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
-    EXPECT_GE (argv.underlyingArrayLen (), 3); // 2 + null-term
+    EXPECT_GE (argv.underlyingArrayLen (), 3UL); // 2 + null-term
 }
 
 TEST_F (GetArgvForTool, AtLeastThreeArgumentsInReturnedArgvWithWrapperAndOpts)
@@ -135,7 +135,7 @@ TEST_F (GetArgvForTool, AtLeastThreeArgumentsInReturnedArgvWithWrapperAndOpts)
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
-    EXPECT_GE (argv.underlyingArrayLen (), 4); // 3 + null-term
+    EXPECT_GE (argv.underlyingArrayLen (), 4UL); // 3 + null-term
 }
 
 TEST_F (GetArgvForTool, FirstArgvIsInstrumentation)
@@ -147,7 +147,7 @@ TEST_F (GetArgvForTool, FirstArgvIsInstrumentation)
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
-    ASSERT_EQ (argv.underlyingArrayLen (), 3); // 2 + null-term
+    ASSERT_EQ (argv.underlyingArrayLen (), 3UL); // 2 + null-term
     EXPECT_THAT (argv.underlyingArray ()[0],
                  StrEq (ytestrexec::MockInstrumentation));
 }
@@ -161,7 +161,7 @@ TEST_F (GetArgvForTool, SecondArgvIsProgramName)
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
-    ASSERT_EQ (argv.underlyingArrayLen (), 3); // 2 + null-term
+    ASSERT_EQ (argv.underlyingArrayLen (), 3UL); // 2 + null-term
     EXPECT_THAT (argv.underlyingArray ()[1], StrEq (ytest::MockProgramName));
 }
 
@@ -184,7 +184,7 @@ TEST_F (GetArgvForTool, SubsequentArgvAreOptions)
         IsNull ()
     };
 
-    ASSERT_EQ (argv.underlyingArrayLen (), 4); // 3 + null-term
+    ASSERT_EQ (argv.underlyingArrayLen (), 4UL); // 3 + null-term
     EXPECT_THAT (argv.underlyingArray (),
                  ymatch::ArrayFitsMatchers (matchers));
 }
@@ -195,7 +195,7 @@ TEST_F (GetArgvForTool, FinalArgvIsNull)
                                                   ytest::ArgumentCount (args),
                                                   ytest::Arguments (args)));
 
-    ASSERT_EQ (argv.underlyingArrayLen (), 2); // 1 + null-term
+    ASSERT_EQ (argv.underlyingArrayLen (), 2UL); // 1 + null-term
     EXPECT_THAT (argv.underlyingArray ()[1], IsNull ());
 }
 
@@ -206,7 +206,7 @@ class GetEnvForTool :
 
         GetEnvForTool ()
         {
-            tool.IgnoreCalls();
+            tool.IgnoreCalls ();
             syscalls.IgnoreCalls ();
 
             /* Don't need the tool id, wrapper or args */

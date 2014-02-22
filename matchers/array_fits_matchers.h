@@ -25,8 +25,8 @@ namespace yiqi
     {
         namespace util
         {
-            std::ostream & InsertIntoStreamIfNotEmpty(std::string const &str,
-                                                      std::ostream      &os);
+            std::ostream & InsertIntoStreamIfNotEmpty (std::string const &str,
+                                                       std::ostream      &os);
 
             class StringMatchResultListener :
                 public ::testing::MatchResultListener

@@ -3,28 +3,17 @@
 #
 # See LICENCE.md for Copyright information
 
-include_directories (${CMAKE_CURRENT_BINARY_DIR}
-                     ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
-                     ${YIQI_INTERNAL_SOURCE_DIRECTORY}
-                     ${YIQI_EXTERNAL_INCLUDE_DIRS})
-
 set (YIQI_MAIN_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/yiqi_main.cpp)
 
-add_library (${YIQI_MAIN_LIBRARY} STATIC
-             ${YIQI_MAIN_SRCS})
-
-target_link_libraries (${YIQI_MAIN_LIBRARY}
-                       ${GTEST_LIBRARY})
-
-verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
-                                               ${CMAKE_CURRENT_SOURCE_DIR}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ${YIQI_MAIN_LIBRARY}
-                                               ${YIQI_VERAPP_IMPORT_RULES}
-                                               ERROR)
-
-cppcheck_target_sources (${YIQI_MAIN_LIBRARY})
+polysquare_add_library (${YIQI_MAIN_LIBRARY} STATIC
+                        SOURCES ${YIQI_MAIN_SRCS}
+                        LIBRARIES ${GTEST_LIBRARY}
+                        INTERNAL_INCLUDE_DIRS
+                        ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
+                        ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                        EXTERNAL_INCLUDE_DIRS
+                        ${YIQI_EXTERNAL_INCLUDE_DIRS})
 
 # Get available tools and generate tools_declarations.h and
 # tools_factory.cpp
@@ -120,21 +109,12 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
-add_library (${YIQI_LIBRARY} STATIC
-             ${YIQI_LIBRARY_SRCS})
-
-target_link_libraries (${YIQI_LIBRARY}
-                       ${YIQI_EXTERNAL_LIBRARIES})
-
-verapp_profile_check_source_files_conformance (${YIQI_VERAPP_OUTPUT_DIRECTORY}
-                                               ${CMAKE_CURRENT_SOURCE_DIR}
-                                               ${YIQI_VERAPP_PROFILE}
-                                               ${YIQI_LIBRARY}
-                                               ${YIQI_VERAPP_IMPORT_RULES}
-                                               ERROR)
-
-cppcheck_target_sources (${YIQI_LIBRARY}
-                        INCLUDES
-                        ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+polysquare_add_library (${YIQI_LIBRARY} STATIC
+                        SOURCES ${YIQI_LIBRARY_SRCS}
+                        INTERNAL_INCLUDE_DIRS
+                        ${YIQI_INTERNAL_SOURCE_BINARY_DIRECTORY}
                         ${YIQI_INTERNAL_INCLUDE_DIRECTORY}
-                        ${CMAKE_CURRENT_BINARY_DIR})
+                        ${YIQI_INTERNAL_SOURCE_DIRECTORY}
+                        EXTERNAL_INCLUDE_DIRS
+                        ${YIQI_EXTERNAL_INCLUDE_DIRS}
+                        LIBRARIES ${YIQI_EXTERNAL_LIBRARIES})

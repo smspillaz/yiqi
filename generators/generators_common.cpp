@@ -39,13 +39,13 @@ yg::GetOptions (int                       argc,
 
     description.add_options ()
         ("input,i",
-         po::value<std::string> (&input)->required (),
+         po::value <std::string> (&input)->required (),
          "File to read template from")
         ("output,o",
-         po::value<std::string> (&output)->required (),
+         po::value <std::string> (&output)->required (),
          "File to write result to")
         ("extra,e",
-         po::value<std::vector<std::string>> (&tools)->multitoken (),
+         po::value <std::vector <std::string>> (&tools)->multitoken (),
          "Extra options");
 
     po::positional_options_description positionalDescription;
@@ -276,10 +276,10 @@ ygu::InsertStringsAtIndentationLevel (StringVector const &collection,
     }
 }
 
-typedef std::vector<std::string> StringVector;
-typedef std::function<std::string (std::string const &,
-                                   size_t,
-                                   size_t)> Transformation;
+typedef std::vector <std::string> StringVector;
+typedef std::function <std::string (std::string const &,
+                                    size_t,
+                                    size_t)> Transformation;
 
 void
 ygu::GenerateFromTools (std::string          &string,
