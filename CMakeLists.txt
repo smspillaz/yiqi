@@ -4,8 +4,13 @@
 #
 # See LICENCE.md for Copyright information
 
-project (YiqiInstrumentation)
+if (POLICY CMP0025)
 
+    cmake_policy (SET CMP0025 NEW)
+
+endif (POLICY CMP0025)
+
+project (YiqiInstrumentation)
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
 # Search the following directories as well as
@@ -111,10 +116,6 @@ add_subdirectory (${YIQI_TESTS_UTIL_DIRECTORY})
 add_subdirectory (${YIQI_TESTS_DIRECTORY})
 
 polysquare_cppcheck_complete_scanning ()
-
-# Append all sources to unused function check
-add_custom_target (yiqi_check_unused ALL
-                   COMMENT "Checking for unused functions")
 
 # Get available tools and print report
 set (AVAILABLE_TOOLS)

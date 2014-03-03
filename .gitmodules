@@ -3,7 +3,7 @@
 	url = git://github.com/polysquare/cpp-subprocess
 [submodule "imported/gtest-tap-listener"]
 	path = imported/gtest-tap-listener
-	url = git://github.com/smspillaz/gtest-tap-listener
+	url = git://github.com/kinow/gtest-tap-listener
 [submodule "cmake/common"]
 	path = cmake/common
 	url = git://github.com/polysquare/common-universal-cmake
