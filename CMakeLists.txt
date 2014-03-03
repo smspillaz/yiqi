@@ -112,10 +112,6 @@ add_subdirectory (${YIQI_TESTS_DIRECTORY})
 
 polysquare_cppcheck_complete_scanning ()
 
-# Append all sources to unused function check
-add_custom_target (yiqi_check_unused ALL
-                   COMMENT "Checking for unused functions")
-
 # Get available tools and print report
 set (AVAILABLE_TOOLS)
 yiqi_tools_available (AVAILABLE_TOOLS)
