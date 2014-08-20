@@ -39,8 +39,8 @@ namespace
         private:
 
             Controller::ToolID ToolIdentifier () const;
-            void Start ();
-            void Stop (FinishMode mode);
+            void Start () override;
+            Status Stop () override;
     };
 }
 
@@ -62,9 +62,10 @@ CallgrindController::Start ()
 {
 }
 
-void
-CallgrindController::Stop (FinishMode mode)
+CallgrindController::Status
+CallgrindController::Stop ()
 {
+    return Status ();
 }
 
 yconst::InstrumentationTool

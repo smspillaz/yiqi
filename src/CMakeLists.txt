@@ -60,6 +60,7 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
      ${CMAKE_CURRENT_SOURCE_DIR}/environment.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/init.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool.h
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
@@ -67,6 +68,7 @@ set (YIQI_LIBRARY_SRCS
      ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_passthrough.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/operating_system_implementation.h
      ${CMAKE_CURRENT_SOURCE_DIR}/operating_system_wrapper.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platform_gtest.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.h
      ${CMAKE_CURRENT_SOURCE_DIR}/scopeguard.h

@@ -28,11 +28,12 @@ namespace yiqi
 
                     private:
 
-                        std::string const & WrapperBinary () const;
-                        std::string const & WrapperOptions () const;
-                        std::string const & Name () const;
+                        std::string const & WrapperBinary () const override;
+                        std::string const & WrapperOptions () const override;
+                        std::string const & Name () const override;
 
-                        virtual std::string const & ToolAdditionalOptions () const = 0;
+                        virtual std::string const &
+                        ToolAdditionalOptions () const = 0;
                 };
             }
         }

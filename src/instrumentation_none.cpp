@@ -34,16 +34,16 @@ namespace
         private:
 
             ToolID ToolIdentifier () const;
-            void Start ();
-            void Stop (FinishMode mode);
+            void Start () override;
+            Status Stop () override;
     };
 }
 
 std::string const &
 NoneProgram::Name () const
 {
-    static std::string const name (
-        yconst::StringFromTool (ToolIdentifier ()));
+    static std::string const name =
+        yconst::StringFromTool (ToolIdentifier ());
     return name;
 }
 
@@ -78,9 +78,9 @@ NoneController::Start ()
 {
 }
 
-void
-NoneController::Stop (FinishMode mode)
+NoneController::Status NoneController::Stop ()
 {
+    return NoneController::Status ();
 }
 
 yitp::Unique

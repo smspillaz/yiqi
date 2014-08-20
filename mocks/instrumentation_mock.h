@@ -56,7 +56,7 @@ namespace yiqi
                                             ToolID ());
 
                         MOCK_METHOD0 (Start, void ());
-                        MOCK_METHOD1 (Stop, void (FinishMode mode));
+                        MOCK_METHOD0 (Stop, Status ());
                 };
             }
         }

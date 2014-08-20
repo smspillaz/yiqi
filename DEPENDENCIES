@@ -1,5 +1,7 @@
 clang
 cppcheck
+g++-4.8
+gcc-4.8
 libboost-iostreams-dev
 libboost-program-options-dev
 libboost-dev

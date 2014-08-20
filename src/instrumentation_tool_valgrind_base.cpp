@@ -43,7 +43,7 @@ yitv::ProgramBase::WrapperOptions () const
 std::string const &
 yitv::ProgramBase::Name () const
 {
-    static std::string const name (
-        yconst::StringFromTool (ToolIdentifier ()));
+    static std::string const name =
+        yconst::StringFromTool (ToolIdentifier ());
     return name;
 }
