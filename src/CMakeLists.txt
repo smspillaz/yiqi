@@ -52,34 +52,6 @@ add_custom_command (OUTPUT ${YIQI_TOOLS_FACTORY_H_OUTPUT}
                     ${YIQI_TOOLS_FACTORY_H_INPUT}
                     COMMENT "Generating Yiqi Tools Factories")
 
-set (YIQI_LIBRARY_SRCS
-     ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/commandline.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/construction.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/environment.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/init.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_timer.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_passthrough.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/operating_system_implementation.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/operating_system_wrapper.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platform_gtest.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/scopeguard.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/system_api.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/system_implementation.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/system_unix.cpp
-     ${CMAKE_CURRENT_BINARY_DIR}/tools_declarations.h
-     ${CMAKE_CURRENT_BINARY_DIR}/tools_factory.cpp)
-
 yiqi_tools_are_available (YIQI_VALGRIND_TOOLS_AVAILABLE
                           "memcheck"
                           "callgrind"
@@ -110,6 +82,35 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
          ${CMAKE_CURRENT_SOURCE_DIR}/gnu_operating_system.cpp)
 
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+set (YIQI_LIBRARY_SRCS
+     ${YIQI_LIBRARY_SRCS}
+     ${CMAKE_CURRENT_SOURCE_DIR}/commandline.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/construction.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/environment.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/init.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tools_available.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_none.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_timer.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_passthrough.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platform_gtest.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_unix.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/tools_factory.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/commandline.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/construction.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/instrumentation_tool.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/reexecution.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/scopeguard.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/systempaths.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_api.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/system_implementation.h
+     ${CMAKE_CURRENT_BINARY_DIR}/tools_declarations.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/operating_system_implementation.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/operating_system_wrapper.h)
 
 polysquare_add_library (${YIQI_LIBRARY} STATIC
                         SOURCES ${YIQI_LIBRARY_SRCS}

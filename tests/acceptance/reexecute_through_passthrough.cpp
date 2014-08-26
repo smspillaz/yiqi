@@ -9,10 +9,11 @@
  * See LICENCE.md for Copyright information
  */
 
-#include <gmock/gmock.h>
-
+#include <functional>
 #include <iostream>
 #include <system_error>
+
+#include <gmock/gmock.h>
 
 #include <boost/noncopyable.hpp>
 

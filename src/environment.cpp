@@ -44,7 +44,7 @@ namespace
     {
         public:
 
-            YiqiToolDispatch (int argc, char **argv);
+            YiqiToolDispatch ();
             virtual ~YiqiToolDispatch () {};
             virtual void SetUp ();
 
@@ -58,25 +58,18 @@ namespace
     {
         public:
 
-            Private (int argc, char **argv);
-
-            int argc;
-            char **argv;
+            Private ();
 
             std::unique_ptr <yit::Controller> controller;
     };
 }
 
-YiqiToolDispatch::Private::Private (int argc,
-                                    char **argv) :
-    argc (argc),
-    argv (argv)
+YiqiToolDispatch::Private::Private ()
 {
 }
 
-YiqiToolDispatch::YiqiToolDispatch (int argc,
-                                    char **argv) :
-    priv (new Private (argc, argv))
+YiqiToolDispatch::YiqiToolDispatch () :
+    priv (new Private ())
 {
 }
 

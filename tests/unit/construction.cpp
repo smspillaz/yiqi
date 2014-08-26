@@ -6,6 +6,7 @@
  * See LICENCE.md for Copyright information
  */
 
+#include <functional>
 #include <vector>
 
 #include <gmock/gmock.h>

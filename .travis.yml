@@ -28,11 +28,12 @@ script:
   - pushd build;
   - export CC=${CC_OVERLOAD}
   - export CXX=${CXX_OVERLOAD}
+  - export COMMON_CMAKE_OPTIONS="-DYIQI_BOOST_USE_STATIC_LIBS=OFF -DGMOCK_ALWAYS_DOWNLOAD_SOURCES=ON"
   - if [[ $SCAN_BUILD == 1 ]] ; then
-      scan-build cmake .. `echo ${CMAKE_OPTIONS}`;
+      scan-build cmake .. `echo ${CMAKE_OPTIONS} ${COMMON_CMAKE_OPTIONS}`;
       scan-build --use-cc=clang --use-c++=clang++ make;
     else
-      cmake .. `echo ${CMAKE_OPTIONS}` -DYIQI_BOOST_USE_STATIC_LIBS=OFF;
+      cmake .. `echo ${CMAKE_OPTIONS} ${COMMON_CMAKE_OPTIONS}`;
       make;
     fi;
   - pushd tests;

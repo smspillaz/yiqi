@@ -7,6 +7,8 @@
  * See LICENCE.md for Copyright information
  */
 
+#include <functional>
+
 #include <gmock/gmock.h>
 
 #include "commandline.h"

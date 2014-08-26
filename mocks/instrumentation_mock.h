@@ -8,6 +8,7 @@
 #ifndef YIQI_INSTRUMENTATION_MOCK_H
 #define YIQI_INSTRUMENTATION_MOCK_H
 
+#include <functional>
 #include <string>
 
 #include <gmock/gmock.h>

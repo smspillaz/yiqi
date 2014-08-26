@@ -11,7 +11,9 @@
 #define YIQI_INSTRUMENTATION_TOOL_H
 
 #include <string>
+#include <map>
 #include <memory>
+#include <vector>
 
 #include <boost/variant.hpp>
 

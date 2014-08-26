@@ -10,4 +10,5 @@ set (YIQI_HEADERS
      ${CMAKE_CURRENT_SOURCE_DIR}/platform_gtest.h)
 
 polysquare_add_checked_sources (yiqi_headers
-                                SOURCES ${YIQI_HEADERS})
+                                SOURCES ${YIQI_HEADERS}
+                                FORCE_LANGUAGE CXX)

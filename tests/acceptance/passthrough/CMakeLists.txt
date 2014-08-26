@@ -4,8 +4,8 @@
 #
 # See LICENCE.md for Copyright information.
 set (YIQI_PASSTHROUGH_CONSTANTS_LIBRARY_SRCS
-     ${CMAKE_CURRENT_SOURCE_DIR}/passthrough_constants.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/passthrough_constants.cpp)
+     ${CMAKE_CURRENT_SOURCE_DIR}/passthrough_constants.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/passthrough_constants.h)
 
 polysquare_add_library (${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY} SHARED
                         SOURCES ${YIQI_PASSTHROUGH_CONSTANTS_LIBRARY_SRCS}
