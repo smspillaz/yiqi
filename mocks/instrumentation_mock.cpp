@@ -57,5 +57,5 @@ ymock::instrumentation::tools::Controller::IgnoreCalls ()
 {
     EXPECT_CALL (*this, ToolIdentifier ()).Times (AtLeast (0));
     EXPECT_CALL (*this, Start ()).Times (AtLeast (0));
-    EXPECT_CALL (*this, Stop (_)).Times (AtLeast (0));
+    EXPECT_CALL (*this, Stop ()).Times (AtLeast (0));
 }

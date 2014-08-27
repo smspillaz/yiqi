@@ -17,7 +17,7 @@
 
 #include <unistd.h>
 
-#include <yiqi/environment.h>
+#include <yiqi/init.h>
 
 #include "commandline.h"
 #include "constants.h"
@@ -39,13 +39,13 @@ namespace ysysapi = yiqi::system::api;
 
 namespace
 {
-    class YiqiEnvironment :
-        public ::testing::Environment
+    class YiqiToolDispatch :
+        public ::testing::EmptyTestEventListener
     {
         public:
 
-            YiqiEnvironment (int argc, char **argv);
-            virtual ~YiqiEnvironment () {};
+            YiqiToolDispatch ();
+            virtual ~YiqiToolDispatch () {};
             virtual void SetUp ();
 
         private:
@@ -54,71 +54,27 @@ namespace
             std::unique_ptr <Private> priv;
     };
 
-    class YiqiEnvironment::Private
+    class YiqiToolDispatch::Private
     {
         public:
 
-            Private (int argc, char **argv);
+            Private ();
 
-            int argc;
-            char **argv;
+            std::unique_ptr <yit::Controller> controller;
     };
 }
 
-YiqiEnvironment::Private::Private (int argc,
-                                   char **argv) :
-    argc (argc),
-    argv (argv)
+YiqiToolDispatch::Private::Private ()
 {
 }
 
-YiqiEnvironment::YiqiEnvironment (int argc,
-                                  char **argv) :
-    priv (new Private (argc, argv))
+YiqiToolDispatch::YiqiToolDispatch () :
+    priv (new Private ())
 {
 }
 
 void
 // cppcheck-suppress unusedFunction
-YiqiEnvironment::SetUp ()
+YiqiToolDispatch::SetUp ()
 {
-    char const *activeTool = getenv (yconst::YiqiToolEnvKey);
-
-    if (activeTool)
-    {
-        std::cout << yconst::YiqiRunningUnderHeader
-                  << std::string (activeTool)
-                  << std::endl;
-    }
-    else
-    {
-        po::options_description desc (yc::FetchOptionsDescription ());
-
-        /* Figure out if we need to re-exec here under valgrind */
-        std::string const &toolStr (yc::ParseOptionsForToolName (priv->argc,
-                                                                 priv->argv,
-                                                                 desc));
-        yconst::InstrumentationTool toolID (yconst::ToolFromString (toolStr));
-        yit::FactoryPackage factories (yc::FactoryPackageForTool (toolID));
-
-        yit::Program::Unique instrumentingProgram (factories.program ());
-
-        /* We can skip a bit if there is no instrumentation wrapper */
-        if (!instrumentingProgram->WrapperBinary ().empty ())
-        {
-            auto calls (ysysapi::MakeUNIXSystemCalls ());
-
-            yexec::RelaunchCurrentProgram (*instrumentingProgram,
-                                           priv->argc,
-                                           priv->argv,
-                                           *calls);
-        }
-    }
-}
-
-::testing::Environment *
-yiqi::CreateTestEnvironment (int argc,
-                             char **argv)
-{
-    return new YiqiEnvironment (argc, argv);
 }

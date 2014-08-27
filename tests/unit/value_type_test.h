@@ -30,6 +30,7 @@
 #ifndef YIQI_VALUE_TYPE_TEST_H
 #define YIQI_VALUE_TYPE_TEST_H
 
+#include <functional>
 #include <memory>
 
 #include <gtest/gtest.h>

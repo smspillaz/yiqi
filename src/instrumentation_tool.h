@@ -11,11 +11,13 @@
 #define YIQI_INSTRUMENTATION_TOOL_H
 
 #include <string>
+#include <map>
 #include <memory>
+#include <vector>
+
+#include <boost/variant.hpp>
 
 #include <constants.h>
-//#include <valgrind/memcheck.h>
-//#include <valgrind.h>
 
 namespace yiqi
 {
@@ -88,12 +90,6 @@ namespace yiqi
                     typedef std::unique_ptr <Controller> Unique;
                     typedef constants::InstrumentationTool ToolID;
 
-                    enum class FinishMode
-                    {
-                        Report = 0,
-                        Throw
-                    };
-
                     virtual ~Controller () {};
 
                     /**
@@ -102,15 +98,37 @@ namespace yiqi
                      */
                     virtual void Start () = 0;
 
+                    struct Status
+                    {
+                        typedef std::string Key;
+                        typedef boost::variant <int, float, std::string> Value;
+
+                        std::vector <std::pair <Key, Value>> warnings;
+                        std::vector <std::pair <Key, Value>> results;
+                        std::map <size_t, std::pair <Key, Value>> lines;
+
+                        /* Disable copy */
+                        Status (Status const &other) = delete;
+                        Status & operator= (Status const &other) = delete;
+
+                        /* Enable move */
+                        Status (Status &&other) = default;
+                        Status & operator= (Status &&other) = default;
+
+                        /* Enable default-constructor */
+                        Status () = default;
+                    };
+
                     /**
                      * @brief Stop collecting instrumentation data from
                      * the currently active tool.
-                     * @param mode What to do when instrumentation data has
-                     * been collected. If mode is Throw, then any data
-                     * which would almost always be considered a negative will
-                     * result in an exception being thrown, failing the test.
+                     * @return A #FinishStatus struct describing the current
+                     * warnings and errors the tool found (if relevant).
+                     *
+                     * Use the @return value with the ToolReporter wrapper
+                     * to respond to warnings and errors as appropriate.
                      */
-                    virtual void Stop (FinishMode mode) = 0;
+                    virtual Status Stop () = 0;
 
                     /**
                      * @brief ToolIdentifier

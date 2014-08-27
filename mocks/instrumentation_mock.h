@@ -8,6 +8,7 @@
 #ifndef YIQI_INSTRUMENTATION_MOCK_H
 #define YIQI_INSTRUMENTATION_MOCK_H
 
+#include <functional>
 #include <string>
 
 #include <gmock/gmock.h>
@@ -56,7 +57,7 @@ namespace yiqi
                                             ToolID ());
 
                         MOCK_METHOD0 (Start, void ());
-                        MOCK_METHOD1 (Stop, void (FinishMode mode));
+                        MOCK_METHOD0 (Stop, Status ());
                 };
             }
         }

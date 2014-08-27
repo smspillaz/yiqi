@@ -38,8 +38,8 @@ namespace
     {
         private:
 
-            void Start ();
-            void Stop (FinishMode mode);
+            void Start () override;
+            Status Stop () override;
             Controller::ToolID ToolIdentifier () const;
     };
 }
@@ -62,9 +62,10 @@ CachegrindController::Start ()
 {
 }
 
-void
-CachegrindController::Stop (FinishMode mode)
+CachegrindController::Status
+CachegrindController::Stop ()
 {
+    return Status ();
 }
 
 yconst::InstrumentationTool

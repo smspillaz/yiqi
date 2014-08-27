@@ -40,8 +40,8 @@ namespace
         private:
 
             Controller::ToolID ToolIdentifier () const;
-            void Start ();
-            void Stop (FinishMode mode);
+            void Start () override;
+            Status Stop () override;
     };
 }
 
@@ -63,9 +63,10 @@ MemcheckController::Start ()
 {
 }
 
-void
-MemcheckController::Stop (FinishMode mode)
+MemcheckController::Status
+MemcheckController::Stop ()
 {
+    return Status ();
 }
 
 yconst::InstrumentationTool

@@ -34,8 +34,8 @@ namespace
         private:
 
             ToolID ToolIdentifier () const;
-            void Start ();
-            void Stop (FinishMode mode);
+            void Start () override;
+            Status Stop () override;
     };
 }
 
@@ -72,9 +72,10 @@ PassthroughController::Start ()
 {
 }
 
-void
-PassthroughController::Stop (FinishMode mode)
+PassthroughController::Status
+PassthroughController::Stop ()
 {
+    return PassthroughController::Status ();
 }
 
 yconst::InstrumentationTool

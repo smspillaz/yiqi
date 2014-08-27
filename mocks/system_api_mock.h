@@ -8,6 +8,7 @@
 #ifndef YIQI_SYSTEM_API_MOCK_H
 #define YIQI_SYSTEM_API_MOCK_H
 
+#include <functional>
 #include <string>
 
 #include <gmock/gmock.h>

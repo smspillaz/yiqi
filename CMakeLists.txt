@@ -13,6 +13,9 @@ endif (POLICY CMP0025)
 project (YiqiInstrumentation)
 cmake_minimum_required (VERSION 2.8 FATAL_ERROR)
 
+option (YIQI_BOOST_STATIC_LIBS ON
+        "Link static libraries for boost. OFF if not using system compiler")
+
 # Search the following directories as well as
 # the global cmake directories for new modules
 set (YIQI_CMAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
@@ -37,16 +40,54 @@ polysquare_rules_bootstrap (${YIQI_POLYSQUARE_CMAKE_DIRECTORY}
                             ${CMAKE_BINARY_DIR})
 polysquare_gmock_bootstrap (${YIQI_POLYSQUARE_CMAKE_DIRECTORY})
 polysquare_coverage_bootstrap (${YIQI_POLYSQUARE_CMAKE_DIRECTORY})
+polysquare_cotire_bootstrap (${YIQI_POLYSQUARE_CMAKE_DIRECTORY})
 
 include (FindPkgConfig)
 pkg_check_modules (YIQI_VALGRIND valgrind)
 
-set (Boost_USE_STATIC_LIBS ON)
-set (CPP_SUBPROCESS_SOURCES_DIRECTORY ${YIQI_IMPORTED_DIRECTORY}/cpp-subprocess)
+set (Boost_USE_STATIC_LIBS ${YIQI_BOOST_USE_STATIC_LIBS})
+set (CPP_SUBPROCESS_SOURCES_DIRECTORY
+     ${YIQI_IMPORTED_DIRECTORY}/cpp-subprocess)
 
-find_package (Boost 1.46 REQUIRED COMPONENTS program_options iostreams)
+function (yiqi_import_external_libraries_from_boost RETURN_VALUE
+                                                    VERSION)
+
+    cmake_parse_arguments (EXTERNAL
+                           ""
+                           ""
+                           "COMPONENTS"
+                           ${ARGN})
+
+    find_package (Boost ${VERSION} COMPONENTS ${EXTERNAL_COMPONENTS})
+
+    set (RETURN_LIST)
+
+    foreach (LIBRARY ${Boost_LIBRARIES})
+
+        list (FIND Boost_LIBRARIES ${LIBRARY} INDEX)
+        list (GET EXTERNAL_COMPONENTS ${INDEX} EXT_COMPONENT_NAME)
+        set (IMPORTED_LIBRARY_NAME imported_boost_${EXT_COMPONENT_NAME})
+
+        add_library (${IMPORTED_LIBRARY_NAME} STATIC IMPORTED GLOBAL)
+        set_target_properties (${IMPORTED_LIBRARY_NAME}
+                               PROPERTIES
+                               IMPORTED_LOCATION
+                               ${LIBRARY})
+        list (APPEND RETURN_LIST ${IMPORTED_LIBRARY_NAME})
+
+    endforeach ()
+
+    set (${RETURN_VALUE} ${RETURN_LIST} PARENT_SCOPE)
+
+endfunction ()
+
 find_package (Threads REQUIRED)
 find_package (CPPSubprocess REQUIRED)
+yiqi_import_external_libraries_from_boost (BOOST_LIBRARIES
+                                           1.46
+                                           COMPONENTS
+                                           program_options
+                                           iostreams)
 
 # Set up the tool tracker
 include (${YIQI_CMAKE_DIRECTORY}/ToolTracker.cmake)
@@ -73,7 +114,7 @@ set (YIQI_EXTERNAL_LIBRARY_DIRS
      ${YIQI_VALGRIND_LIBRARY_DIRS}
      ${Boost_LIBRARY_DIRS})
 set (YIQI_EXTERNAL_LIBRARIES
-     ${Boost_LIBRARIES}
+     ${BOOST_LIBRARIES}
      ${CPP_SUBPROCESS_LIBRARY})
 set (YIQI_INTERNAL_INCLUDE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set (YIQI_INTERNAL_SOURCE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -106,8 +147,8 @@ set (YIQI_IMPORTED_GTEST_TAP_LISTENER_DIRECTORY
 set (YIQI_IMPORTED_GTEST_TAP_LISTENER_INCLUDE_DIRECTORY
      ${YIQI_IMPORTED_GTEST_TAP_LISTENER_DIRECTORY}/src)
 
-add_subdirectory (${YIQI_INTERNAL_INCLUDE_DIRECTORY})
 add_subdirectory (${YIQI_INTERNAL_SOURCE_DIRECTORY})
+add_subdirectory (${YIQI_INTERNAL_INCLUDE_DIRECTORY})
 add_subdirectory (${YIQI_GENERATORS_DIRECTORY})
 add_subdirectory (${YIQI_SAMPLES_DIRECTORY})
 add_subdirectory (${YIQI_MOCKS_DIRECTORY})

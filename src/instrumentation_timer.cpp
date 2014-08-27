@@ -35,7 +35,7 @@ namespace
 
             ToolID ToolIdentifier () const;
             void Start ();
-            void Stop (FinishMode mode);
+            Status Stop () override;
     };
 }
 
@@ -72,9 +72,10 @@ TimerController::Start ()
 {
 }
 
-void
-TimerController::Stop (FinishMode mode)
+TimerController::Status
+TimerController::Stop ()
 {
+    return TimerController::Status ();
 }
 
 yconst::InstrumentationTool

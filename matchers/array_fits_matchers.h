@@ -15,6 +15,7 @@
 #ifndef YIQI_ARRAY_FITS_MATCHERS_H
 #define YIQI_ARRAY_FITS_MATCHERS_H
 
+#include <functional>
 #include <iostream>
 #include <vector>
 #include <gmock/gmock.h>

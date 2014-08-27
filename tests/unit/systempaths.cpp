@@ -5,6 +5,8 @@
  * See LICENCE.md for Copyright information
  */
 
+#include <functional>
+
 #include <gmock/gmock.h>
 
 #include "systempaths.h"

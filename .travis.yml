@@ -16,19 +16,24 @@ env:
 before_install:
   - git submodule update --init --recursive
   - sudo apt-add-repository -y ppa:smspillaz/verapp-latest
+  - sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update -qq
   - sudo apt-get install -qq `cat DEPENDENCIES`
+  - yes | sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50
+  - yes | sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
+  - yes | sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-4.8 50
   - if [[ $COVERAGE == 1 ]] ; then sudo pip install cpp-coveralls; fi
 script:
   - mkdir build
   - pushd build;
   - export CC=${CC_OVERLOAD}
   - export CXX=${CXX_OVERLOAD}
+  - export COMMON_CMAKE_OPTIONS="-DYIQI_BOOST_USE_STATIC_LIBS=OFF -DGMOCK_ALWAYS_DOWNLOAD_SOURCES=ON"
   - if [[ $SCAN_BUILD == 1 ]] ; then
-      scan-build cmake .. `echo ${CMAKE_OPTIONS}`;
+      scan-build cmake .. `echo ${CMAKE_OPTIONS} ${COMMON_CMAKE_OPTIONS}`;
       scan-build --use-cc=clang --use-c++=clang++ make;
     else
-      cmake .. `echo ${CMAKE_OPTIONS}`;
+      cmake .. `echo ${CMAKE_OPTIONS} ${COMMON_CMAKE_OPTIONS}`;
       make;
     fi;
   - pushd tests;
